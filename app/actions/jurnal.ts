@@ -38,15 +38,16 @@ export async function simpanJurnalBaru(formData: FormData) {
 
 export async function hapusJurnal(id: string) {
   const session = await getServerSession(authOptions);
+  const user = session?.user as SessionUser | undefined;
   
-  if (!session?.user?.id) {
+  if (!user?.id) {
     throw new Error("Tidak diizinkan.");
   }
 
   await prisma.brewJournal.delete({
     where: {
       id: id,
-      userId: session.user.id,
+      userId: user.id,
     },
   });
 
@@ -55,8 +56,9 @@ export async function hapusJurnal(id: string) {
 
 export async function updateJurnal(id: string, formData: FormData) {
   const session = await getServerSession(authOptions);
+  const user = session?.user as SessionUser | undefined;
   
-  if (!session?.user?.id) {
+  if (!user?.id) {
     throw new Error("Tidak diizinkan.");
   }
 
@@ -68,7 +70,7 @@ export async function updateJurnal(id: string, formData: FormData) {
   await prisma.brewJournal.update({
     where: { 
       id: id,
-      userId: session.user.id 
+      userId: user.id 
     },
     data: {
       coffeeBean,

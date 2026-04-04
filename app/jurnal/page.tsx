@@ -74,7 +74,7 @@ export default async function JurnalPage() {
         {/* Grid Daftar Jurnal */}
         {daftarJurnal.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {daftarJurnal.map((jurnal) => (
+            {daftarJurnal.map((jurnal: any) => (
               <div 
                 key={jurnal.id} 
                 className="bg-white rounded-3xl p-6 border border-[#8B5E3C]/10 shadow-sm hover:shadow-lg transition-all flex flex-col justify-between"

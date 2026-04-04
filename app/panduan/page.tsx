@@ -16,7 +16,7 @@ export default function PanduanPage() {
           <p className="font-teks text-[#8B5E3C] text-lg max-w-2xl">Langkah demi langkah mengekstrak rasa terbaik dari biji kopimu. Pilih metode favoritmu dan mari menyeduh.</p>
         </div>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {panduan.map((item, index) => (
+          {panduan.map((item: any, index: number) => (
             <div key={index} className="bg-white rounded-3xl p-8 shadow-sm hover:shadow-xl transition-all border border-[#8B5E3C]/10 group flex flex-col justify-between">
               <div>
                 <div className="w-14 h-14 bg-[#FDF6EE] rounded-2xl flex items-center justify-center mb-6 group-hover:bg-[#D4956A] group-hover:text-white transition-colors text-[#D4956A]">

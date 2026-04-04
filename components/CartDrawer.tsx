@@ -54,7 +54,7 @@ export default function CartDrawer() {
                         <p className="font-teks font-medium text-lg">Keranjang masih kosong.</p>
                       </div>
                     ) : (
-                      items.map((item) => (
+                      items.map((item: any) => (
                         <div key={item.id} className="flex gap-4 items-center bg-white p-4 rounded-3xl border border-[#8B5E3C]/10 shadow-sm transition-all hover:shadow-md">
                           <img src={item.image} alt={item.name} className="w-24 h-24 object-cover rounded-2xl flex-shrink-0" />
                           <div className="flex-1">

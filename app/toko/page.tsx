@@ -36,7 +36,7 @@ export default function TokoPage() {
 
         {/* Grid Produk */}
         <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {DUMMY_PRODUCTS.map((product) => (
+          {DUMMY_PRODUCTS.map((product: any) => (
             <div key={product.id} className="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all border border-[#8B5E3C]/10 flex flex-col group">
               {/* Gambar Produk */}
               <div className="h-48 overflow-hidden relative">
