@@ -1,0 +1,153 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+}
+
+// Tabel Pengguna
+model User {
+  id            String        @id @default(cuid())
+  name          String?
+  email         String?       @unique
+  emailVerified DateTime?
+  image         String?
+  role          Role          @default(USER)
+  accounts      Account[]
+  sessions      Session[]
+  journals      BrewJournal[] // Relasi 1 user bisa punya banyak jurnal seduh
+  orders        Order[]       // Relasi 1 user bisa punya banyak pesanan
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+// TABEL NEXTAUTH 
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String?  @db.Text
+  access_token       String?  @db.Text
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?  @db.Text
+  session_state      String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// Tabel Jurnal Seduh Personal
+model BrewJournal {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date        DateTime @default(now())
+  coffeeBean  String
+  brewMethod  String
+  ratio       String
+  tastingNote String?  @db.Text
+  rating      Rating   @default(NEEDS_IMPROVEMENT)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+enum Rating {
+  SUCCESS
+  COULD_BE_BETTER
+  NEEDS_IMPROVEMENT
+}
+
+// Tabel Produk (Katalog Toko Kecil)
+model Product {
+  id          String      @id @default(cuid())
+  name        String
+  slug        String      @unique
+  description String      @db.Text
+  price       Int         
+  stock       Int         @default(0)
+  imageUrl    String?
+  category    Category
+  orders      OrderItem[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+enum Category {
+  BEANS
+  STARTER_KIT
+  EQUIPMENT
+}
+
+// Tabel Pesanan Transaksi (Midtrans siap pakai)
+model Order {
+  id            String      @id @default(cuid())
+  userId        String
+  user          User        @relation(fields: [userId], references: [id])
+  midtransId    String?     @unique 
+  status        OrderStatus @default(PENDING)
+  totalAmount   Int
+  paymentType   String?    
+  items         OrderItem[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+  quantity  Int
+  price     Int     
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+// Tabel baru untuk Direktori Kopi
+model CoffeeDirectory {
+  id          String   @id @default(cuid())
+  name        String   // Contoh: "Gayo Washed"
+  origin      String   // Contoh: "Aceh, Sumatera"
+  roastLevel  String   // Contoh: "Light to Medium"
+  notes       String[] // Array catatan rasa: ["Apple", "Caramel"]
+  createdAt   DateTime @default(now())
+}
