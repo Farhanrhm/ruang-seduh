@@ -51,7 +51,7 @@ export async function hapusJurnal(id: string) {
 export async function updateJurnal(id: string, formData: FormData) {
   const session = await getServerSession(authOptions);
   
-  if (!session?.user?.id) {
+  if (!(session?.user as any)?.id) {
     throw new Error("Tidak diizinkan.");
   }
 
@@ -63,7 +63,7 @@ export async function updateJurnal(id: string, formData: FormData) {
   await prisma.brewJournal.update({
     where: { 
       id: id,
-      userId: session.user.id 
+      userId: (session!.user as any).id,
     },
     data: {
       coffeeBean,
