@@ -10,11 +10,11 @@ export default async function EditJurnalPage({ params }: { params: Promise<{ id:
   const { id } = await params;
   
   const session = await getServerSession(authOptions);
-  if (!(session?.user as any)?.id) redirect("/");
+  if (!session?.user) redirect("/");
 
   // Ambil data jurnal lama dari database
   const jurnal = await prisma.brewJournal.findUnique({
-    where: { id: id, userId: (session.user as any).id },
+    where: { id: id, userId: session.user.id },
   });
 
   if (!jurnal) redirect("/jurnal");

@@ -8,7 +8,8 @@ import { redirect } from "next/navigation";
 
 export async function simpanJurnalBaru(formData: FormData) {
   const session = await getServerSession(authOptions);
-  if (!(session?.user as any)?.id) {
+  
+  if (!session?.user?.id) {
     throw new Error("Anda harus login untuk mencatat jurnal.");
   }
 
@@ -19,7 +20,7 @@ export async function simpanJurnalBaru(formData: FormData) {
   
   await prisma.brewJournal.create({
     data: {
-      userId: (session!.user as any).id,
+      userId: session.user.id,
       coffeeBean,
       brewMethod,
       ratio,
@@ -34,14 +35,14 @@ export async function simpanJurnalBaru(formData: FormData) {
 export async function hapusJurnal(id: string) {
   const session = await getServerSession(authOptions);
   
-  if (!(session?.user as any)?.id) {
+  if (!session?.user?.id) {
     throw new Error("Tidak diizinkan.");
   }
 
   await prisma.brewJournal.delete({
     where: {
       id: id,
-      userId: (session!.user as any).id,
+      userId: session.user.id,
     },
   });
 
@@ -51,7 +52,7 @@ export async function hapusJurnal(id: string) {
 export async function updateJurnal(id: string, formData: FormData) {
   const session = await getServerSession(authOptions);
   
-  if (!(session?.user as any)?.id) {
+  if (!session?.user?.id) {
     throw new Error("Tidak diizinkan.");
   }
 
@@ -63,7 +64,7 @@ export async function updateJurnal(id: string, formData: FormData) {
   await prisma.brewJournal.update({
     where: { 
       id: id,
-      userId: (session!.user as any).id,
+      userId: session.user.id 
     },
     data: {
       coffeeBean,

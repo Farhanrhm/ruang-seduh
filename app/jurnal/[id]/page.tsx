@@ -10,12 +10,12 @@ export default async function DetailJurnalPage({ params }: { params: Promise<{ i
   const { id } = await params;
   
   const session = await getServerSession(authOptions);
-  if (!(session?.user as any)?.id) redirect("/");
+  if (!session?.user) redirect("/");
 
   const jurnal = await prisma.brewJournal.findUnique({
     where: { 
       id: id,
-      userId: (session!.user as any).id
+      userId: session.user.id
     },
   });
 
