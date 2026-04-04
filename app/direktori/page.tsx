@@ -60,7 +60,7 @@ export default async function DirektoriPage({
         {/* Grid Hasil Pencarian */}
         {beans.length > 0 ? (
           <div className="grid md:grid-cols-2 gap-6">
-            {beans.map((bean) => (
+            {beans.map((bean: any) => ( 
               <div key={bean.id} className="bg-white rounded-2xl p-6 shadow-sm border border-[#8B5E3C]/10 hover:shadow-lg transition-all flex flex-col sm:flex-row gap-6 items-start">
                 <div className="w-full sm:w-32 h-32 bg-[#FDF6EE] rounded-2xl flex-shrink-0 flex items-center justify-center border border-[#8B5E3C]/5 relative overflow-hidden">
                   <Database className="absolute -bottom-4 -right-4 w-16 h-16 text-[#8B5E3C]/5" />
@@ -74,7 +74,7 @@ export default async function DirektoriPage({
                   <p className="font-teks text-[#8B5E3C] text-sm font-medium mb-4">Roast: {bean.roastLevel}</p>
                   
                   <div className="flex flex-wrap gap-2 pt-1">
-                    {bean.notes.map((note, i) => (
+                    {bean.notes.map((note: string, i: number) => (
                       <span key={i} className="px-3 py-1 bg-[#FDF6EE] text-[#8B5E3C] text-xs font-bold rounded-md border border-[#8B5E3C]/10 shadow-sm">
                         {note}
                       </span>
