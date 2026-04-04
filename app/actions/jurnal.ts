@@ -1,15 +1,19 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { getServerSession } from "next-auth";
+import { getServerSession, DefaultSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
+type SessionUser = DefaultSession["user"] & { id: string };
+
 export async function simpanJurnalBaru(formData: FormData) {
   const session = await getServerSession(authOptions);
+
+  const user = session?.user as SessionUser | undefined;
   
-  if (!session?.user?.id) {
+  if (!user?.id) {
     throw new Error("Anda harus login untuk mencatat jurnal.");
   }
 
@@ -20,7 +24,7 @@ export async function simpanJurnalBaru(formData: FormData) {
   
   await prisma.brewJournal.create({
     data: {
-      userId: session.user.id,
+      userId: user.id,
       coffeeBean,
       brewMethod,
       ratio,
