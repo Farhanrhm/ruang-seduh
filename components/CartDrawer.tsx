@@ -1,100 +1,89 @@
 "use client";
 
-import { Fragment, useState, useEffect } from "react";
-import { Dialog, Transition } from "@headlessui/react";
-import { ShoppingBag, X, Plus, Minus, Trash2, ArrowRight } from "lucide-react";
-import { useCartStore } from "@/store/useCartStore";
+import Image from "next/image";
 import Link from "next/link";
+import { X, Trash2, ShoppingBag, Plus, Minus, ArrowRight } from "lucide-react";
+import { useCartStore } from "@/store/useCartStore";
+import { useEffect, useState } from "react";
 
-export default function CartDrawer() {
-  // Mencegah error Hydration di Next.js
-  const [isMounted, setIsMounted] = useState(false);
-  useEffect(() => setIsMounted(true), []);
+export default function CartDrawer({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+  const { items, removeItem, updateQuantity } = useCartStore();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
-  const { items, isOpenCart, closeCart, addItem, decreaseQuantity, removeItem, getTotalPrice, getTotalItems } = useCartStore();
+  const total = items.reduce((sum: number, item: any) => sum + item.price * item.quantity, 0);
 
-  const formatRupiah = (angka: number) => {
-    return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(angka);
-  };
-
-  if (!isMounted) return null;
+  if (!isOpen || !mounted) return null;
 
   return (
-    <Transition.Root show={isOpenCart} as={Fragment}>
-      <Dialog as="div" className="relative z-50" onClose={closeCart}>
+    <>
+      <div className="fixed inset-0 bg-[#4B2E1C]/40 backdrop-blur-sm z-50 transition-opacity" onClick={onClose} />
+      <div className="fixed inset-y-0 right-0 w-full sm:w-[400px] bg-[#FDF6EE] shadow-2xl z-50 flex flex-col transform transition-transform duration-300">
         
-        {/* Latar Belakang Gelap (Overlay) dengan Animasi Fading */}
-        <Transition.Child as={Fragment} enter="ease-in-out duration-300" enterFrom="opacity-0" enterTo="opacity-100" leave="ease-in-out duration-300" leaveFrom="opacity-100" leaveTo="opacity-0">
-          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" />
-        </Transition.Child>
+        {/* Header Drawer */}
+        <div className="p-6 border-b border-[#8B5E3C]/10 flex items-center justify-between bg-white">
+          <div className="flex items-center gap-3">
+            <ShoppingBag className="w-5 h-5 text-[#D4956A]" />
+            <h2 className="font-judul text-xl font-black text-[#4B2E1C]">Keranjangmu</h2>
+            <span className="bg-[#D4956A]/10 text-[#D4956A] text-[10px] font-bold px-2 py-1 rounded-full">{items.length} item</span>
+          </div>
+          <button onClick={onClose} className="p-2 text-[#8B5E3C] hover:bg-red-50 hover:text-red-500 rounded-xl transition-all">
+            <X className="w-5 h-5" />
+          </button>
+        </div>
 
-        <div className="fixed inset-0 overflow-hidden">
-          <div className="absolute inset-0 overflow-hidden">
-            <div className="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10">
-              
-              {/* Laci Keranjang (Slide-over) dengan Animasi Slide-In */}
-              <Transition.Child as={Fragment} enter="transform transition ease-in-out duration-300" enterFrom="translate-x-full" enterTo="translate-x-0" leave="transform transition ease-in-out duration-300" leaveFrom="translate-x-0" leaveTo="translate-x-full">
-                <Dialog.Panel className="pointer-events-auto h-full w-full sm:w-[450px] bg-white shadow-2xl flex flex-col">
-                  
-                  {/* Header Laci */}
-                  <div className="p-6 border-b border-[#8B5E3C]/10 flex items-center justify-between bg-[#FDF6EE]">
-                    <Dialog.Title className="font-judul text-3xl font-black text-[#4B2E1C] flex items-center gap-2 tracking-tighter">
-                      <ShoppingBag className="w-7 h-7 text-[#D4956A]" /> Keranjangmu
-                    </Dialog.Title>
-                    <button onClick={closeCart} className="p-2.5 text-[#8B5E3C] hover:bg-white rounded-full transition-colors border border-transparent hover:border-[#8B5E3C]/20">
-                      <X className="w-5 h-5" />
+        {/* Isi Keranjang */}
+        <div className="flex-1 overflow-y-auto p-6 space-y-4">
+          {items.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-full text-center opacity-70">
+              <ShoppingBag className="w-16 h-16 text-[#8B5E3C]/30 mb-4" />
+              <p className="font-judul text-xl font-bold text-[#4B2E1C] mb-2">Keranjang Kosong</p>
+              <p className="font-teks text-sm text-[#8B5E3C]">Yuk, eksplorasi biji kopi terbaik kami!</p>
+            </div>
+          ) : (
+            items.map((item: any) => (
+              <div key={item.id} className="flex gap-4 bg-white p-4 rounded-2xl border border-[#8B5E3C]/10 shadow-sm">
+                <div className="relative w-20 h-20 rounded-xl overflow-hidden bg-[#FDF6EE] flex-shrink-0">
+                  <Image src={item.image} alt={item.name} fill className="object-cover" />
+                </div>
+                <div className="flex-1 flex flex-col justify-between">
+                  <div className="flex justify-between items-start gap-2">
+                    <h3 className="font-judul font-bold text-[#4B2E1C] text-sm line-clamp-2">{item.name}</h3>
+                    <button onClick={() => removeItem(item.id)} className="text-[#8B5E3C]/50 hover:text-red-500 transition-colors">
+                      <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
-
-                  {/* Daftar Barang dengan Scroll */}
-                  <div className="flex-1 overflow-y-auto p-6 space-y-6">
-                    {items.length === 0 ? (
-                      <div className="h-full flex flex-col items-center justify-center text-[#8B5E3C]/60 space-y-4">
-                        <ShoppingBag className="w-20 h-20 opacity-50" />
-                        <p className="font-teks font-medium text-lg">Keranjang masih kosong.</p>
-                      </div>
-                    ) : (
-                      items.map((item: any) => (
-                        <div key={item.id} className="flex gap-4 items-center bg-white p-4 rounded-3xl border border-[#8B5E3C]/10 shadow-sm transition-all hover:shadow-md">
-                          <img src={item.image} alt={item.name} className="w-24 h-24 object-cover rounded-2xl flex-shrink-0" />
-                          <div className="flex-1">
-                            <h3 className="font-judul text-xl font-bold text-[#4B2E1C] leading-tight mb-1 line-clamp-1">{item.name}</h3>
-                            <p className="font-teks text-[#D4956A] font-black text-sm mb-3">{formatRupiah(item.price)}</p>
-                            
-                            {/* Kontrol Kuantitas */}
-                            <div className="flex items-center gap-3 bg-[#FDF6EE] w-fit rounded-lg border border-[#8B5E3C]/20 p-1">
-                              <button onClick={() => decreaseQuantity(item.id)} className="p-1.5 text-[#8B5E3C] hover:text-[#4B2E1C] transition-colors"><Minus className="w-4 h-4" /></button>
-                              <span className="font-teks font-bold text-base w-5 text-center">{item.quantity}</span>
-                              <button onClick={() => addItem(item)} className="p-1.5 text-[#8B5E3C] hover:text-[#4B2E1C] transition-colors"><Plus className="w-4 h-4" /></button>
-                            </div>
-                          </div>
-                          <button onClick={() => removeItem(item.id)} className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-2xl transition-colors">
-                            <Trash2 className="w-6 h-6" />
-                          </button>
-                        </div>
-                      ))
-                    )}
-                  </div>
-
-                  {/* Footer / Total Harga yang Rapi dan Sejajar */}
-                  {items.length > 0 && (
-                    <div className="p-6 border-t border-[#8B5E3C]/10 bg-white">
-                      <div className="flex items-center justify-between mb-8 pb-4 border-b border-[#8B5E3C]/10">
-                        <span className="font-teks text-[#8B5E3C] text-lg font-medium">Total Belanja</span>
-                        <span className="font-judul text-3xl font-black text-[#4B2E1C] tracking-tight">{formatRupiah(getTotalPrice())}</span>
-                      </div>
-                      <Link href="/checkout" onClick={() => closeCart()} className="w-full py-5 bg-[#D4956A] text-white rounded-2xl font-bold hover:bg-[#b57a52] transition-colors flex items-center justify-center gap-3 shadow-lg shadow-[#D4956A]/30 text-xl tracking-wide">
-                        Checkout Sekarang <ArrowRight className="w-6 h-6" />
-                      </Link>
+                  <div className="flex items-center justify-between mt-2">
+                    <p className="font-teks font-black text-[#D4956A] text-sm">Rp {item.price.toLocaleString('id-ID')}</p>
+                    <div className="flex items-center gap-3 bg-[#FDF6EE] rounded-lg p-1 border border-[#8B5E3C]/10">
+                      <button onClick={() => updateQuantity(item.id, Math.max(1, item.quantity - 1))} className="p-1 text-[#4B2E1C] hover:bg-white rounded-md shadow-sm">
+                        <Minus className="w-3 h-3" />
+                      </button>
+                      <span className="font-bold text-xs w-4 text-center text-[#4B2E1C]">{item.quantity}</span>
+                      <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="p-1 text-[#4B2E1C] hover:bg-white rounded-md shadow-sm">
+                        <Plus className="w-3 h-3" />
+                      </button>
                     </div>
-                  )}
-
-                </Dialog.Panel>
-              </Transition.Child>
-            </div>
-          </div>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
         </div>
-      </Dialog>
-    </Transition.Root>
+
+        {/* Footer Checkout */}
+        {items.length > 0 && (
+          <div className="p-6 bg-white border-t border-[#8B5E3C]/10">
+            <div className="flex justify-between items-center mb-6">
+              <span className="font-teks text-[#8B5E3C] font-bold">Total Belanja</span>
+              <span className="font-judul text-2xl font-black text-[#4B2E1C]">Rp {total.toLocaleString('id-ID')}</span>
+            </div>
+            <Link href="/checkout" onClick={onClose} className="w-full py-4 bg-[#4B2E1C] text-[#FDF6EE] rounded-xl font-bold hover:bg-[#8B5E3C] transition-all flex items-center justify-center gap-2 group shadow-lg hover:shadow-xl hover:-translate-y-0.5">
+              Checkout Sekarang <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </Link>
+          </div>
+        )}
+      </div>
+    </>
   );
 }

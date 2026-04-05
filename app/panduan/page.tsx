@@ -1,41 +1,66 @@
+import { client } from "@/sanity/lib/client";
+import { urlFor } from "@/sanity/lib/image";
 import Link from "next/link";
-import { Timer, Thermometer, ArrowRight, Coffee } from "lucide-react";
+import Image from "next/image";
+import { Clock, BookOpen, ArrowRight } from "lucide-react";
 
-export default function PanduanPage() {
-  const panduan = [
-    { title: "V60 Pour Over", slug: "v60", desc: "Karakter rasa yang bersih (clean) dan menonjolkan keasaman (acidity) cerah dari biji kopi.", time: "3 Menit", temp: "90-93°C" },
-    { title: "French Press", slug: "french-press", desc: "Menghasilkan kopi dengan body yang tebal dan kaya rasa karena minyak kopi tidak tersaring kertas.", time: "4 Menit", temp: "95°C" },
-    { title: "Aeropress", slug: "aeropress", desc: "Metode serbaguna yang cepat, menghasilkan kopi yang pekat, halus, dan tingkat keasaman yang rendah.", time: "2 Menit", temp: "85-90°C" },
-  ];
+export const revalidate = 0; // Disable cache agar update instan
+
+export default async function PanduanPage() {
+  // Ambil data dari tabel "guide" yang baru kita buat
+  const query = `*[_type == "guide"] | order(_createdAt desc) {
+    _id, title, "slug": slug.current, image, description, difficulty, time
+  }`;
+  const guides = await client.fetch(query);
 
   return (
-    <div className="bg-[#FDF6EE] min-h-screen pt-16 pb-24">
-      <div className="container mx-auto px-4 md:px-8 max-w-6xl">
-        <div className="mb-16 border-b border-[#8B5E3C]/10 pb-8 text-center md:text-left">
-          <h1 className="font-judul text-4xl md:text-5xl font-black text-[#4B2E1C] mb-4 tracking-tighter">Panduan Seduh</h1>
-          <p className="font-teks text-[#8B5E3C] text-lg max-w-2xl">Langkah demi langkah mengekstrak rasa terbaik dari biji kopimu. Pilih metode favoritmu dan mari menyeduh.</p>
+    <div className="bg-[#FDF6EE] min-h-screen pt-24 pb-24 text-[#4B2E1C]">
+      <div className="container mx-auto px-4 md:px-8 max-w-7xl">
+        <div className="text-center max-w-3xl mx-auto mb-16">
+          <h1 className="font-judul text-5xl md:text-6xl font-black text-[#4B2E1C] mb-6 tracking-tighter">Panduan Seduh</h1>
+          <p className="font-teks text-[#8B5E3C] text-lg leading-relaxed">
+            Dari teknik dasar hingga mahir. Pelajari cara menghasilkan secangkir kopi terbaik langsung dari dapur rumahmu.
+          </p>
         </div>
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {panduan.map((item: any, index: number) => (
-            <div key={index} className="bg-white rounded-3xl p-8 shadow-sm hover:shadow-xl transition-all border border-[#8B5E3C]/10 group flex flex-col justify-between">
-              <div>
-                <div className="w-14 h-14 bg-[#FDF6EE] rounded-2xl flex items-center justify-center mb-6 group-hover:bg-[#D4956A] group-hover:text-white transition-colors text-[#D4956A]">
-                  <Coffee className="w-7 h-7" />
+
+        {guides.length > 0 ? (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {guides.map((guide: any) => (
+              <Link key={guide._id} href={`/panduan/${guide.slug}`} className="bg-white rounded-[2rem] border border-[#8B5E3C]/10 overflow-hidden group hover:shadow-2xl hover:border-[#D4956A]/30 hover:-translate-y-2 transition-all duration-300 flex flex-col">
+                <div className="relative h-60 w-full overflow-hidden bg-[#FDF6EE]">
+                  {guide.image ? (
+                    <Image src={urlFor(guide.image).url()} alt={guide.title} fill className="object-cover group-hover:scale-105 transition-transform duration-700" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-[#8B5E3C]/30"><BookOpen className="w-12 h-12" /></div>
+                  )}
+                  {/* Badge Kesulitan */}
+                  <div className={`absolute top-4 left-4 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest backdrop-blur-md shadow-sm border ${
+                    guide.difficulty === 'Mudah' ? 'bg-emerald-500/90 text-white border-emerald-400' :
+                    guide.difficulty === 'Menengah' ? 'bg-amber-500/90 text-white border-amber-400' : 'bg-red-500/90 text-white border-red-400'
+                  }`}>
+                    {guide.difficulty || "Info"}
+                  </div>
                 </div>
-                <h2 className="font-judul text-2xl font-bold text-[#4B2E1C] mb-3">{item.title}</h2>
-                <p className="font-teks text-[#8B5E3C] text-sm mb-6 leading-relaxed">{item.desc}</p>
-                <div className="flex items-center gap-4 mb-8">
-                  <span className="flex items-center gap-1.5 text-xs font-bold text-[#8B5E3C] bg-[#FDF6EE] px-3 py-1.5 rounded-lg"><Timer className="w-4 h-4 text-[#D4956A]" /> {item.time}</span>
-                  <span className="flex items-center gap-1.5 text-xs font-bold text-[#8B5E3C] bg-[#FDF6EE] px-3 py-1.5 rounded-lg"><Thermometer className="w-4 h-4 text-[#D4956A]" /> {item.temp}</span>
+
+                <div className="p-8 flex-1 flex flex-col">
+                  <h3 className="font-judul text-2xl font-bold text-[#4B2E1C] mb-3 group-hover:text-[#D4956A] transition-colors">{guide.title}</h3>
+                  <p className="font-teks text-[#8B5E3C] mb-6 line-clamp-2 leading-relaxed flex-1">{guide.description}</p>
+                  
+                  <div className="flex items-center justify-between border-t border-[#8B5E3C]/10 pt-5 mt-auto">
+                    <span className="flex items-center gap-1.5 text-xs font-bold text-[#8B5E3C] uppercase tracking-wider">
+                      <Clock className="w-4 h-4 text-[#D4956A]" /> {guide.time || "-"}
+                    </span>
+                    <span className="text-sm font-bold text-[#D4956A] flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      Mulai Belajar <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    </span>
+                  </div>
                 </div>
-              </div>
-              {/* REVISI: Tombol sekarang menjadi Link yang mengarah ke dynamic route */}
-              <Link href={`/panduan/${item.slug}`} className="w-full py-3 bg-transparent border-2 border-[#4B2E1C] text-[#4B2E1C] rounded-xl font-bold hover:bg-[#4B2E1C] hover:text-[#FDF6EE] transition-all flex items-center justify-center gap-2">
-                Mulai Belajar <ArrowRight className="w-4 h-4" />
               </Link>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-center text-[#8B5E3C] italic mt-10">Admin, silakan tambahkan Panduan baru melalui Sanity Studio (/studio).</p>
+        )}
       </div>
     </div>
   );
