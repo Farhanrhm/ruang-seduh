@@ -9,6 +9,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import FormKomentar from "@/components/FormKomentar";
 import TombolAksiKomentar from "@/components/TombolAksiKomentar";
+import TombolLike from "@/components/TombolLike";
 
 interface SanityAsset {
   url: string;
@@ -155,8 +156,8 @@ export default async function BlogPostPage({
             <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-xl border border-[#8B5E3C]/10 shadow-sm">
               <span className="text-xs font-bold text-[#8B5E3C] uppercase tracking-wider">Urutkan:</span>
               <div className="flex gap-3 text-sm font-bold">
-                <Link href={`?sort=terbaru`} className={`hover:text-[#D4956A] ${sort === 'terbaru' ? 'text-[#D4956A]' : ''}`}>Terbaru</Link>
-                <Link href={`?sort=populer`} className={`hover:text-[#D4956A] ${sort === 'populer' ? 'text-[#D4956A]' : ''}`}>Populer</Link>
+                <Link href={`?sort=terbaru`} scroll={false} className={`hover:text-[#D4956A] ${sort === 'terbaru' ? 'text-[#D4956A]' : ''}`}>Terbaru</Link>
+                <Link href={`?sort=populer`} scroll={false} className={`hover:text-[#D4956A] ${sort === 'populer' ? 'text-[#D4956A]' : ''}`}>Populer</Link>
               </div>
             </div>
           </div>
@@ -188,24 +189,27 @@ export default async function BlogPostPage({
                         {komentar.user.role === 'ADMIN' && <span className="text-[9px] bg-[#4B2E1C] text-white px-1.5 py-0.5 rounded">ADMIN</span>}
                       </h4>
                       
-                      {/* TOMBOL AKSI ADMIN (Pin & Hapus) */}
+                      {/* TOMBOL AKSI ADMIN: Hanya kirim prop yang dibutuhkan saja */}
                       <TombolAksiKomentar 
                         commentId={komentar.id} 
                         slug={slug} 
                         isAdmin={isAdmin} 
                         isPinned={komentar.isPinned}
-                        isOwner={session?.user?.id === komentar.userId}
                       />
                     </div>
 
                     <p className="text-xs text-[#8B5E3C] mb-3">{new Date(komentar.createdAt).toLocaleDateString('id-ID')}</p>
                     <p className="font-teks text-[#4B2E1C] leading-relaxed mb-4 whitespace-pre-wrap">{komentar.text}</p>
 
-                    {/* Tombol Like & Reply */}
+                    {/* Tombol Like Interaktif */}
                     <div className="flex items-center gap-6">
-                      <button className="flex items-center gap-1.5 text-xs font-bold text-[#8B5E3C] hover:text-red-500 transition-colors">
-                        <Heart className="w-4 h-4" /> {komentar.likes.length} Suka
-                      </button>
+                      <TombolLike 
+                        commentId={komentar.id}
+                        slug={slug}
+                        initialLikes={komentar.likes.length}
+                        hasLiked={komentar.likes.some((like: any) => like.userId === session?.user?.id)}
+                        isGuest={!session?.user?.id}
+                      />
                     </div>
                   </div>
                 </div>
@@ -220,4 +224,4 @@ export default async function BlogPostPage({
       </div>
     </div>
   );
-}
+}

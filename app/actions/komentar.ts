@@ -44,12 +44,10 @@ export async function hapusKomentar(commentId: string, slug: string) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) throw new Error("Tidak ada akses.");
 
-  // Cek apakah dia Admin atau pemilik komentar
   const userDB = await prisma.user.findUnique({ where: { id: session.user.id } });
-  const comment = await prisma.comment.findUnique({ where: { id: commentId } });
 
-  if (userDB?.role !== "ADMIN" && comment?.userId !== session.user.id) {
-    throw new Error("Hanya admin atau penulis yang bisa menghapus.");
+  if (userDB?.role !== "ADMIN") {
+    throw new Error("Hanya admin yang bisa menghapus komentar.");
   }
 
   await prisma.comment.delete({ where: { id: commentId } });
