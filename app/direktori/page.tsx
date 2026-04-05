@@ -37,7 +37,7 @@ export default async function DirektoriPage({
         { roastLevel: { contains: query, mode: "insensitive" } }
       ],
     },
-    orderBy: { name: "asc" }, // Urutkan sesuai abjad
+    orderBy: { name: "asc" }, 
   });
 
   return (

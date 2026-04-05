@@ -91,14 +91,14 @@ export default async function BlogPostPage({
   if (sort === "populer") orderBy = { likes: { _count: "desc" } };
 
   const komentarList = await prisma.comment.findMany({
-    where: { postSlug: slug, parentId: null }, // Ambil komentar utama (bukan balasan)
+    where: { postSlug: slug, parentId: null }, 
     include: { 
       user: true, 
       likes: true,
       replies: { include: { user: true, likes: true } } 
     },
     orderBy: [
-      { isPinned: "desc" }, // Selalu tampilkan yang di-pin di paling atas
+      { isPinned: "desc" }, 
       orderBy
     ]
   });

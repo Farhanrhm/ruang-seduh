@@ -19,7 +19,6 @@ export default async function EditJurnalPage({ params }: { params: Promise<{ id:
 
   if (!jurnal) redirect("/jurnal");
 
-  // Karena Server Action butuh ID, kita bungkus fungsinya dengan .bind
   const updateJurnalDenganId = updateJurnal.bind(null, jurnal.id);
 
   return (

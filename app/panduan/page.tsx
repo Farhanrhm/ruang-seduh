@@ -19,7 +19,7 @@ export default async function PanduanPage() {
         <div className="text-center max-w-3xl mx-auto mb-16">
           <h1 className="font-judul text-5xl md:text-6xl font-black text-[#4B2E1C] mb-6 tracking-tighter">Panduan Seduh</h1>
           <p className="font-teks text-[#8B5E3C] text-lg leading-relaxed">
-            Dari teknik dasar hingga mahir. Pelajari cara menghasilkan secangkir kopi terbaik langsung dari dapur rumahmu.
+            Dari teknik dasar hingga mahir. Pelajari cara menghasilkan secangkir kopi terbaik langsung dengan tanganmu.
           </p>
         </div>
 
