@@ -1,32 +1,86 @@
+import Hero from "@/components/Hero";
 import Link from "next/link";
-import { ArrowRight, Coffee } from "lucide-react";
+import { BookOpen, Map, BookMarked, Users, ArrowRight } from "lucide-react";
 
 export default function Home() {
   return (
-    <div className="bg-[#FDF6EE] min-h-[90vh] flex items-center">
-      <div className="container mx-auto px-4 md:px-8 py-12 md:py-20">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-          <div className="space-y-8 max-w-2xl">
-            <h1 className="font-judul text-5xl md:text-6xl lg:text-7xl font-black text-[#4B2E1C] leading-[1.1]">
-              Teman Menyeduh Kopi di <span className="text-[#D4956A]">Rumah</span>
-            </h1>
-            <p className="font-teks text-[#8B5E3C] text-lg md:text-xl leading-relaxed">
-              Kenali biji kopi Nusantara, temukan metode seduh favoritmu, dan mari buat secangkir kopi yang hangat, tanpa aturan yang mengekang.
-            </p>
-            <div className="flex flex-wrap items-center gap-4 pt-4">
-              <Link href="/panduan" className="px-8 py-4 bg-[#D4956A] text-white rounded-full font-bold hover:bg-[#b57a52] transition-all shadow-lg hover:shadow-xl hover:-translate-y-1 flex items-center gap-2">
-                <Coffee className="w-5 h-5" /> Mulai Belajar
-              </Link>
-              <Link href="/toko" className="px-8 py-4 bg-transparent border-2 border-[#D4956A] text-[#D4956A] rounded-full font-bold hover:bg-[#D4956A] hover:text-white transition-all flex items-center gap-2">
-                Lihat Koleksi Kopi <ArrowRight className="w-5 h-5" />
-              </Link>
-            </div>
+    <div className="bg-[#FDF6EE] min-h-screen text-[#4B2E1C]">
+      {/* 1. Bagian Hero */}
+      <Hero />
+      
+      {/* 2. Fitur Utama Section */}
+      <section className="py-24 relative">
+        <div className="container mx-auto px-4 md:px-8 max-w-7xl">
+          
+          <div className="text-center mb-16 max-w-3xl mx-auto">
+            <h2 className="font-judul text-4xl md:text-5xl font-black text-[#4B2E1C] mb-4 tracking-tight">Ruang Untuk Semua</h2>
+            <p className="font-teks text-[#8B5E3C] text-lg leading-relaxed">Dari pemula yang baru mengenal V60 hingga barista rumahan yang mencari kesempurnaan rasio dan suhu seduhan.</p>
           </div>
-          <div className="relative w-full h-[400px] md:h-[500px] lg:h-[600px] rounded-[2.5rem] overflow-hidden shadow-2xl border-8 border-white transform lg:rotate-2 hover:rotate-0 transition-transform duration-500">
-            <img src="https://images.unsplash.com/photo-1497935586351-b67a49e012bf?q=80&w=1000&auto=format&fit=crop" alt="Peralatan Kopi Estetik" className="w-full h-full object-cover" />
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+            <FeatureCard 
+              icon={<Map className="w-8 h-8 text-[#D4956A]" />}
+              title="Peta Kopi"
+              desc="Eksplorasi direktori biji kopi Nusantara dengan filter profil rasa yang detail."
+              link="/direktori"
+            />
+            <FeatureCard 
+              icon={<BookOpen className="w-8 h-8 text-[#D4956A]" />}
+              title="Panduan Seduh"
+              desc="Pelajari teknik manual brew dari dasar hingga mahir dengan visual yang jelas."
+              link="/panduan"
+            />
+            <FeatureCard 
+              icon={<BookMarked className="w-8 h-8 text-[#D4956A]" />}
+              title="Jurnal Personal"
+              desc="Catat rasio, suhu, dan hasil eksperimen seduhan kopimu setiap harinya."
+              link="/jurnal"
+            />
+            <FeatureCard 
+              icon={<Users className="w-8 h-8 text-[#D4956A]" />}
+              title="Blog & Cerita"
+              desc="Baca artikel seputar industri kopi, tips rahasia, dan cerita dari petani."
+              link="/blog"
+            />
           </div>
         </div>
-      </div>
+      </section>
+
+      {/* 3. Section Ajakan Singkat (Call to Action) */}
+      <section className="py-20 mb-10">
+        <div className="container mx-auto px-4 md:px-8 max-w-5xl">
+          <div className="bg-[#4B2E1C] rounded-[3rem] p-10 md:p-16 text-center text-[#FDF6EE] relative overflow-hidden shadow-2xl">
+            {/* Ornamen bulatan dekoratif */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-[#D4956A]/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-48 h-48 bg-[#D4956A]/20 rounded-full blur-3xl translate-y-1/3 -translate-x-1/3 pointer-events-none" />
+            
+            <h2 className="font-judul text-3xl md:text-5xl font-black mb-6 relative z-10 tracking-tight">Siap menyeduh cangkir pertamamu?</h2>
+            <p className="font-teks text-[#FDF6EE]/80 text-lg mb-10 max-w-2xl mx-auto relative z-10 leading-relaxed">
+              Jadikan setiap pagi lebih bermakna. Daftarkan dirimu dan mulai bagikan pengalaman seduhmu bersama komunitas Ruang Seduh hari ini.
+            </p>
+            <Link href="/api/auth/signin" className="inline-flex items-center gap-2 px-8 py-4 bg-[#D4956A] text-white rounded-full font-bold hover:bg-[#b57a52] transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1 relative z-10 group">
+              Bergabung Sekarang <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </Link>
+          </div>
+        </div>
+      </section>
     </div>
-  );
+  )
+}
+
+// Komponen Card Kecil agar rapi
+function FeatureCard({ icon, title, desc, link }: any) {
+  return (
+    <Link href={link} className="bg-white p-8 rounded-[2rem] border border-[#8B5E3C]/10 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 group flex flex-col h-full">
+      <div className="w-16 h-16 bg-[#FDF6EE] rounded-2xl flex items-center justify-center mb-6 group-hover:bg-[#D4956A] transition-colors duration-300 [&>svg]:group-hover:text-white [&>svg]:transition-colors">
+        {icon}
+      </div>
+      <h3 className="font-judul text-2xl font-bold text-[#4B2E1C] mb-3">{title}</h3>
+      <p className="font-teks text-[#8B5E3C] leading-relaxed flex-1">{desc}</p>
+      
+      <div className="mt-6 flex items-center gap-2 text-sm font-bold text-[#D4956A] opacity-0 group-hover:opacity-100 transition-opacity">
+        Jelajahi <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+      </div>
+    </Link>
+  )
 }

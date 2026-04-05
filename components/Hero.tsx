@@ -1,57 +1,45 @@
-import Image from "next/image";
 import Link from "next/link";
-import { Coffee, ArrowRight } from "lucide-react";
+import Image from "next/image";
+import { ArrowRight } from "lucide-react";
 
 export default function Hero() {
   return (
-    <section className="relative overflow-hidden bg-[#FDF6EE] pt-16 md:pt-24 lg:pt-32 pb-16">
-      <div className="container mx-auto px-4 md:px-8">
-        <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-8">
+    <section className="relative w-full min-h-[90vh] flex items-center bg-[#1A110A] overflow-hidden pt-20">
+      {/* Background Image (Estetika Gelap) */}
+      <div className="absolute inset-0 w-full h-full z-0">
+        <Image 
+          src="/hero-bg.jpg" // Pastikan gambar Anda ada di folder public/hero-bg.jpg
+          alt="Coffee Pouring"
+          fill
+          className="object-cover opacity-60 md:opacity-50 object-center"
+          priority
+        />
+        {/* Efek Gradasi: Dari hitam transparan di atas, memudar ke warna #FDF6EE di paling bawah agar nyambung dengan konten */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#FDF6EE] via-[#1A110A]/40 to-transparent" />
+      </div>
+
+      <div className="container mx-auto px-4 md:px-8 relative z-10 mt-10 md:mt-0">
+        <div className="max-w-3xl">
+          <span className="inline-block py-1.5 px-4 bg-[#D4956A]/20 text-[#D4956A] rounded-full font-bold text-xs tracking-widest uppercase mb-6 backdrop-blur-sm border border-[#D4956A]/30 shadow-sm">
+            Eksplorasi Rasa Kopi Nusantara
+          </span>
           
-          {/* Sisi Kiri: Teks & Tombol CTA */}
-          <div className="flex-1 space-y-8 text-center lg:text-left">
-            <h1 className="font-judul text-4xl md:text-5xl lg:text-6xl font-bold text-[#3D2B1F] leading-tight">
-              Teman Menyeduh Kopi di <span className="text-[#D4956A]">Rumah</span>
-            </h1>
-            <p className="font-teks text-lg text-[#8B5E3C] max-w-2xl mx-auto lg:mx-0">
-              Kenali biji kopi Nusantara, temukan metode seduh favoritmu, dan mari buat secangkir kopi yang hangat, tanpa aturan yang mengekang.
-            </p>
-            
-            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-4">
-              <Link 
-                href="/panduan" 
-                className="flex items-center gap-2 px-6 py-3 bg-[#D4956A] text-white rounded-full font-medium hover:bg-[#b87d55] transition-colors shadow-sm"
-              >
-                <Coffee className="w-5 h-5" />
-                Mulai Belajar
-              </Link>
-              <Link 
-                href="/toko" 
-                className="flex items-center gap-2 px-6 py-3 border border-[#8B5E3C] text-[#3D2B1F] rounded-full font-medium hover:bg-[#8B5E3C]/10 transition-colors"
-              >
-                Lihat Koleksi Kopi
-                <ArrowRight className="w-5 h-5" />
-              </Link>
-            </div>
+          <h1 className="font-judul text-5xl md:text-6xl lg:text-7xl font-black text-white leading-[1.1] mb-6 tracking-tighter drop-shadow-md">
+            Menyeduh <span className="text-[#D4956A]">Cerita</span>,<br className="hidden md:block"/> Menemukan Rasa.
+          </h1>
+          
+          <p className="font-teks text-lg md:text-xl text-gray-200 mb-10 max-w-xl leading-relaxed drop-shadow">
+            Ruang Seduh adalah kompas bagi para penikmat kopi. Temukan panduan seduh, direktori biji kopi lokal, hingga jurnal personal untuk mencatat resep terbaikmu.
+          </p>
+          
+          <div className="flex flex-col sm:flex-row items-center gap-4">
+            <Link href="/direktori" className="w-full sm:w-auto px-8 py-4 bg-[#D4956A] text-white rounded-full font-bold hover:bg-[#b57a52] transition-all duration-300 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl hover:-translate-y-1 group">
+              Mulai Eksplorasi <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </Link>
+            <Link href="/panduan" className="w-full sm:w-auto px-8 py-4 bg-white/10 text-white backdrop-blur-md rounded-full font-bold hover:bg-white/20 border border-white/20 transition-all duration-300 flex items-center justify-center gap-2 hover:-translate-y-1">
+              Pelajari Panduan
+            </Link>
           </div>
-
-          {/* Sisi Kanan: Foto Suasana Seduh */}
-          <div className="flex-1 relative w-full max-w-lg mx-auto lg:max-w-none">
-            {/* Aspect ratio container agar gambar tidak lompat (mencegah CLS) */}
-            <div className="relative aspect-[4/3] rounded-2xl overflow-hidden shadow-xl">
-              <Image
-                src="https://images.unsplash.com/photo-1497935586351-b67a49e012bf?q=80&w=1000&auto=format&fit=crop"
-                alt="Suasana menyeduh kopi di meja kayu"
-                fill
-                className="object-cover"
-                priority
-                sizes="(max-width: 768px) 100vw, 50vw"
-              />
-            </div>
-            {/* Aksen Dekoratif */}
-            <div className="absolute -bottom-6 -left-6 w-24 h-24 bg-[#D4956A]/20 rounded-full blur-xl -z-10"></div>
-          </div>
-
         </div>
       </div>
     </section>
