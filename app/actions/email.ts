@@ -2,7 +2,7 @@
 
 import { resend } from "@/lib/resend";
 import { WelcomeEmail } from "@/emails/WelcomeEmail";
-import { InvoiceEmail } from "@/emails/InvoiceEmail"; // Asumsikan Anda buat template serupa untuk Invoice
+import { InvoiceEmail } from "@/emails/InvoiceEmail";
 
 export async function kirimEmailWelcome(email: string, name: string) {
   try {
@@ -17,23 +17,20 @@ export async function kirimEmailWelcome(email: string, name: string) {
   }
 }
 
-
 export async function kirimEmailInvoice(email: string, customerName: string, cartItems: any[], total: number) {
   try {
     // Generate Order ID acak
     const orderId = `INV-${Math.floor(100000 + Math.random() * 900000)}`;
-    const shippingCost = 20000;
-
+    
     await resend.emails.send({
       from: 'Ruang Seduh Store <onboarding@resend.dev>', // Nanti ganti domain Anda
       to: email,
       subject: `Invoice Pesanan Anda - ${orderId}`,
       react: InvoiceEmail({ 
-        customerName: customerName,
+        name: customerName,   
         orderId: orderId,
         items: cartItems,
-        totalAmount: total,
-        shippingCost: shippingCost
+        total: total          
       }),
     });
     
