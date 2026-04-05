@@ -6,18 +6,18 @@ import { X, Trash2, ShoppingBag, Plus, Minus, ArrowRight } from "lucide-react";
 import { useCartStore } from "@/store/useCartStore";
 import { useEffect, useState } from "react";
 
-export default function CartDrawer({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
-  const { items, removeItem, updateQuantity } = useCartStore();
+export default function CartDrawer() {
+  const { items, removeItem, updateQuantity, isOpenCart, closeCart } = useCartStore();
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
   const total = items.reduce((sum: number, item: any) => sum + item.price * item.quantity, 0);
 
-  if (!isOpen || !mounted) return null;
+  if (!isOpenCart || !mounted) return null;
 
   return (
     <>
-      <div className="fixed inset-0 bg-[#4B2E1C]/40 backdrop-blur-sm z-50 transition-opacity" onClick={onClose} />
+      <div className="fixed inset-0 bg-[#4B2E1C]/40 backdrop-blur-sm z-50 transition-opacity" onClick={closeCart} />
       <div className="fixed inset-y-0 right-0 w-full sm:w-[400px] bg-[#FDF6EE] shadow-2xl z-50 flex flex-col transform transition-transform duration-300">
         
         {/* Header Drawer */}
@@ -27,7 +27,7 @@ export default function CartDrawer({ isOpen, onClose }: { isOpen: boolean; onClo
             <h2 className="font-judul text-xl font-black text-[#4B2E1C]">Keranjangmu</h2>
             <span className="bg-[#D4956A]/10 text-[#D4956A] text-[10px] font-bold px-2 py-1 rounded-full">{items.length} item</span>
           </div>
-          <button onClick={onClose} className="p-2 text-[#8B5E3C] hover:bg-red-50 hover:text-red-500 rounded-xl transition-all">
+          <button onClick={closeCart} className="p-2 text-[#8B5E3C] hover:bg-red-50 hover:text-red-500 rounded-xl transition-all">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -78,7 +78,7 @@ export default function CartDrawer({ isOpen, onClose }: { isOpen: boolean; onClo
               <span className="font-teks text-[#8B5E3C] font-bold">Total Belanja</span>
               <span className="font-judul text-2xl font-black text-[#4B2E1C]">Rp {total.toLocaleString('id-ID')}</span>
             </div>
-            <Link href="/checkout" onClick={onClose} className="w-full py-4 bg-[#4B2E1C] text-[#FDF6EE] rounded-xl font-bold hover:bg-[#8B5E3C] transition-all flex items-center justify-center gap-2 group shadow-lg hover:shadow-xl hover:-translate-y-0.5">
+            <Link href="/checkout" onClick={closeCart} className="w-full py-4 bg-[#4B2E1C] text-[#FDF6EE] rounded-xl font-bold hover:bg-[#8B5E3C] transition-all flex items-center justify-center gap-2 group shadow-lg hover:shadow-xl hover:-translate-y-0.5">
               Checkout Sekarang <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
