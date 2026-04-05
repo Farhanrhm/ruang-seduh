@@ -49,7 +49,7 @@ export default async function DirektoriPage({
           <div>
             <h1 className="font-judul text-4xl md:text-5xl font-black text-[#4B2E1C] mb-4 tracking-tighter">Direktori Kopi</h1>
             <p className="font-teks text-[#8B5E3C] text-lg max-w-2xl leading-relaxed">
-              Jelajahi kekayaan rasa kopi Nusantara. Data ini kini disajikan langsung dari database Supabase Anda.
+              Jelajahi kekayaan rasa kopi Nusantara.
             </p>
           </div>
           
