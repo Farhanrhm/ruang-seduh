@@ -21,7 +21,7 @@ const PRODUCTS: Product[] = [
   { id: "b2", name: "Chemex 6 Cup", price: 450000, category: "ALAT SEDUH", image: "https://images.unsplash.com/photo-1580915411954-282cb1b0d780?w=400&h=400&fit=crop&q=80", description: "Bahan: Borosilicate glass | Kapasitas: 900ml", createdAt: "2024-01-10" },
   { id: "b3", name: "Aeropress Original", price: 550000, category: "ALAT SEDUH", image: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=400&h=400&fit=crop&q=80", description: "Brand: AeroPress Inc. | Includes: 350 filter papers", createdAt: "2024-01-11" },
   { id: "b4", name: "French Press Bodum 350ml", price: 285000, category: "ALAT SEDUH", image: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400&h=400&fit=crop&q=80", description: "Brand: Bodum | Bahan: Borosilicate glass + stainless steel | Kapasitas: 350ml", createdAt: "2024-01-12" },
-  { id: "b5", name: "Moka Pot Bialetti 3 Cup", price: 320000, category: "ALAT SEDUH", image: "https://images.unsplash.com/photo-1544191959-2383e524235e?w=400&h=400&fit=crop&q=80", description: "Brand: Bialetti | Bahan: Aluminium | Kapasitas: 3 cup (150ml)", createdAt: "2024-01-13" },
+  { id: "b5", name: "Moka Pot Bialetti 3 Cup", price: 320000, category: "ALAT SEDUH", image: "https://images.unsplash.com/photo-1590186851676-e8220819777d?w=400&h=400&fit=crop&q=80", description: "Brand: Bialetti | Bahan: Aluminium | Kapasitas: 3 cup (150ml)", createdAt: "2024-01-13" },
   { id: "b6", name: "Clever Dripper", price: 180000, category: "ALAT SEDUH", image: "https://images.unsplash.com/photo-1544194215-541c2d3561a4?w=400&h=400&fit=crop&q=80", description: "Bahan: BPA-free plastic | Ukuran: Large (500ml)", createdAt: "2024-01-14" },
 
   // 3. Kategori: Aksesoris (6)
