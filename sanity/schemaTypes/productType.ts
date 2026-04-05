@@ -17,10 +17,7 @@ export const productType = defineType({
       name: 'slug',
       title: 'Slug',
       type: 'slug',
-      options: {
-        source: 'name',
-        maxLength: 96,
-      },
+      options: { source: 'name', maxLength: 96 },
       validation: (Rule) => Rule.required(),
     }),
     defineField({
@@ -42,40 +39,60 @@ export const productType = defineType({
       },
       validation: (Rule) => Rule.required(),
     }),
+    // 👇 Field Baru: Jenis Asal Kopi 👇
+    defineField({
+      name: 'originCategory',
+      title: 'Jenis Asal (Khusus Biji Kopi)',
+      type: 'string',
+      options: {
+        list: [
+          {title: 'Lokal (Indonesia)', value: 'LOKAL'},
+          {title: 'Impor (Luar Negeri)', value: 'IMPOR'},
+        ],
+      },
+      description: 'Pilih apakah ini biji kopi Nusantara atau Internasional',
+    }),
+    defineField({
+      name: 'imageUrl',
+      title: 'URL Gambar (Dari Internet)',
+      type: 'url',
+      description: 'Tempel link gambar dari internet di sini agar lebih cepat',
+    }),
     defineField({
       name: 'image',
-      title: 'Gambar Produk',
+      title: 'Gambar Produk (Upload)',
       type: 'image',
-      options: {
-        hotspot: true,
-      },
+      options: { hotspot: true },
     }),
     defineField({
       name: 'description',
-      title: 'Deskripsi',
+      title: 'Deskripsi (Khusus Alat/Aksesoris)',
       type: 'text',
     }),
-    // Field Tambahan untuk Detail Kopi
     defineField({
       name: 'origin',
-      title: 'Asal (Khusus Kopi)',
+      title: 'Daerah Asal Spesifik (Khusus Kopi)',
       type: 'string',
+      description: 'Contoh: Aceh Gayo, Ethiopia Yirgacheffe',
     }),
     defineField({
       name: 'process',
       title: 'Proses (Khusus Kopi)',
       type: 'string',
+      description: 'Contoh: Wet Hulled, Natural, Washed',
     }),
     defineField({
       name: 'roast',
       title: 'Roast Level (Khusus Kopi)',
       type: 'string',
+      description: 'Contoh: Dark Roast, Medium Roast',
     }),
     defineField({
       name: 'notes',
       title: 'Tasting Notes (Khusus Kopi)',
       type: 'array',
       of: [{type: 'string'}],
+      description: 'Tekan Enter setiap selesai menulis 1 note (Contoh: Dark Chocolate)',
     }),
   ],
   preview: {
