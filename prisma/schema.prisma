@@ -164,3 +164,48 @@ model Comment {
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
+
+// Tambahkan field role dan likes pada User
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  role          String    @default("USER") // 'USER' atau 'ADMIN'
+  accounts      Account[]
+  sessions      Session[]
+  comments      Comment[]
+  likes         Like[]
+}
+
+// Update model Comment
+model Comment {
+  id        String   @id @default(cuid())
+  text      String   // Max 500 karakter akan divalidasi di form
+  createdAt DateTime @default(now())
+  postSlug  String   
+  isPinned  Boolean  @default(false)
+
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Fitur Nested Reply (Balasan)
+  parentId  String?
+  parent    Comment?  @relation("KomentarBalasan", fields: [parentId], references: [id], onDelete: Cascade)
+  replies   Comment[] @relation("KomentarBalasan")
+
+  // Fitur Like
+  likes     Like[]
+}
+
+// Model baru untuk sistem Like
+model Like {
+  id        String   @id @default(cuid())
+  userId    String
+  commentId String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comment   Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, commentId]) // Cegah 1 user like berkali-kali di komentar yang sama
+}
