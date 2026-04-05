@@ -45,20 +45,26 @@ export default function FormKomentar({ slug, userId }: { slug: string; userId?: 
 
   return (
     <form onSubmit={handleSubmit} className="relative group">
-      <textarea
-        value={text}
-        onChange={(e) => setText(e.target.value)}
-        placeholder="Tulis pendapat atau pertanyaanmu di sini..."
-        disabled={isPending}
-        className="w-full bg-white border border-[#8B5E3C]/20 rounded-3xl p-5 pr-16 min-h-[140px] focus:outline-none focus:ring-2 focus:ring-[#D4956A] focus:border-transparent resize-y font-teks text-[#4B2E1C] shadow-sm transition-all"
-      />
-      <button
-        type="submit"
-        disabled={isPending || !text.trim()}
-        className="absolute bottom-5 right-5 p-3.5 bg-[#D4956A] text-white rounded-2xl hover:bg-[#b57a52] disabled:opacity-50 disabled:hover:bg-[#D4956A] transition-all shadow-md group-focus-within:animate-pulse"
-      >
-        <Send className="w-5 h-5" />
-      </button>
+      <div className="relative">
+        <textarea
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          placeholder="Tulis pendapat atau pertanyaanmu di sini..."
+          disabled={isPending}
+          maxLength={500}
+          className="w-full bg-white border border-[#8B5E3C]/20 rounded-3xl p-5 pr-16 min-h-[140px] focus:outline-none focus:ring-2 focus:ring-[#D4956A] focus:border-transparent resize-y font-teks text-[#4B2E1C] shadow-sm transition-all"
+        />
+        <div className="absolute bottom-4 left-5 text-[10px] font-bold text-[#8B5E3C]/40 uppercase tracking-widest">
+          {text.length} / 500
+        </div>
+        <button
+          type="submit"
+          disabled={isPending || !text.trim()}
+          className="absolute bottom-5 right-5 p-3.5 bg-[#D4956A] text-white rounded-2xl hover:bg-[#b57a52] disabled:opacity-50 disabled:hover:bg-[#D4956A] transition-all shadow-md group-focus-within:animate-pulse"
+        >
+          <Send className="w-5 h-5" />
+        </button>
+      </div>
     </form>
   );
 }

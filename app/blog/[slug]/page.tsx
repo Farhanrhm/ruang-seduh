@@ -2,12 +2,13 @@ import { client } from "@/sanity/lib/client";
 import { urlFor } from "@/sanity/lib/image";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, Calendar, Coffee, User, MessageCircle } from "lucide-react";
+import { ArrowLeft, Calendar, Coffee, User, MessageCircle, Pin, Trash2, Heart, ChevronDown } from "lucide-react";
 import { PortableText } from "@portabletext/react";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import FormKomentar from "@/components/FormKomentar";
+import TombolAksiKomentar from "@/components/TombolAksiKomentar";
 
 interface SanityAsset {
   url: string;
@@ -49,8 +50,15 @@ const ptComponents = {
   }
 };
 
-export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function BlogPostPage({ 
+  params, 
+  searchParams 
+}: { 
+  params: Promise<{ slug: string }>, 
+  searchParams: Promise<{ sort?: string }> 
+}) {
   const { slug } = await params;
+  const { sort = "terbaru" } = await searchParams;
 
   // 1. Ambil Data Artikel dari Sanity
   const query = `*[_type == "post" && slug.current == $slug][0]{
@@ -71,12 +79,27 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
     );
   }
 
-  // 2. Ambil Session User & Data Komentar dari Prisma (Supabase)
+  // 2. Ambil Session & Data User dari Database
   const session = await getServerSession(authOptions);
+  const userDB = session?.user?.id ? await prisma.user.findUnique({ where: { id: session.user.id } }) : null;
+  const isAdmin = userDB?.role === "ADMIN";
+
+  // 3. Ambil Daftar Komentar dengan Logika Sorting
+  let orderBy: any = { createdAt: "desc" };
+  if (sort === "terlama") orderBy = { createdAt: "asc" };
+  if (sort === "populer") orderBy = { likes: { _count: "desc" } };
+
   const komentarList = await prisma.comment.findMany({
-    where: { postSlug: slug },
-    include: { user: true },
-    orderBy: { createdAt: "desc" }, // Komentar terbaru di atas
+    where: { postSlug: slug, parentId: null }, // Ambil komentar utama (bukan balasan)
+    include: { 
+      user: true, 
+      likes: true,
+      replies: { include: { user: true, likes: true } } 
+    },
+    orderBy: [
+      { isPinned: "desc" }, // Selalu tampilkan yang di-pin di paling atas
+      orderBy
+    ]
   });
 
   const imageMetadata = post.mainImage?.metadata?.dimensions;
@@ -86,7 +109,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
     <div className="bg-[#FDF6EE] min-h-screen pt-24 pb-24 text-[#4B2E1C]">
       <div className="container mx-auto px-4 max-w-4xl">
         <Link href="/blog" className="inline-flex items-center gap-2 text-[#8B5E3C] hover:text-[#4B2E1C] font-bold mb-12 transition-colors bg-white px-5 py-2.5 rounded-full shadow-sm border border-[#8B5E3C]/10 w-fit group">
-          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" /> Kembali ke Artikel
+          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" /> Kembali ke Daftar Artikel
         </Link>
 
         <h1 className="font-judul text-4xl md:text-5xl lg:text-6xl font-black text-[#4B2E1C] mb-10 leading-[1.1] tracking-tighter">{post.title}</h1>
@@ -112,43 +135,79 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
           </div>
         )}
 
-        <div className="font-teks px-1 max-w-3xl mx-auto">
+        <div className="font-teks px-1 max-w-3xl mx-auto mb-20 pb-20 border-b border-[#8B5E3C]/10">
           <PortableText value={post.body} components={ptComponents} />
         </div>
 
         {/* ======================================================== */}
-        {/* BAGIAN KOMENTAR */}
+        {/* BAGIAN KOMENTAR KOMPLEKS */}
         {/* ======================================================== */}
-        <div className="mt-20 pt-16 border-t border-[#8B5E3C]/20 max-w-3xl mx-auto">
-          <div className="flex items-center gap-3 mb-8">
-            <MessageCircle className="w-8 h-8 text-[#D4956A]" />
-            <h3 className="font-judul text-3xl font-black text-[#4B2E1C]">Ruang Diskusi <span className="text-[#8B5E3C] font-normal text-xl">({komentarList.length})</span></h3>
+        <div className="mt-20 pt-16 max-w-3xl mx-auto">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
+            <div className="flex items-center gap-3">
+              <MessageCircle className="w-8 h-8 text-[#D4956A]" />
+              <h3 className="font-judul text-3xl font-black text-[#4B2E1C]">
+                Ruang Diskusi <span className="text-[#8B5E3C] font-normal text-xl">({komentarList.length})</span>
+              </h3>
+            </div>
+
+            {/* Filter Sorting */}
+            <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-xl border border-[#8B5E3C]/10 shadow-sm">
+              <span className="text-xs font-bold text-[#8B5E3C] uppercase tracking-wider">Urutkan:</span>
+              <div className="flex gap-3 text-sm font-bold">
+                <Link href={`?sort=terbaru`} className={`hover:text-[#D4956A] ${sort === 'terbaru' ? 'text-[#D4956A]' : ''}`}>Terbaru</Link>
+                <Link href={`?sort=populer`} className={`hover:text-[#D4956A] ${sort === 'populer' ? 'text-[#D4956A]' : ''}`}>Populer</Link>
+              </div>
+            </div>
           </div>
           
           <FormKomentar slug={slug} userId={session?.user?.id} />
 
-          {/* Daftar Komentar */}
-          <div className="mt-12 space-y-8">
+          <div className="mt-12 space-y-10">
             {komentarList.map((komentar) => (
-              <div key={komentar.id} className="flex gap-4">
-                {/* Foto Profil User */}
-                {komentar.user.image ? (
-                  <Image src={komentar.user.image} alt={komentar.user.name || "User"} width={48} height={48} className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm flex-shrink-0" />
-                ) : (
-                  <div className="w-12 h-12 rounded-full bg-[#D4956A] flex items-center justify-center flex-shrink-0 border-2 border-white shadow-sm">
-                    <User className="w-6 h-6 text-white" />
+              <div key={komentar.id} className={`relative group ${komentar.isPinned ? 'bg-[#D4956A]/5 p-6 rounded-[2rem] border-2 border-[#D4956A]/20' : ''}`}>
+                {komentar.isPinned && (
+                  <div className="absolute -top-3 left-6 bg-[#D4956A] text-white text-[10px] font-black px-3 py-1 rounded-full flex items-center gap-1 shadow-sm">
+                    <Pin className="w-3 h-3 fill-white" /> DISEMATKAN
                   </div>
                 )}
-                
-                {/* Gelembung Komentar */}
-                <div className="flex-1 bg-white p-5 rounded-2xl rounded-tl-none shadow-sm border border-[#8B5E3C]/10">
-                  <div className="flex items-center justify-between mb-2">
-                    <h4 className="font-judul font-bold text-[#4B2E1C]">{komentar.user.name}</h4>
-                    <span className="text-xs font-teks text-[#8B5E3C]">
-                      {new Date(komentar.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
-                    </span>
+
+                <div className="flex gap-4">
+                  {komentar.user.image ? (
+                    <Image src={komentar.user.image} alt="User" width={48} height={48} className="w-12 h-12 rounded-full border-2 border-white shadow-sm flex-shrink-0 object-cover" />
+                  ) : (
+                    <div className="w-12 h-12 rounded-full bg-[#D4956A] flex items-center justify-center flex-shrink-0 border-2 border-white shadow-sm">
+                      <User className="w-6 h-6 text-white" />
+                    </div>
+                  )}
+                  
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between mb-1">
+                      <h4 className="font-judul font-bold text-[#4B2E1C] flex items-center gap-2">
+                        {komentar.user.name}
+                        {komentar.user.role === 'ADMIN' && <span className="text-[9px] bg-[#4B2E1C] text-white px-1.5 py-0.5 rounded">ADMIN</span>}
+                      </h4>
+                      
+                      {/* TOMBOL AKSI ADMIN (Pin & Hapus) */}
+                      <TombolAksiKomentar 
+                        commentId={komentar.id} 
+                        slug={slug} 
+                        isAdmin={isAdmin} 
+                        isPinned={komentar.isPinned}
+                        isOwner={session?.user?.id === komentar.userId}
+                      />
+                    </div>
+
+                    <p className="text-xs text-[#8B5E3C] mb-3">{new Date(komentar.createdAt).toLocaleDateString('id-ID')}</p>
+                    <p className="font-teks text-[#4B2E1C] leading-relaxed mb-4 whitespace-pre-wrap">{komentar.text}</p>
+
+                    {/* Tombol Like & Reply */}
+                    <div className="flex items-center gap-6">
+                      <button className="flex items-center gap-1.5 text-xs font-bold text-[#8B5E3C] hover:text-red-500 transition-colors">
+                        <Heart className="w-4 h-4" /> {komentar.likes.length} Suka
+                      </button>
+                    </div>
                   </div>
-                  <p className="font-teks text-[#8B5E3C] leading-relaxed whitespace-pre-wrap">{komentar.text}</p>
                 </div>
               </div>
             ))}
@@ -158,8 +217,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             )}
           </div>
         </div>
-
       </div>
     </div>
   );
-}
+}
