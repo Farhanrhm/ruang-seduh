@@ -1,99 +1,102 @@
-import { Html, Body, Container, Text, Heading, Section, Row, Column, Hr } from '@react-email/components';
-
-// Tipe Data untuk Email
-interface OrderItem {
-  name: string;
-  quantity: number;
-  price: number;
-}
+import {
+  Body,
+  Container,
+  Head,
+  Heading,
+  Hr,
+  Html,
+  Preview,
+  Section,
+  Text,
+  Row,
+  Column,
+} from "@react-email/components";
+import * as React from "react";
 
 interface InvoiceEmailProps {
-  customerName: string;
   orderId: string;
-  items: OrderItem[];
-  totalAmount: number;
-  shippingCost: number;
+  name: string;
+  items: any[];
+  total: number;
 }
 
-export const InvoiceEmail = ({ 
-  customerName = "Pelanggan", 
-  orderId = "INV-0000", 
-  items = [], 
-  totalAmount = 0, 
-  shippingCost = 0 
+export const InvoiceEmail = ({
+  orderId = "INV-20260405-1024",
+  name = "Penikmat Kopi",
+  items = [
+    { name: "Kopi Gayo Washed", quantity: 1, price: 85000 },
+    { name: "Hario V60 Dripper", quantity: 1, price: 120000 }
+  ],
+  total = 205000,
 }: InvoiceEmailProps) => {
-  
-  const formatRupiah = (angka: number) => {
-    return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(angka);
-  };
-
-  const subtotal = totalAmount - shippingCost;
+  const formatRupiah = (price: number) =>
+    new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(price);
 
   return (
     <Html>
+      <Head />
+      <Preview>Invoice {orderId} dari Ruang Seduh</Preview>
       <Body style={main}>
         <Container style={container}>
-          {/* Header Nota */}
+          {/* Bagian Header Cokelat Tua */}
           <Section style={header}>
-            <Heading style={logoText}>Ruang Seduh.</Heading>
-            <Text style={headerSubText}>Terima kasih atas pesananmu!</Text>
+            <Text style={headerTitle}>Ruang Seduh</Text>
+            <Text style={headerSubtitle}>INVOICE PEMBELIAN</Text>
           </Section>
 
-          {/* Info Pelanggan & Pesanan */}
-          <Section style={infoSection}>
-            <Row>
-              <Column>
-                <Text style={infoTitle}>Ditagihkan Kepada:</Text>
-                <Text style={infoText}><b>{customerName}</b></Text>
-              </Column>
-              <Column align="right">
-                <Text style={infoTitle}>Nomor Pesanan:</Text>
-                <Text style={infoText}><b>{orderId}</b></Text>
-              </Column>
-            </Row>
-          </Section>
+          {/* Isi Email */}
+          <Section style={content}>
+            <Heading style={greeting}>Halo, {name}!</Heading>
+            <Text style={text}>
+              Terima kasih telah berbelanja di Ruang Seduh. Pesanan Anda dengan rincian di bawah ini sedang kami proses dan akan segera dikirim.
+            </Text>
 
-          <Hr style={divider} />
+            {/* Kotak Nomor Invoice */}
+            <Section style={invoiceBox}>
+              <Text style={invoiceLabel}>NO. INVOICE</Text>
+              <Text style={invoiceNumber}>{orderId}</Text>
+            </Section>
 
-          {/* Rincian Barang */}
-          <Section style={itemSection}>
-            <Text style={sectionTitle}>Rincian Belanja</Text>
-            {items.map((item, index) => (
-              <Row key={index} style={itemRow}>
-                <Column style={{ width: '70%' }}>
-                  <Text style={itemName}>{item.quantity}x {item.name}</Text>
+            <Hr style={divider} />
+
+            {/* Rincian Pesanan */}
+            <Section>
+              <Text style={sectionTitle}>Rincian Pesanan:</Text>
+              {items.map((item, index) => (
+                <Row key={index} style={itemRow}>
+                  <Column style={itemColName}>
+                    <Text style={itemName}>{item.name}</Text>
+                    <Text style={itemQty}>{item.quantity}x</Text>
+                  </Column>
+                  <Column style={itemColPrice}>
+                    <Text style={itemPrice}>{formatRupiah(item.price * item.quantity)}</Text>
+                  </Column>
+                </Row>
+              ))}
+            </Section>
+
+            <Hr style={divider} />
+
+            {/* Total Pembayaran */}
+            <Section>
+              <Row>
+                <Column style={itemColName}>
+                  <Text style={totalLabel}>Total Pembayaran</Text>
                 </Column>
-                <Column style={{ width: '30%' }} align="right">
-                  <Text style={itemPrice}>{formatRupiah(item.price * item.quantity)}</Text>
+                <Column style={itemColPrice}>
+                  <Text style={totalValue}>{formatRupiah(total)}</Text>
                 </Column>
               </Row>
-            ))}
-          </Section>
+            </Section>
 
-          <Hr style={divider} />
-
-          {/* Kalkulasi Total */}
-          <Section style={totalSection}>
-            <Row style={totalRow}>
-              <Column><Text style={totalText}>Subtotal</Text></Column>
-              <Column align="right"><Text style={totalText}>{formatRupiah(subtotal)}</Text></Column>
-            </Row>
-            <Row style={totalRow}>
-              <Column><Text style={totalText}>Ongkos Kirim</Text></Column>
-              <Column align="right"><Text style={totalText}>{formatRupiah(shippingCost)}</Text></Column>
-            </Row>
-            <Row style={{ marginTop: '12px' }}>
-              <Column><Text style={grandTotalText}>Total Bayar</Text></Column>
-              <Column align="right"><Text style={grandTotalAmount}>{formatRupiah(totalAmount)}</Text></Column>
-            </Row>
-          </Section>
-
-          {/* Footer */}
-          <Section style={footer}>
             <Text style={footerText}>
-              Pesananmu sedang kami siapkan dan akan segera dikirim. Jika ada pertanyaan, balas email ini.
+              Silakan selesaikan pembayaran sesuai instruksi. Jika ada pertanyaan, balas email ini ke halo@ruangseduh.id.
             </Text>
-            <Text style={footerText}>© 2026 Ruang Seduh. All rights reserved.</Text>
+          </Section>
+
+          {/* Footer Terang */}
+          <Section style={footer}>
+            <Text style={footerCopyright}>© {new Date().getFullYear()} Ruang Seduh. Dirancang dengan sepenuh hati.</Text>
           </Section>
         </Container>
       </Body>
@@ -101,25 +104,28 @@ export const InvoiceEmail = ({
   );
 };
 
-// --- CSS Styles Objects ---
-const main = { backgroundColor: '#FDF6EE', fontFamily: 'sans-serif', padding: '40px 0' };
-const container = { backgroundColor: '#ffffff', border: '1px solid #e6d9cc', borderRadius: '16px', margin: '0 auto', maxWidth: '600px', overflow: 'hidden' };
-const header = { backgroundColor: '#4B2E1C', padding: '32px 40px', textAlign: 'center' as const };
-const logoText = { color: '#FDF6EE', fontSize: '32px', fontWeight: 'bold', margin: '0', letterSpacing: '-1px' };
-const headerSubText = { color: '#D4956A', fontSize: '16px', margin: '8px 0 0 0' };
-const infoSection = { padding: '32px 40px 20px 40px' };
-const infoTitle = { color: '#8B5E3C', fontSize: '12px', textTransform: 'uppercase' as const, fontWeight: 'bold', margin: '0 0 4px 0' };
-const infoText = { color: '#4B2E1C', fontSize: '16px', margin: '0' };
-const divider = { borderColor: '#e6d9cc', margin: '0 40px' };
-const itemSection = { padding: '24px 40px' };
-const sectionTitle = { color: '#4B2E1C', fontSize: '18px', fontWeight: 'bold', margin: '0 0 16px 0' };
-const itemRow = { marginBottom: '12px' };
-const itemName = { color: '#4B2E1C', fontSize: '15px', margin: '0' };
-const itemPrice = { color: '#8B5E3C', fontSize: '15px', margin: '0', fontWeight: 'bold' };
-const totalSection = { padding: '24px 40px', backgroundColor: '#faf6f0' };
-const totalRow = { marginBottom: '8px' };
-const totalText = { color: '#8B5E3C', fontSize: '15px', margin: '0' };
-const grandTotalText = { color: '#4B2E1C', fontSize: '18px', fontWeight: 'bold', margin: '0' };
-const grandTotalAmount = { color: '#D4956A', fontSize: '24px', fontWeight: 'bold', margin: '0' };
-const footer = { padding: '32px 40px', textAlign: 'center' as const };
-const footerText = { color: '#8B5E3C', fontSize: '13px', lineHeight: '20px', margin: '0 0 8px 0' };
+// Styling Object untuk React Email (Inline CSS)
+const main = { backgroundColor: "#f4f4f4", fontFamily: '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif' };
+const container = { backgroundColor: "#ffffff", margin: "40px auto", borderRadius: "16px", overflow: "hidden", boxShadow: "0 4px 12px rgba(0,0,0,0.05)", maxWidth: "600px" };
+const header = { backgroundColor: "#4B2E1C", padding: "40px 20px", textAlign: "center" as const };
+const headerTitle = { color: "#D4956A", fontSize: "28px", fontWeight: "bold", margin: "0", letterSpacing: "-1px" };
+const headerSubtitle = { color: "#FDF6EE", fontSize: "12px", letterSpacing: "3px", margin: "10px 0 0 0" };
+const content = { padding: "40px 30px" };
+const greeting = { color: "#4B2E1C", fontSize: "22px", fontWeight: "bold", margin: "0 0 15px" };
+const text = { color: "#8B5E3C", fontSize: "15px", lineHeight: "24px", margin: "0 0 25px" };
+const invoiceBox = { backgroundColor: "#FDF6EE", padding: "20px", borderRadius: "12px", textAlign: "center" as const, marginBottom: "30px", border: "1px solid #eaddd3" };
+const invoiceLabel = { color: "#8B5E3C", fontSize: "10px", fontWeight: "bold", letterSpacing: "2px", margin: "0 0 5px" };
+const invoiceNumber = { color: "#4B2E1C", fontSize: "24px", fontWeight: "bold", margin: "0" };
+const divider = { borderColor: "#eaddd3", margin: "20px 0" };
+const sectionTitle = { color: "#4B2E1C", fontSize: "16px", fontWeight: "bold", marginBottom: "15px" };
+const itemRow = { marginBottom: "15px" };
+const itemColName = { width: "70%" };
+const itemColPrice = { width: "30%", textAlign: "right" as const };
+const itemName = { color: "#4B2E1C", fontSize: "15px", margin: "0 0 4px 0", fontWeight: "500" };
+const itemQty = { color: "#8B5E3C", fontSize: "13px", margin: "0" };
+const itemPrice = { color: "#4B2E1C", fontSize: "15px", margin: "0", fontWeight: "500" };
+const totalLabel = { color: "#4B2E1C", fontSize: "18px", fontWeight: "bold", margin: "0" };
+const totalValue = { color: "#D4956A", fontSize: "22px", fontWeight: "bold", margin: "0" };
+const footerText = { color: "#8B5E3C", fontSize: "14px", lineHeight: "22px", margin: "40px 0 0 0", textAlign: "center" as const, fontStyle: "italic" };
+const footer = { backgroundColor: "#FDF6EE", padding: "20px", textAlign: "center" as const, borderTop: "1px solid #eaddd3" };
+const footerCopyright = { color: "#8B5E3C", fontSize: "12px", margin: "0" };
