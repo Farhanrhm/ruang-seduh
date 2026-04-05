@@ -37,6 +37,7 @@ export default function FormKomentar({ slug, userId }: { slug: string; userId?: 
         setText("");
         toast.success("Komentar berhasil dikirim!");
       } catch (error) {
+        console.error("Detail Error Komentar:", error);
         toast.error("Gagal mengirim komentar.");
       }
     });
