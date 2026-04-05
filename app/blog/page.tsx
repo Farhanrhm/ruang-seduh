@@ -31,7 +31,7 @@ export default async function BlogPage() {
             Jurnal & Cerita
           </h1>
           <p className="font-teks text-[#8B5E3C] text-lg max-w-2xl">
-            Artikel seputar kopi, cerita dari kebun, dan tips menyeduh dari para ahli. Semuanya dikelola langsung via Sanity CMS.
+            Artikel seputar kopi, cerita dari kebun, dan tips menyeduh dari para ahli.
           </p>
         </div>
 
@@ -76,7 +76,7 @@ export default async function BlogPage() {
         ) : (
           <div className="text-center py-20 bg-white rounded-3xl border border-[#8B5E3C]/10">
             <h2 className="font-judul text-2xl font-bold text-[#4B2E1C] mb-2">Belum ada artikel.</h2>
-            <p className="font-teks text-[#8B5E3C]">Silakan tulis artikel pertamamu di Sanity Studio (localhost:3333).</p>
+            <p className="font-teks text-[#8B5E3C]">Silakan tulis artikel pertamamu di Sanity Studio.</p>
           </div>
         )}
 

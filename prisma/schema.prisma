@@ -25,6 +25,7 @@ model User {
   orders        Order[]       // Relasi 1 user bisa punya banyak pesanan
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
+  comments      Comment[]
 }
 
 enum Role {
@@ -150,4 +151,16 @@ model CoffeeDirectory {
   roastLevel  String   // Contoh: "Light to Medium"
   notes       String[] // Array catatan rasa: ["Apple", "Caramel"]
   createdAt   DateTime @default(now())
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  text      String
+  createdAt DateTime @default(now())
+  
+  // Penanda untuk artikel Sanity yang mana
+  postSlug  String   
+
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
