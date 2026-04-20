@@ -59,7 +59,7 @@ export default async function PanduanPage() {
             ))}
           </div>
         ) : (
-          <p className="text-center text-[#8B5E3C] italic mt-10">Admin, silakan tambahkan Panduan baru melalui Sanity Studio (/studio).</p>
+          <p className="text-center text-[#8B5E3C] italic mt-10">Tolong tunggu admin untuk menambahkan panduan baru.</p>
         )}
       </div>
     </div>
