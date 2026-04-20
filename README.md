@@ -1,11 +1,11 @@
-# ☕ Ruang Seduh
+#  Ruang Seduh
 **Platform Eksplorasi & Jurnal Kopi Digital Nusantara.**
 
 Ruang Seduh adalah aplikasi web modern yang dirancang khusus untuk para pecinta kopi (Home Brewers) di Indonesia. Dari mencatat resep seduhan harian, mengeksplorasi biji kopi Nusantara, hingga belajar teknik manual brew yang presisi.
 
 ---
 
-## ✨ Fitur Utama
+##  Fitur Utama
 
 * **🛒 Katalog Toko Kopi:** Beli biji kopi pilihan (Lokal & Impor) dengan detail *Roast Level*, *Process*, dan *Tasting Notes*.
 * **📒 Jurnal Seduh Personal:** Catat eksperimen kopimu (rasio, suhu, alat, dan catatan rasa) agar tidak lupa resep terbaikmu.
@@ -16,7 +16,7 @@ Ruang Seduh adalah aplikasi web modern yang dirancang khusus untuk para pecinta 
 
 ---
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 * **Framework:** [Next.js 15](https://nextjs.org/) (App Router)
 * **Styling:** [Tailwind CSS](https://tailwindcss.com/)
@@ -28,7 +28,7 @@ Ruang Seduh adalah aplikasi web modern yang dirancang khusus untuk para pecinta 
 
 ---
 
-## 🚀 Cara Menjalankan Proyek
+##  Cara Menjalankan Proyek
 
 ### 1. Instal Dependensi
 ```bash
