@@ -18,20 +18,20 @@ export default function SearchDirektori() {
     }
     
     startTransition(() => {
-      router.replace(`/direktori?${params.toString()}`);
+      router.replace(`/direktori?${params.toString()}`, { scroll: false });
     });
   };
 
   return (
-    <div className="relative w-full md:w-72 shadow-sm">
+    <div className="relative w-full group">
       <input 
         type="text" 
-        placeholder="Cari nama atau daerah..." 
+        placeholder="Cari daerah atau roast..." 
         defaultValue={searchParams.get('q')?.toString()}
         onChange={(e) => handleSearch(e.target.value)}
-        className="w-full px-6 py-3 pl-12 rounded-full border border-[#8B5E3C]/30 bg-white focus:outline-none focus:border-[#D4956A] font-teks text-[#4B2E1C]"
+        className="w-full px-6 py-4 pl-14 rounded-2xl border border-[#8B5E3C]/20 bg-white focus:outline-none focus:ring-2 focus:ring-[#D4956A]/30 font-teks text-[#4B2E1C] transition-all shadow-sm placeholder:text-[#8B5E3C]/40"
       />
-      <Search className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 ${isPending ? 'text-[#D4956A] animate-pulse' : 'text-[#8B5E3C]/60'}`} />
+      <Search className={`absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 transition-colors ${isPending ? 'text-[#D4956A] animate-pulse' : 'text-[#8B5E3C]/50 group-focus-within:text-[#D4956A]'}`} />
     </div>
   );
 }
