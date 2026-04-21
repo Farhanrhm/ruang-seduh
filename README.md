@@ -28,21 +28,3 @@ Ruang Seduh adalah aplikasi web modern yang dirancang khusus untuk para pecinta 
 
 ---
 
-##  Cara Menjalankan Proyek
-
-### 1. Instal Dependensi
-```bash
-npm install
-```
-### 2. Konfigurasi Environment
-Buat file .env.local dan isi dengan kredensial Database, Google Auth, Resend, dan Sanity.
-
-### 3. Sinkronisasi Database
-```bash
-npx prisma db push
-```
-
-### 4. Jalankan Server
-```bash
-npm run dev
-```
