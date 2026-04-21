@@ -1,46 +1,67 @@
-import Link from "next/link";
+"use client";
+
 import Image from "next/image";
-import { ArrowRight } from "lucide-react";
+import Link from "next/link";
+import { ArrowRight, Coffee } from "lucide-react";
+import { useSession } from "next-auth/react"; //
 
 export default function Hero() {
+  const { data: session } = useSession(); // Mengambil data sesi pengguna
+
   return (
-    <section className="relative w-full min-h-[90vh] flex items-center bg-[#1A110A] overflow-hidden pt-20">
-      {/* Background Image (Estetika Gelap) */}
-      <div className="absolute inset-0 w-full h-full z-0">
-        <Image 
-          src="/hero-bg.jpg" // Pastikan gambar Anda ada di folder public/hero-bg.jpg
-          alt="Coffee Pouring"
+    <section className="relative h-[90vh] flex items-center justify-center overflow-hidden">
+      {/* Background Image */}
+      <div className="absolute inset-0 z-0">
+        <Image
+          src="/hero-bg.jpg"
+          alt="Suasana menyeduh kopi"
           fill
-          className="object-cover opacity-60 md:opacity-50 object-center"
+          className="object-cover brightness-[0.3]"
           priority
         />
-        {/* Efek Gradasi: Dari hitam transparan di atas, memudar ke warna #FDF6EE di paling bawah agar nyambung dengan konten */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#FDF6EE] via-[#1A110A]/40 to-transparent" />
       </div>
 
-      <div className="container mx-auto px-4 md:px-8 relative z-10 mt-10 md:mt-0">
-        <div className="max-w-3xl">
-          <span className="inline-block py-1.5 px-4 bg-[#D4956A]/20 text-[#D4956A] rounded-full font-bold text-xs tracking-widest uppercase mb-6 backdrop-blur-sm border border-[#D4956A]/30 shadow-sm">
-            Eksplorasi Rasa Kopi Nusantara
+      {/* Hero Content */}
+      <div className="container mx-auto px-4 z-10 text-center">
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 mb-8 animate-fade-in">
+          <Coffee className="w-4 h-4 text-[#D4956A]" />
+          <span className="text-xs font-bold text-[#FDF6EE] uppercase tracking-widest">
+            Temukan Karakter Kopimu
           </span>
-          
-          <h1 className="font-judul text-5xl md:text-6xl lg:text-7xl font-black text-white leading-[1.1] mb-6 tracking-tighter drop-shadow-md">
-            Menyeduh <span className="text-[#D4956A]">Cerita</span>,<br className="hidden md:block"/> Menemukan Rasa.
-          </h1>
-          
-          <p className="font-teks text-lg md:text-xl text-gray-200 mb-10 max-w-xl leading-relaxed drop-shadow">
-            Ruang Seduh adalah kompas bagi para penikmat kopi. Temukan panduan seduh, direktori biji kopi lokal, hingga jurnal personal untuk mencatat resep terbaikmu.
-          </p>
-          
-          <div className="flex flex-col sm:flex-row items-center gap-4">
-            <Link href="/direktori" className="w-full sm:w-auto px-8 py-4 bg-[#D4956A] text-white rounded-full font-bold hover:bg-[#b57a52] transition-all duration-300 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl hover:-translate-y-1 group">
-              Mulai Eksplorasi <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </Link>
-            <Link href="/panduan" className="w-full sm:w-auto px-8 py-4 bg-white/10 text-white backdrop-blur-md rounded-full font-bold hover:bg-white/20 border border-white/20 transition-all duration-300 flex items-center justify-center gap-2 hover:-translate-y-1">
-              Pelajari Panduan
-            </Link>
-          </div>
         </div>
+        
+        <h1 className="font-judul text-5xl md:text-7xl lg:text-8xl font-black text-[#FDF6EE] mb-8 leading-[1.1] tracking-tighter">
+          Ruang <span className="text-[#D4956A]">Seduh.</span>
+        </h1>
+        
+        <p className="font-teks text-lg md:text-xl text-gray-300 max-w-2xl mx-auto mb-12 leading-relaxed">
+          Catat setiap tetesan rasa, jelajahi biji kopi nusantara, dan temukan teknik seduh yang paling pas untuk harimu.
+        </p>
+
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+          {/* LOGIKA PERBAIKAN DI SINI */}
+          <Link
+            href={session ? "/toko" : "/api/auth/signin"} // Jika sudah login ke /toko, jika belum ke signin
+            className="group relative px-8 py-4 bg-[#D4956A] text-[#1A110A] rounded-full font-black text-lg overflow-hidden transition-all hover:scale-105 active:scale-95 shadow-2xl shadow-[#D4956A]/20"
+          >
+            <span className="relative z-10 flex items-center gap-2">
+              {session ? "Mulai Belanja" : "Bergabung Sekarang"} 
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </span>
+          </Link>
+          
+          <Link
+            href="/panduan"
+            className="px-8 py-4 bg-transparent text-[#FDF6EE] border-2 border-white/20 rounded-full font-black text-lg hover:bg-white/10 transition-all backdrop-blur-sm"
+          >
+            Pelajari Teknik
+          </Link>
+        </div>
+      </div>
+
+      {/* Scroll Indicator */}
+      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce opacity-50">
+        <div className="w-1 h-12 rounded-full bg-gradient-to-b from-[#D4956A] to-transparent"></div>
       </div>
     </section>
   );
