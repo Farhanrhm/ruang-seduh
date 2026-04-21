@@ -65,11 +65,11 @@ export default function CheckoutForm() {
                 <div className="grid md:grid-cols-2 gap-5">
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-[#8B5E3C] uppercase tracking-wider">Nama Lengkap</label>
-                    <input name="nama" required placeholder="Cth: Farhan" className="w-full px-5 py-3.5 bg-gray-50 border border-[#8B5E3C]/20 rounded-xl focus:ring-2 focus:ring-[#D4956A] focus:bg-white outline-none transition-all font-teks" />
+                    <input name="nama" required placeholder="Masukkan Nama Anda" className="w-full px-5 py-3.5 bg-gray-50 border border-[#8B5E3C]/20 rounded-xl focus:ring-2 focus:ring-[#D4956A] focus:bg-white outline-none transition-all font-teks" />
                   </div>
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-[#8B5E3C] uppercase tracking-wider">Email (Untuk Invoice)</label>
-                    <input name="email" type="email" required placeholder="Cth: halo@email.com" className="w-full px-5 py-3.5 bg-gray-50 border border-[#8B5E3C]/20 rounded-xl focus:ring-2 focus:ring-[#D4956A] focus:bg-white outline-none transition-all font-teks" />
+                    <input name="email" type="email" required placeholder="Masukkan Email Anda" className="w-full px-5 py-3.5 bg-gray-50 border border-[#8B5E3C]/20 rounded-xl focus:ring-2 focus:ring-[#D4956A] focus:bg-white outline-none transition-all font-teks" />
                   </div>
                 </div>
               </div>
