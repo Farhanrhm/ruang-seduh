@@ -45,25 +45,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      {/* 3. Section Ajakan Singkat (Call to Action) */}
-      <section className="py-20 mb-10">
-        <div className="container mx-auto px-4 md:px-8 max-w-5xl">
-          <div className="bg-[#4B2E1C] rounded-[3rem] p-10 md:p-16 text-center text-[#FDF6EE] relative overflow-hidden shadow-2xl">
-            {/* Ornamen bulatan dekoratif */}
-            <div className="absolute top-0 right-0 w-64 h-64 bg-[#D4956A]/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none" />
-            <div className="absolute bottom-0 left-0 w-48 h-48 bg-[#D4956A]/20 rounded-full blur-3xl translate-y-1/3 -translate-x-1/3 pointer-events-none" />
-            
-            <h2 className="font-judul text-3xl md:text-5xl font-black mb-6 relative z-10 tracking-tight">Siap menyeduh cangkir pertamamu?</h2>
-            <p className="font-teks text-[#FDF6EE]/80 text-lg mb-10 max-w-2xl mx-auto relative z-10 leading-relaxed">
-              Jadikan setiap pagi lebih bermakna. Daftarkan dirimu dan mulai bagikan pengalaman seduhmu bersama komunitas Ruang Seduh hari ini.
-            </p>
-            <Link href="/api/auth/signin" className="inline-flex items-center gap-2 px-8 py-4 bg-[#D4956A] text-white rounded-full font-bold hover:bg-[#b57a52] transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1 relative z-10 group">
-              Bergabung Sekarang <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </Link>
-          </div>
-        </div>
-      </section>
     </div>
   )
 }
