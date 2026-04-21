@@ -7,9 +7,11 @@ import { PortableText } from "@portabletext/react";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { checkGate } from "@/lib/auth-gate";
 import FormKomentar from "@/components/FormKomentar";
 import TombolAksiKomentar from "@/components/TombolAksiKomentar";
 import TombolLike from "@/components/TombolLike";
+import AuthPromptBlog from "@/components/AuthPromptBlog";
 
 interface SanityAsset {
   url: string;
@@ -80,8 +82,12 @@ export default async function BlogPostPage({
     );
   }
 
-  // 2. Ambil Session & Data User dari Database
+  // 2. Cek Auth Gate — blokir guest sebelum fetch data berat
   const session = await getServerSession(authOptions);
+  if (checkGate(session) === "blocked") {
+    const imageUrl = post.mainImage?.url;
+    return <AuthPromptBlog title={post.title} imageUrl={imageUrl} slug={slug} />;
+  }
   const userDB = session?.user?.id ? await prisma.user.findUnique({ where: { id: session.user.id } }) : null;
   const isAdmin = userDB?.role === "ADMIN";
 
