@@ -3,10 +3,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Coffee } from "lucide-react";
-import { useSession } from "next-auth/react"; //
+import { useSession } from "next-auth/react"; 
 
 export default function Hero() {
-  const { data: session } = useSession(); // Mengambil data sesi pengguna
+  const { data: session, status } = useSession(); 
+  const isAuthenticated = status === "authenticated";
+  const isLoading = status === "loading";
 
   return (
     <section className="relative h-[90vh] flex items-center justify-center overflow-hidden">
@@ -39,13 +41,13 @@ export default function Hero() {
         </p>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-          {/* LOGIKA PERBAIKAN DI SINI */}
+          {/* Tombol Utama Dinamis */}
           <Link
-            href={session ? "/toko" : "/api/auth/signin"} // Jika sudah login ke /toko, jika belum ke signin
+            href={session ? "/toko" : "/api/auth/signin"} // Jika sudah login, arahkan ke Toko. Jika belum, ke Sign In.
             className="group relative px-8 py-4 bg-[#D4956A] text-[#1A110A] rounded-full font-black text-lg overflow-hidden transition-all hover:scale-105 active:scale-95 shadow-2xl shadow-[#D4956A]/20"
           >
             <span className="relative z-10 flex items-center gap-2">
-              {session ? "Mulai Belanja" : "Bergabung Sekarang"} 
+              {session ? "Mulai Belanja" : "Bergabung Sekarang"} {/* Teks berubah sesuai status login */}
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </span>
           </Link>
