@@ -2,8 +2,23 @@ import { client } from "@/sanity/lib/client";
 import { urlFor } from "@/sanity/lib/image";
 import Image from "next/image";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { ArrowLeft, Clock, BarChart3, Wrench, BookOpen } from "lucide-react";
 import { PortableText } from "@portabletext/react";
+
+// ISR: Cache panduan detail selama 24 jam (86400 detik)
+export const revalidate = 86400;
+
+/**
+ * Pre-render seluruh slug panduan saat build time
+ */
+export async function generateStaticParams() {
+  const query = `*[_type == "guide" && defined(slug.current)]{ "slug": slug.current }`;
+  const guides = await client.fetch<{ slug: string }[]>(query);
+  return guides.map((guide) => ({
+    slug: guide.slug,
+  }));
+}
 
 // Komponen perapian teks (PortableText)
 const ptComponents = {
@@ -15,7 +30,11 @@ const ptComponents = {
   list: { number: ({children}: any) => <ol className="list-decimal pl-6 mb-8 space-y-4 text-lg text-[#8B5E3C] marker:text-[#D4956A] marker:font-bold">{children}</ol> },
 };
 
-export default async function GuideDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function GuideDetailPage({ 
+  params 
+}: { 
+  params: Promise<{ slug: string }> 
+}) {
   const { slug } = await params;
 
   const query = `*[_type == "guide" && slug.current == $slug][0]{
@@ -23,7 +42,9 @@ export default async function GuideDetailPage({ params }: { params: Promise<{ sl
   }`;
   const guide = await client.fetch(query, { slug });
 
-  if (!guide) return <div className="min-h-screen flex items-center justify-center text-2xl">Panduan Tidak Ditemukan</div>;
+  if (!guide) {
+    notFound();
+  }
 
   return (
     <div className="bg-[#FDF6EE] min-h-screen pt-24 pb-24 text-[#4B2E1C]">
@@ -35,7 +56,14 @@ export default async function GuideDetailPage({ params }: { params: Promise<{ sl
         {/* Gambar Cover Full Lebar */}
         {guide.mainImage && (
           <div className="w-full relative aspect-video md:aspect-[21/9] rounded-[2.5rem] overflow-hidden mb-12 shadow-2xl border border-[#8B5E3C]/10">
-            <Image src={urlFor(guide.mainImage).url()} alt={guide.title} fill className="object-cover" priority />
+            <Image 
+              src={urlFor(guide.mainImage).url()} 
+              alt={guide.title} 
+              fill 
+              sizes="(max-width: 1024px) 100vw, 896px"
+              className="object-cover" 
+              priority 
+            />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex items-end p-8 md:p-12">
               <h1 className="font-judul text-4xl md:text-5xl lg:text-6xl font-black text-white leading-[1.1] tracking-tighter">
                 {guide.title}

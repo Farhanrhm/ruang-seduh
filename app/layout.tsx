@@ -4,11 +4,20 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Providers from "@/components/Providers"; 
-import CartDrawer from "@/components/CartDrawer";
+import CartDrawerWrapper from "@/components/CartDrawerWrapper";
 import { Toaster } from 'react-hot-toast';
 
-const lora = Lora({ subsets: ["latin"], variable: "--font-lora" });
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const lora = Lora({ 
+  subsets: ["latin"], 
+  variable: "--font-lora",
+  display: "swap",
+});
+
+const inter = Inter({ 
+  subsets: ["latin"], 
+  variable: "--font-inter",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "Ruang Seduh | Teman Menyeduh Kopi di Rumah",
@@ -28,7 +37,7 @@ export default function RootLayout({
           <Navbar />
           <main>{children}</main>
           <Footer />
-          <CartDrawer />
+          <CartDrawerWrapper />
         </Providers>
       </body>
     </html>

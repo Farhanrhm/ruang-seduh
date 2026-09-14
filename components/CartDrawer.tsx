@@ -4,16 +4,15 @@ import Image from "next/image";
 import Link from "next/link";
 import { X, Trash2, ShoppingBag, Plus, Minus, ArrowRight } from "lucide-react";
 import { useCartStore } from "@/store/useCartStore";
-import { useEffect, useState } from "react";
+import { useCartHydration } from "@/lib/hooks/useCartHydration";
 
 export default function CartDrawer() {
+  const isHydrated = useCartHydration();
   const { items, removeItem, updateQuantity, isOpenCart, closeCart } = useCartStore();
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
 
   const total = items.reduce((sum: number, item: any) => sum + item.price * item.quantity, 0);
 
-  if (!isOpenCart || !mounted) return null;
+  if (!isOpenCart || !isHydrated) return null;
 
   return (
     <>
@@ -27,7 +26,7 @@ export default function CartDrawer() {
             <h2 className="font-judul text-xl font-black text-[#4B2E1C]">Keranjangmu</h2>
             <span className="bg-[#D4956A]/10 text-[#D4956A] text-[10px] font-bold px-2 py-1 rounded-full">{items.length} item</span>
           </div>
-          <button onClick={closeCart} className="p-2 text-[#8B5E3C] hover:bg-red-50 hover:text-red-500 rounded-xl transition-all">
+          <button onClick={closeCart} className="p-2 text-[#8B5E3C] hover:bg-red-50 hover:text-red-500 rounded-xl transition-all" aria-label="Tutup Keranjang">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -44,23 +43,23 @@ export default function CartDrawer() {
             items.map((item: any) => (
               <div key={item.id} className="flex gap-4 bg-white p-4 rounded-2xl border border-[#8B5E3C]/10 shadow-sm">
                 <div className="relative w-20 h-20 rounded-xl overflow-hidden bg-[#FDF6EE] flex-shrink-0">
-                  <Image src={item.image} alt={item.name} fill className="object-cover" />
+                  <Image src={item.image} alt={item.name} fill sizes="80px" className="object-cover" />
                 </div>
                 <div className="flex-1 flex flex-col justify-between">
                   <div className="flex justify-between items-start gap-2">
                     <h3 className="font-judul font-bold text-[#4B2E1C] text-sm line-clamp-2">{item.name}</h3>
-                    <button onClick={() => removeItem(item.id)} className="text-[#8B5E3C]/50 hover:text-red-500 transition-colors">
+                    <button onClick={() => removeItem(item.id)} className="text-[#8B5E3C]/50 hover:text-red-500 transition-colors" aria-label="Hapus item">
                       <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
                   <div className="flex items-center justify-between mt-2">
                     <p className="font-teks font-black text-[#D4956A] text-sm">Rp {item.price.toLocaleString('id-ID')}</p>
                     <div className="flex items-center gap-3 bg-[#FDF6EE] rounded-lg p-1 border border-[#8B5E3C]/10">
-                      <button onClick={() => updateQuantity(item.id, Math.max(1, item.quantity - 1))} className="p-1 text-[#4B2E1C] hover:bg-white rounded-md shadow-sm">
+                      <button onClick={() => updateQuantity(item.id, Math.max(1, item.quantity - 1))} className="p-1 text-[#4B2E1C] hover:bg-white rounded-md shadow-sm" aria-label="Kurangi jumlah">
                         <Minus className="w-3 h-3" />
                       </button>
                       <span className="font-bold text-xs w-4 text-center text-[#4B2E1C]">{item.quantity}</span>
-                      <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="p-1 text-[#4B2E1C] hover:bg-white rounded-md shadow-sm">
+                      <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="p-1 text-[#4B2E1C] hover:bg-white rounded-md shadow-sm" aria-label="Tambah jumlah">
                         <Plus className="w-3 h-3" />
                       </button>
                     </div>

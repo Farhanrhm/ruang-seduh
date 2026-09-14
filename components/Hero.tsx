@@ -1,25 +1,25 @@
-"use client";
-
 import Image from "next/image";
-import Link from "next/link";
-import { ArrowRight, Coffee } from "lucide-react";
-import { useSession } from "next-auth/react"; 
+import { Coffee } from "lucide-react";
+import HeroCTA from "@/components/HeroCTA";
 
+/**
+ * Hero Component - Pure Server Component
+ * Mengoptimalkan LCP (Largest Contentful Paint) dengan pre-rendering SSR murni,
+ * dan mendelegasikan interaktivitas sesi ke leaf client component (HeroCTA).
+ */
 export default function Hero() {
-  const { data: session, status } = useSession(); 
-  const isAuthenticated = status === "authenticated";
-  const isLoading = status === "loading";
-
   return (
     <section className="relative h-[90vh] flex items-center justify-center overflow-hidden">
-      {/* Background Image */}
+      {/* Background Image - LCP Asset Utama */}
       <div className="absolute inset-0 z-0">
         <Image
           src="/hero-bg.jpg"
-          alt="Suasana menyeduh kopi"
+          alt="Suasana menyeduh kopi di Ruang Seduh"
           fill
-          className="object-cover brightness-[0.3]"
           priority
+          quality={85}
+          sizes="100vw"
+          className="object-cover brightness-[0.3]"
         />
       </div>
 
@@ -40,30 +40,13 @@ export default function Hero() {
           Catat setiap tetesan rasa, jelajahi biji kopi nusantara, dan temukan teknik seduh yang paling pas untuk harimu.
         </p>
 
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-          {/* Tombol Utama Dinamis */}
-          <Link
-            href={session ? "/toko" : "/api/auth/signin"} // Jika sudah login, arahkan ke Toko. Jika belum, ke Sign In.
-            className="group relative px-8 py-4 bg-[#D4956A] text-[#1A110A] rounded-full font-black text-lg overflow-hidden transition-all hover:scale-105 active:scale-95 shadow-2xl shadow-[#D4956A]/20"
-          >
-            <span className="relative z-10 flex items-center gap-2">
-              {session ? "Mulai Belanja" : "Bergabung Sekarang"} {/* Teks berubah sesuai status login */}
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </span>
-          </Link>
-          
-          <Link
-            href="/panduan"
-            className="px-8 py-4 bg-transparent text-[#FDF6EE] border-2 border-white/20 rounded-full font-black text-lg hover:bg-white/10 transition-all backdrop-blur-sm"
-          >
-            Pelajari Teknik
-          </Link>
-        </div>
+        {/* Leaf Client Component dengan CLS-safe skeleton */}
+        <HeroCTA />
       </div>
 
       {/* Scroll Indicator */}
-      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce opacity-50">
-        <div className="w-1 h-12 rounded-full bg-gradient-to-b from-[#D4956A] to-transparent"></div>
+      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce opacity-50" aria-hidden="true">
+        <div className="w-1 h-12 rounded-full bg-gradient-to-b from-[#D4956A] to-transparent" />
       </div>
     </section>
   );

@@ -2,7 +2,8 @@ import { client } from "@/sanity/lib/client";
 import { urlFor } from "@/sanity/lib/image";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, Calendar, Coffee, User, MessageCircle, Pin, Trash2, Heart, ChevronDown } from "lucide-react";
+import { notFound } from "next/navigation";
+import { ArrowLeft, Calendar, Coffee, User, MessageCircle, Pin } from "lucide-react";
 import { PortableText } from "@portabletext/react";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
@@ -12,6 +13,20 @@ import FormKomentar from "@/components/FormKomentar";
 import TombolAksiKomentar from "@/components/TombolAksiKomentar";
 import TombolLike from "@/components/TombolLike";
 import AuthPromptBlog from "@/components/AuthPromptBlog";
+
+// ISR: Revalidasi halaman artikel blog setiap 1 jam (3600 detik)
+export const revalidate = 3600;
+
+/**
+ * Pre-render seluruh slug artikel saat build time (SSG/ISR)
+ */
+export async function generateStaticParams() {
+  const query = `*[_type == "post" && defined(slug.current)]{ "slug": slug.current }`;
+  const posts = await client.fetch<{ slug: string }[]>(query);
+  return posts.map((post) => ({
+    slug: post.slug,
+  }));
+}
 
 interface SanityAsset {
   url: string;
@@ -34,7 +49,13 @@ const ptComponents = {
       if (!value?.asset?._ref) return null;
       return (
         <div className="relative w-full my-10 rounded-2xl overflow-hidden shadow-md bg-black/5 flex items-center justify-center p-2 border border-[#8B5E3C]/5">
-          <Image src={urlFor(value).url()} alt="Ilustrasi Blog" width={1200} height={800} className="w-full h-auto object-contain max-h-[80vh]" />
+          <Image 
+            src={urlFor(value).url()} 
+            alt="Ilustrasi Blog" 
+            width={1200} 
+            height={800} 
+            className="w-full h-auto object-contain max-h-[80vh]" 
+          />
         </div>
       );
     }
@@ -57,8 +78,8 @@ export default async function BlogPostPage({
   params, 
   searchParams 
 }: { 
-  params: Promise<{ slug: string }>, 
-  searchParams: Promise<{ sort?: string }> 
+  params: Promise<{ slug: string }>; 
+  searchParams: Promise<{ sort?: string }>; 
 }) {
   const { slug } = await params;
   const { sort = "terbaru" } = await searchParams;
@@ -71,18 +92,12 @@ export default async function BlogPostPage({
   }`;
   const post = await client.fetch<BlogPost | null>(query, { slug });
 
+  // Gunakan notFound() dari Next.js jika artikel tidak ada
   if (!post) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-[#FDF6EE] text-[#4B2E1C] px-4">
-        <Coffee className="w-16 h-16 text-[#8B5E3C]/30 mb-6" />
-        <h1 className="font-judul text-4xl font-black mb-4 tracking-tighter text-center">404 - Artikel Tidak Ditemukan</h1>
-        <p className="font-teks text-[#8B5E3C] mb-10 text-center max-w-md">Maaf, artikel yang Anda cari mungkin sudah dipindahkan atau dihapus.</p>
-        <Link href="/blog" className="px-6 py-3.5 bg-[#4B2E1C] text-[#FDF6EE] rounded-xl font-bold hover:bg-[#8B5E3C] transition-all shadow-md">← Kembali ke Halaman Blog</Link>
-      </div>
-    );
+    notFound();
   }
 
-  // 2. Cek Auth Gate — blokir guest sebelum fetch data berat
+  // 2. Cek Auth Gate — cegah pembaca gelap mengakses konten eksklusif
   const session = await getServerSession(authOptions);
   if (checkGate(session) === "blocked") {
     const imageUrl = post.mainImage?.url;
@@ -138,7 +153,14 @@ export default async function BlogPostPage({
 
         {post.mainImage && imageMetadata && (
           <div className={`w-full relative rounded-3xl overflow-hidden mb-16 shadow-2xl border border-[#8B5E3C]/10 ${isPortrait ? 'bg-black/80 p-4' : 'bg-white'}`}>
-            <Image src={post.mainImage.url} alt={post.title} width={imageMetadata.width} height={imageMetadata.height} className={`w-full h-auto object-contain mx-auto ${isPortrait ? 'max-h-[70vh]' : 'w-full'}`} priority />
+            <Image 
+              src={post.mainImage.url} 
+              alt={post.title} 
+              width={imageMetadata.width} 
+              height={imageMetadata.height} 
+              className={`w-full h-auto object-contain mx-auto ${isPortrait ? 'max-h-[70vh]' : 'w-full'}`} 
+              priority 
+            />
           </div>
         )}
 
@@ -195,7 +217,7 @@ export default async function BlogPostPage({
                         {komentar.user.role === 'ADMIN' && <span className="text-[9px] bg-[#4B2E1C] text-white px-1.5 py-0.5 rounded">ADMIN</span>}
                       </h4>
                       
-                      {/* TOMBOL AKSI ADMIN: Hanya kirim prop yang dibutuhkan saja */}
+                      {/* TOMBOL AKSI ADMIN */}
                       <TombolAksiKomentar 
                         commentId={komentar.id} 
                         slug={slug} 

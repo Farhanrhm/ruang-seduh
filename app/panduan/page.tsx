@@ -4,10 +4,10 @@ import Link from "next/link";
 import Image from "next/image";
 import { Clock, BookOpen, ArrowRight } from "lucide-react";
 
-export const revalidate = 0; // Disable cache agar update instan
+// ISR: Cache halaman indeks panduan selama 24 jam (86400 detik)
+export const revalidate = 86400;
 
 export default async function PanduanPage() {
-  // Ambil data dari tabel "guide" yang baru kita buat
   const query = `*[_type == "guide"] | order(_createdAt desc) {
     _id, title, "slug": slug.current, image, description, difficulty, time
   }`;
@@ -29,7 +29,13 @@ export default async function PanduanPage() {
               <Link key={guide._id} href={`/panduan/${guide.slug}`} className="bg-white rounded-[2rem] border border-[#8B5E3C]/10 overflow-hidden group hover:shadow-2xl hover:border-[#D4956A]/30 hover:-translate-y-2 transition-all duration-300 flex flex-col">
                 <div className="relative h-60 w-full overflow-hidden bg-[#FDF6EE]">
                   {guide.image ? (
-                    <Image src={urlFor(guide.image).url()} alt={guide.title} fill className="object-cover group-hover:scale-105 transition-transform duration-700" />
+                    <Image 
+                      src={urlFor(guide.image).url()} 
+                      alt={guide.title} 
+                      fill 
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      className="object-cover group-hover:scale-105 transition-transform duration-700" 
+                    />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-[#8B5E3C]/30"><BookOpen className="w-12 h-12" /></div>
                   )}

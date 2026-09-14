@@ -2,7 +2,8 @@ import { prisma } from "@/lib/prisma";
 import { MapPin, Compass, Coffee } from "lucide-react";
 import SearchDirektori from "@/components/SearchDirektori";
 
-export const dynamic = "force-dynamic";
+// ISR: Cache hasil direktori dasar selama 5 menit (300 detik)
+export const revalidate = 300;
 
 export default async function DirektoriPage({
   searchParams,

@@ -1,10 +1,21 @@
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight, Calendar } from "lucide-react";
-import { client } from "@/lib/sanity";
+import { client } from "@/sanity/lib/client";
 
-export const revalidate = 0; 
+// ISR: Cache halaman blog selama 1 jam (3600 detik)
+export const revalidate = 3600;
 
-async function getPosts() {
+interface PostItem {
+  _id: string;
+  title: string;
+  slug: string;
+  imageUrl?: string;
+  publishedAt: string;
+  authorName?: string;
+}
+
+async function getPosts(): Promise<PostItem[]> {
   const query = `
     *[_type == "post"] | order(publishedAt desc) {
       _id,
@@ -38,15 +49,17 @@ export default async function BlogPage() {
         {/* Grid Artikel dari Sanity */}
         {posts.length > 0 ? (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {posts.map((post: any) => (
+            {posts.map((post) => (
               <article key={post._id} className="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all border border-[#8B5E3C]/10 group flex flex-col">
                 <div className="h-56 overflow-hidden relative bg-[#FDF6EE]">
                   <div className="absolute inset-0 bg-[#8B5E3C]/10 group-hover:bg-transparent transition-colors z-10" />
                   {post.imageUrl ? (
-                    <img 
+                    <Image 
                       src={post.imageUrl} 
                       alt={post.title} 
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      className="object-cover group-hover:scale-105 transition-transform duration-700"
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-[#8B5E3C]/30 font-judul">No Image</div>

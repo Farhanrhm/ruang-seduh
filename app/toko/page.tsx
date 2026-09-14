@@ -1,7 +1,8 @@
 import { client } from "@/sanity/lib/client";
 import KatalogToko from "@/components/KatalogToko";
 
-export const revalidate = 0; 
+// ISR: Cache katalog toko selama 60 detik
+export const revalidate = 60; 
 
 export default async function TokoPage() {
   const query = `*[_type == "product"] | order(_createdAt desc) {
