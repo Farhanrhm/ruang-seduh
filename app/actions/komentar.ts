@@ -22,7 +22,7 @@ export async function tambahKomentar(slug: string, text: string, parentId?: stri
 
   const parsed = KomentarSchema.safeParse({ text, slug, parentId });
   if (!parsed.success) {
-    throw new Error(parsed.error.errors[0].message);
+    throw new Error(parsed.error.issues[0]?.message || "Input tidak valid.");
   }
 
   try {

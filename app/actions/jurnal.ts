@@ -34,7 +34,7 @@ export async function simpanJurnalBaru(formData: FormData) {
 
   const parsed = JurnalSchema.safeParse(rawData);
   if (!parsed.success) {
-    throw new Error(parsed.error.errors[0].message);
+    throw new Error(parsed.error.issues[0]?.message || "Input tidak valid.");
   }
 
   try {
@@ -95,7 +95,7 @@ export async function updateJurnal(id: string, formData: FormData) {
 
   const parsed = JurnalSchema.safeParse(rawData);
   if (!parsed.success) {
-    throw new Error(parsed.error.errors[0].message);
+    throw new Error(parsed.error.issues[0]?.message || "Input tidak valid.");
   }
 
   try {
