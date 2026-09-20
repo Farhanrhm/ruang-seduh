@@ -1,17 +1,11 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider  = "postgresql"
+  provider = "postgresql"
 }
 
-// Tabel Pengguna
 model User {
   id            String        @id @default(cuid())
   name          String?
@@ -19,37 +13,30 @@ model User {
   emailVerified DateTime?
   image         String?
   role          Role          @default(USER)
-  accounts      Account[]
-  sessions      Session[]
-  journals      BrewJournal[] // Relasi 1 user bisa punya banyak jurnal seduh
-  orders        Order[]       // Relasi 1 user bisa punya banyak pesanan
-  comments      Comment[]
-  likes         Like[]
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
+  accounts      Account[]
+  journals      BrewJournal[]
+  comments      Comment[]
+  likes         Like[]
+  orders        Order[]
+  sessions      Session[]
 }
 
-enum Role {
-  USER
-  ADMIN
-}
-
-// TABEL NEXTAUTH 
 model Account {
-  id                 String  @id @default(cuid())
-  userId             String
-  type               String
-  provider           String
-  providerAccountId  String
-  refresh_token      String?  @db.Text
-  access_token       String?  @db.Text
-  expires_at         Int?
-  token_type         String?
-  scope              String?
-  id_token           String?  @db.Text
-  session_state      String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
@@ -70,19 +57,99 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-// Tabel Jurnal Seduh Personal
 model BrewJournal {
   id          String   @id @default(cuid())
   userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   date        DateTime @default(now())
   coffeeBean  String
   brewMethod  String
   ratio       String
-  tastingNote String?  @db.Text
+  tastingNote String?
   rating      Rating   @default(NEEDS_IMPROVEMENT)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Product {
+  id          String      @id @default(cuid())
+  name        String
+  slug        String      @unique
+  description String
+  price       Int
+  stock       Int         @default(0)
+  imageUrl    String?
+  category    Category
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  orders      OrderItem[]
+}
+
+model Order {
+  id          String      @id @default(cuid())
+  userId      String
+  midtransId  String?     @unique
+  status      OrderStatus @default(PENDING)
+  totalAmount Int
+  paymentType String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  user        User        @relation(fields: [userId], references: [id])
+  items       OrderItem[]
+
+  @@index([userId])
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  productId String
+  quantity  Int
+  price     Int
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product   Product @relation(fields: [productId], references: [id])
+}
+
+model CoffeeDirectory {
+  id         String   @id @default(cuid())
+  name       String
+  origin     String
+  roastLevel String
+  notes      String[]
+  createdAt  DateTime @default(now())
+}
+
+model Comment {
+  id        String    @id @default(cuid())
+  text      String
+  createdAt DateTime  @default(now())
+  postSlug  String
+  userId    String
+  isPinned  Boolean   @default(false)
+  parentId  String?
+  parent    Comment?  @relation("KomentarBalasan", fields: [parentId], references: [id], onDelete: Cascade)
+  replies   Comment[] @relation("KomentarBalasan")
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  likes     Like[]
+
+  @@index([postSlug])
+}
+
+model Like {
+  id        String  @id @default(cuid())
+  userId    String
+  commentId String
+  comment   Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, commentId])
+}
+
+enum Role {
+  USER
+  ADMIN
 }
 
 enum Rating {
@@ -91,49 +158,10 @@ enum Rating {
   NEEDS_IMPROVEMENT
 }
 
-// Tabel Produk (Katalog Toko Kecil)
-model Product {
-  id          String      @id @default(cuid())
-  name        String
-  slug        String      @unique
-  description String      @db.Text
-  price       Int         
-  stock       Int         @default(0)
-  imageUrl    String?
-  category    Category
-  orders      OrderItem[]
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-}
-
 enum Category {
   BEANS
   STARTER_KIT
   EQUIPMENT
-}
-
-// Tabel Pesanan Transaksi (Midtrans siap pakai)
-model Order {
-  id            String      @id @default(cuid())
-  userId        String
-  user          User        @relation(fields: [userId], references: [id])
-  midtransId    String?     @unique 
-  status        OrderStatus @default(PENDING)
-  totalAmount   Int
-  paymentType   String?    
-  items         OrderItem[]
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-}
-
-model OrderItem {
-  id        String  @id @default(cuid())
-  orderId   String
-  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  productId String
-  product   Product @relation(fields: [productId], references: [id])
-  quantity  Int
-  price     Int     
 }
 
 enum OrderStatus {
@@ -142,44 +170,4 @@ enum OrderStatus {
   SHIPPED
   DELIVERED
   CANCELLED
-}
-
-// Tabel baru untuk Direktori Kopi
-model CoffeeDirectory {
-  id          String   @id @default(cuid())
-  name        String   // Contoh: "Gayo Washed"
-  origin      String   // Contoh: "Aceh, Sumatera"
-  roastLevel  String   // Contoh: "Light to Medium"
-  notes       String[] // Array catatan rasa: ["Apple", "Caramel"]
-  createdAt   DateTime @default(now())
-}
-
-model Comment {
-  id        String   @id @default(cuid())
-  text      String   // Max 500 karakter akan divalidasi di form
-  createdAt DateTime @default(now())
-  postSlug  String   
-  isPinned  Boolean  @default(false)
-
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  // Fitur Nested Reply (Balasan)
-  parentId  String?
-  parent    Comment?  @relation("KomentarBalasan", fields: [parentId], references: [id], onDelete: Cascade)
-  replies   Comment[] @relation("KomentarBalasan")
-
-  // Fitur Like
-  likes     Like[]
-}
-
-// Model baru untuk sistem Like
-model Like {
-  id        String   @id @default(cuid())
-  userId    String
-  commentId String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  comment   Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, commentId]) // Cegah 1 user like berkali-kali di komentar yang sama
 }

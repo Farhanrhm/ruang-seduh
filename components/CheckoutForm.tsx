@@ -7,14 +7,17 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft, Loader2, ShieldCheck, MapPin, User } from "lucide-react";
 import Link from "next/link";
 import { kirimEmailInvoice } from "@/app/actions/email";
+import { buatPesanan } from "@/app/actions/order";
+import toast from "react-hot-toast";
 
 export default function CheckoutForm() {
   const { items, clearCart } = useCartStore();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
 
-  const total = items.reduce((sum: number, item: any) => sum + item.price * item.quantity, 0);
+  const total = items.reduce((sum: number, item) => sum + item.price * item.quantity, 0);
   const ongkir = 20000;
+  const totalAkhir = total + ongkir;
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -25,11 +28,20 @@ export default function CheckoutForm() {
     const name = formData.get("nama") as string;
 
     try {
-      await kirimEmailInvoice(email, name, items, total + ongkir);
+      const result = await buatPesanan(formData, items, totalAkhir);
+
+      if (!result.success) {
+        toast.error(result.error);
+        setIsSubmitting(false);
+        return;
+      }
+
+      await kirimEmailInvoice(email, name, items, totalAkhir, result.orderId);
+
       clearCart();
       router.push("/checkout/sukses");
-    } catch (error) {
-      console.error(error);
+    } catch {
+      toast.error("Terjadi kesalahan pada transaksi. Silakan coba lagi.");
       setIsSubmitting(false);
     }
   };
@@ -55,7 +67,6 @@ export default function CheckoutForm() {
         <h1 className="font-judul text-4xl md:text-5xl font-black text-[#4B2E1C] mb-10 tracking-tight">Checkout</h1>
 
         <div className="grid lg:grid-cols-12 gap-10">
-          {/* Kolom Kiri: Form Data Diri */}
           <div className="lg:col-span-7">
             <form id="checkout-form" onSubmit={handleSubmit} className="bg-white p-8 md:p-10 rounded-[2rem] border border-[#8B5E3C]/10 shadow-sm space-y-8">
               <div>
@@ -88,13 +99,12 @@ export default function CheckoutForm() {
             </form>
           </div>
 
-          {/* Kolom Kanan: Rincian Pesanan */}
           <div className="lg:col-span-5">
             <div className="bg-white p-8 md:p-10 rounded-[2rem] border border-[#8B5E3C]/10 shadow-lg sticky top-32">
               <h3 className="font-judul text-xl font-bold text-[#4B2E1C] mb-6">Ringkasan Pesanan</h3>
 
               <div className="space-y-4 mb-6 max-h-[300px] overflow-y-auto pr-2">
-                {items.map((item: any) => (
+                {items.map((item) => (
                   <div key={item.id} className="flex gap-4 items-center">
                     <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-[#FDF6EE] flex-shrink-0 border border-[#8B5E3C]/10">
                       <Image src={item.image} alt={item.name} fill className="object-cover" />
@@ -119,7 +129,7 @@ export default function CheckoutForm() {
 
               <div className="flex justify-between items-center mb-8">
                 <span className="font-judul text-lg font-bold text-[#4B2E1C]">Total Akhir</span>
-                <span className="font-judul text-3xl font-black text-[#D4956A]">Rp {(total + ongkir).toLocaleString("id-ID")}</span>
+                <span className="font-judul text-3xl font-black text-[#D4956A]">Rp {totalAkhir.toLocaleString("id-ID")}</span>
               </div>
 
               <button form="checkout-form" type="submit" disabled={isSubmitting} className="w-full py-4 bg-[#4B2E1C] text-[#FDF6EE] rounded-2xl font-bold hover:bg-[#8B5E3C] transition-all flex items-center justify-center gap-2 text-lg shadow-lg disabled:opacity-70 disabled:cursor-not-allowed group">

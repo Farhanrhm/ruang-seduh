@@ -1,41 +1,45 @@
 "use server";
 
-import { resend } from "@/lib/resend";
+import { Resend } from "resend";
 import { WelcomeEmail } from "@/emails/WelcomeEmail";
 import { InvoiceEmail } from "@/emails/InvoiceEmail";
+import type { CartItem } from "@/store/useCartStore";
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function kirimEmailWelcome(email: string, name: string) {
   try {
     await resend.emails.send({
-      from: 'Ruang Seduh <onboarding@resend.dev>', // Nanti ganti dengan domain asli
+      from: "Ruang Seduh <onboarding@resend.dev>",
       to: email,
-      subject: 'Selamat Datang di Komunitas Ruang Seduh!',
+      subject: "Selamat Datang di Komunitas Ruang Seduh!",
       react: WelcomeEmail({ name }),
     });
-  } catch (error) {
-    console.error("Gagal kirim email welcome:", error);
+  } catch {
+    console.error("Gagal mengirim email sambutan.");
   }
 }
 
-export async function kirimEmailInvoice(email: string, customerName: string, cartItems: any[], total: number) {
+export async function kirimEmailInvoice(
+  email: string,
+  customerName: string,
+  cartItems: CartItem[],
+  total: number,
+  orderId: string
+) {
   try {
-    // Generate Order ID acak
-    const orderId = `INV-${Math.floor(100000 + Math.random() * 900000)}`;
-    
     await resend.emails.send({
-      from: 'Ruang Seduh Store <onboarding@resend.dev>', // Nanti ganti domain Anda
+      from: "Ruang Seduh Store <onboarding@resend.dev>",
       to: email,
       subject: `Invoice Pesanan Anda - ${orderId}`,
-      react: InvoiceEmail({ 
-        name: customerName,   
+      react: InvoiceEmail({
+        name: customerName,
         orderId: orderId,
         items: cartItems,
-        total: total          
+        total: total,
       }),
     });
-    
-    console.log("Invoice berhasil dikirim ke", email);
-  } catch (error) {
-    console.error("Gagal kirim email invoice:", error);
+  } catch {
+    console.error("Gagal mengirim email invoice.");
   }
 }
