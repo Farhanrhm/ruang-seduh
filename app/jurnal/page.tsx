@@ -16,10 +16,7 @@ export default async function JurnalPage() {
   if (!session?.user?.id) {
     return (
       <div className="min-h-[85vh] flex items-center justify-center bg-[#FDF6EE] px-4 py-12 relative overflow-hidden">
-        {/* Ornamen Latar Belakang */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[#D4956A]/20 rounded-full blur-3xl -z-10 pointer-events-none" />
-
-        <div className="max-w-md w-full bg-white/80 backdrop-blur-xl rounded-[2.5rem] p-10 md:p-14 shadow-xl border border-[#8B5E3C]/10 text-center flex flex-col items-center">
+        <div className="max-w-md w-full bg-white rounded-[2.5rem] p-10 md:p-14 shadow-xl border border-[#8B5E3C]/10 text-center flex flex-col items-center">
           <div className="w-20 h-20 bg-[#FDF6EE] rounded-3xl flex items-center justify-center mb-8 border border-[#8B5E3C]/10 shadow-inner">
             <LogIn className="w-10 h-10 text-[#D4956A]" />
           </div>
@@ -109,8 +106,7 @@ export default async function JurnalPage() {
                   
                   {/* Catatan Rasa (Tasting Note) */}
                   <div className="relative">
-                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#D4956A] rounded-full opacity-50" />
-                    <p className="font-teks text-[#8B5E3C] text-sm italic line-clamp-3 pl-4 leading-relaxed">
+                    <p className="font-teks text-[#8B5E3C] text-sm italic line-clamp-3 leading-relaxed">
                       "{jurnal.tastingNote}"
                     </p>
                   </div>
@@ -144,14 +140,14 @@ export default async function JurnalPage() {
             <div className="w-full md:w-1/3 p-8 bg-white rounded-[2.5rem] border border-[#8B5E3C]/10 shadow-sm flex flex-col items-center justify-center text-center">
               <div className="h-28 w-28 overflow-hidden rounded-full border-4 border-[#FDF6EE] shadow-lg mb-6 relative">
                 {session.user?.image ? (
-                  <Image src={session.user.image} alt={session.user.name || "Profil"} fill className="object-cover" />
+                  <Image src={session.user.image} alt={session.user.name || "Profil"} fill sizes="(max-width: 768px) 100vw, 96px" className="object-cover" />
                 ) : (
                   <Coffee className="h-full w-full p-6 text-[#8B5E3C] bg-[#FDF6EE]" />
                 )}
               </div>
               <h2 className="font-judul text-2xl font-black text-[#4B2E1C] tracking-tight">{session.user?.name}</h2>
               <span className="mt-3 inline-flex items-center gap-1.5 px-4 py-1.5 bg-green-50 text-green-600 text-xs font-bold rounded-full border border-green-200">
-                <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> Member Aktif
+                <span className="w-2 h-2 rounded-full bg-green-500"></span> Member Aktif
               </span>
             </div>
 

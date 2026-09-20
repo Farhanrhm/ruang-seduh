@@ -19,7 +19,7 @@ export default function FormKomentar({ slug, userId }: { slug: string; userId?: 
         <p className="text-[#8B5E3C] font-teks mb-6 text-sm max-w-sm">
           Bagikan pengalaman, tanya resep, atau sekadar menyapa penikmat kopi lainnya. Masuk terlebih dahulu yuk!
         </p>
-        <Link href="/api/auth/signin" className="px-8 py-3 bg-[#4B2E1C] text-[#FDF6EE] rounded-full font-bold hover:bg-[#8B5E3C] transition-all shadow-md">
+        <Link href="/api/auth/signin" className="px-8 py-3 bg-[#4B2E1C] text-[#FDF6EE] rounded-2xl font-bold hover:bg-[#8B5E3C] transition-all shadow-md">
           Masuk / Daftar
         </Link>
       </div>
@@ -60,7 +60,7 @@ export default function FormKomentar({ slug, userId }: { slug: string; userId?: 
         <button
           type="submit"
           disabled={isPending || !text.trim()}
-          className="absolute bottom-5 right-5 p-3.5 bg-[#D4956A] text-white rounded-2xl hover:bg-[#b57a52] disabled:opacity-50 disabled:hover:bg-[#D4956A] transition-all shadow-md group-focus-within:animate-pulse"
+          className="absolute bottom-5 right-5 p-3.5 bg-[#D4956A] text-white rounded-2xl hover:bg-[#b57a52] disabled:opacity-50 disabled:hover:bg-[#D4956A] transition-all shadow-md"
         >
           <Send className="w-5 h-5" />
         </button>

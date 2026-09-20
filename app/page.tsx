@@ -1,6 +1,6 @@
 import Hero from "@/components/Hero";
 import Link from "next/link";
-import { BookOpen, Map, BookMarked, Users, ArrowRight } from "lucide-react";
+import { BookOpen, Map, BookMarked, Users } from "lucide-react";
 
 export default function Home() {
   return (
@@ -17,51 +17,57 @@ export default function Home() {
             <p className="font-teks text-[#8B5E3C] text-lg leading-relaxed">Dari pemula yang baru mengenal V60 hingga barista rumahan yang mencari kesempurnaan rasio dan suhu seduhan.</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
-            <FeatureCard 
-              icon={<Map className="w-8 h-8 text-[#D4956A]" />}
-              title="Peta Kopi"
-              desc="Eksplorasi direktori biji kopi Nusantara dengan filter profil rasa yang detail."
-              link="/direktori"
-            />
-            <FeatureCard 
-              icon={<BookOpen className="w-8 h-8 text-[#D4956A]" />}
-              title="Panduan Seduh"
-              desc="Pelajari teknik manual brew dari dasar hingga mahir dengan visual yang jelas."
-              link="/panduan"
-            />
-            <FeatureCard 
-              icon={<BookMarked className="w-8 h-8 text-[#D4956A]" />}
-              title="Jurnal Personal"
-              desc="Catat rasio, suhu, dan hasil eksperimen seduhan kopimu setiap harinya."
-              link="/jurnal"
-            />
-            <FeatureCard 
-              icon={<Users className="w-8 h-8 text-[#D4956A]" />}
-              title="Blog & Cerita"
-              desc="Baca artikel seputar industri kopi, tips rahasia, dan cerita dari petani."
-              link="/blog"
-            />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+            {/* Primary Feature 1 - Takes 2 columns on large screens */}
+            <Link href="/direktori" className="lg:col-span-2 bg-white p-8 md:p-12 rounded-[2.5rem] border border-[#8B5E3C]/10 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 group flex flex-col md:flex-row gap-8 items-center h-full">
+              <div className="w-20 h-20 bg-[#FDF6EE] rounded-3xl flex items-center justify-center flex-shrink-0 group-hover:bg-[#D4956A] transition-colors duration-300 [&>svg]:group-hover:text-white [&>svg]:transition-colors">
+                <Map className="w-10 h-10 text-[#D4956A]" />
+              </div>
+              <div>
+                <h3 className="font-judul text-3xl font-bold text-[#4B2E1C] mb-3 group-hover:text-[#D4956A] transition-colors">Peta Kopi Nusantara</h3>
+                <p className="font-teks text-[#8B5E3C] leading-relaxed text-lg">
+                  Eksplorasi direktori biji kopi dari seluruh penjuru Indonesia. Temukan karakteristik unik dengan filter profil rasa yang detail untuk referensi seduhanmu.
+                </p>
+              </div>
+            </Link>
+
+            {/* Secondary Feature 1 */}
+            <Link href="/jurnal" className="bg-white p-8 rounded-[2rem] border border-[#8B5E3C]/10 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 group flex flex-col h-full">
+              <div className="w-16 h-16 bg-[#FDF6EE] rounded-2xl flex items-center justify-center mb-6 group-hover:bg-[#D4956A] transition-colors duration-300 [&>svg]:group-hover:text-white [&>svg]:transition-colors">
+                <BookMarked className="w-8 h-8 text-[#D4956A]" />
+              </div>
+              <h3 className="font-judul text-2xl font-bold text-[#4B2E1C] mb-3 group-hover:text-[#D4956A] transition-colors">Jurnal Personal</h3>
+              <p className="font-teks text-[#8B5E3C] leading-relaxed flex-1">
+                Catat rasio, suhu, dan hasil eksperimen seduhan kopimu setiap harinya secara rahasia.
+              </p>
+            </Link>
+
+            {/* Secondary Feature 2 */}
+            <Link href="/panduan" className="bg-white p-8 rounded-[2rem] border border-[#8B5E3C]/10 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 group flex flex-col h-full">
+              <div className="w-16 h-16 bg-[#FDF6EE] rounded-2xl flex items-center justify-center mb-6 group-hover:bg-[#D4956A] transition-colors duration-300 [&>svg]:group-hover:text-white [&>svg]:transition-colors">
+                <BookOpen className="w-8 h-8 text-[#D4956A]" />
+              </div>
+              <h3 className="font-judul text-2xl font-bold text-[#4B2E1C] mb-3 group-hover:text-[#D4956A] transition-colors">Panduan Seduh</h3>
+              <p className="font-teks text-[#8B5E3C] leading-relaxed flex-1">
+                Pelajari teknik manual brew dari dasar hingga mahir dengan langkah yang jelas.
+              </p>
+            </Link>
+
+            {/* Primary Feature 2 - Takes 2 columns on large screens */}
+            <Link href="/blog" className="lg:col-span-2 bg-white p-8 md:p-10 rounded-[2.5rem] border border-[#8B5E3C]/10 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 group flex flex-col md:flex-row gap-6 items-center h-full">
+              <div className="w-16 h-16 bg-[#FDF6EE] rounded-2xl flex items-center justify-center flex-shrink-0 group-hover:bg-[#D4956A] transition-colors duration-300 [&>svg]:group-hover:text-white [&>svg]:transition-colors">
+                <Users className="w-8 h-8 text-[#D4956A]" />
+              </div>
+              <div>
+                <h3 className="font-judul text-2xl font-bold text-[#4B2E1C] mb-2 group-hover:text-[#D4956A] transition-colors">Blog & Komunitas</h3>
+                <p className="font-teks text-[#8B5E3C] leading-relaxed">
+                  Baca artikel seputar industri kopi, tips rahasia dari ahli, dan cerita inspiratif langsung dari petani lokal.
+                </p>
+              </div>
+            </Link>
           </div>
         </div>
       </section>
     </div>
-  )
-}
-
-// Komponen Card Kecil agar rapi
-function FeatureCard({ icon, title, desc, link }: any) {
-  return (
-    <Link href={link} className="bg-white p-8 rounded-[2rem] border border-[#8B5E3C]/10 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 group flex flex-col h-full">
-      <div className="w-16 h-16 bg-[#FDF6EE] rounded-2xl flex items-center justify-center mb-6 group-hover:bg-[#D4956A] transition-colors duration-300 [&>svg]:group-hover:text-white [&>svg]:transition-colors">
-        {icon}
-      </div>
-      <h3 className="font-judul text-2xl font-bold text-[#4B2E1C] mb-3">{title}</h3>
-      <p className="font-teks text-[#8B5E3C] leading-relaxed flex-1">{desc}</p>
-      
-      <div className="mt-6 flex items-center gap-2 text-sm font-bold text-[#D4956A] opacity-0 group-hover:opacity-100 transition-opacity">
-        Jelajahi <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-      </div>
-    </Link>
   )
 }

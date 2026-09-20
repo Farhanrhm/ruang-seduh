@@ -33,7 +33,7 @@ export const WelcomeEmail = ({
 
           {/* Isi Email */}
           <Section style={content}>
-            <Heading style={greeting}>Halo, {name}! ☕</Heading>
+            <Heading style={greeting}>Halo, {name}!</Heading>
             <Text style={text}>
               Selamat datang di komunitas Ruang Seduh! Kami sangat senang Anda bergabung bersama kami.
             </Text>

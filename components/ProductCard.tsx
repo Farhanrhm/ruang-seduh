@@ -45,7 +45,7 @@ export default function ProductCard({ product }: { product: any }) {
           </div>
         )}
 
-        <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-md px-3.5 py-1.5 rounded-full text-[9px] font-black text-[#8B5E3C] uppercase tracking-widest shadow-sm">
+        <div className="absolute top-4 left-4 bg-white px-3.5 py-1.5 rounded-full text-[9px] font-black text-[#8B5E3C] uppercase tracking-widest shadow-sm border border-[#8B5E3C]/10">
           {product.category || "PRODUK"}
         </div>
       </div>

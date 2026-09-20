@@ -4,7 +4,7 @@ import { useCartStore } from "@/store/useCartStore";
 import { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Loader2, ShieldCheck, MapPin, User } from "lucide-react";
+import { Loader2, ShieldCheck, MapPin, User } from "lucide-react";
 import Link from "next/link";
 import { kirimEmailInvoice } from "@/app/actions/email";
 import { buatPesanan } from "@/app/actions/order";
@@ -50,7 +50,7 @@ export default function CheckoutForm() {
     return (
       <div className="min-h-screen bg-[#FDF6EE] pt-32 pb-24 text-center">
         <h1 className="font-judul text-3xl font-black text-[#4B2E1C] mb-4">Keranjang Kosong</h1>
-        <Link href="/toko" className="px-6 py-3 bg-[#D4956A] text-white rounded-full font-bold inline-block">
+        <Link href="/toko" className="px-6 py-3 bg-[#D4956A] text-white rounded-2xl font-bold inline-block">
           Belanja Sekarang
         </Link>
       </div>
@@ -60,8 +60,8 @@ export default function CheckoutForm() {
   return (
     <div className="bg-[#FDF6EE] min-h-screen pt-24 pb-24 text-[#4B2E1C]">
       <div className="container mx-auto px-4 max-w-6xl">
-        <Link href="/toko" className="inline-flex items-center gap-2 text-[#8B5E3C] hover:text-[#4B2E1C] font-bold mb-8 bg-white px-4 py-2 rounded-full shadow-sm border border-[#8B5E3C]/10 w-fit">
-          <ArrowLeft className="w-4 h-4" /> Kembali Belanja
+        <Link href="/toko" className="inline-flex items-center gap-2 text-[#8B5E3C] hover:text-[#4B2E1C] font-bold mb-8 bg-white px-4 py-2 rounded-2xl shadow-sm border border-[#8B5E3C]/10 w-fit">
+          Kembali Belanja
         </Link>
 
         <h1 className="font-judul text-4xl md:text-5xl font-black text-[#4B2E1C] mb-10 tracking-tight">Checkout</h1>

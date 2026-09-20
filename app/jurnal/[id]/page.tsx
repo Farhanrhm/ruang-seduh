@@ -16,10 +16,7 @@ export default async function JurnalPage() {
   if (!session?.user?.id) {
     return (
       <div className="min-h-[85vh] flex items-center justify-center bg-[#FDF6EE] px-4 py-12 relative overflow-hidden">
-        {/* Ornamen Latar Belakang */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#D4956A]/20 rounded-full blur-3xl -z-10 pointer-events-none" />
-
-        <div className="max-w-md w-full bg-white/90 backdrop-blur-xl rounded-[2.5rem] p-10 md:p-16 shadow-xl border border-[#8B5E3C]/10 text-center flex flex-col items-center">
+        <div className="max-w-md w-full bg-white rounded-[2.5rem] p-10 md:p-16 shadow-xl border border-[#8B5E3C]/10 text-center flex flex-col items-center">
           <div className="w-20 h-20 bg-[#FDF6EE] rounded-3xl flex items-center justify-center mb-10 border border-[#8B5E3C]/20 shadow-sm">
             <LogIn className="w-10 h-10 text-[#D4956A]" />
           </div>
@@ -132,14 +129,14 @@ export default async function JurnalPage() {
             <div className="md:col-span-1 p-8 bg-white rounded-3xl border border-[#8B5E3C]/10 shadow-sm hover:shadow-md transition-all flex flex-col items-center text-center">
               <div className="h-24 w-24 overflow-hidden rounded-full border-4 border-[#FDF6EE] shadow-lg mb-6 relative">
                 {session.user?.image ? (
-                  <Image src={session.user.image} alt={session.user.name || "Profil"} fill className="object-cover" />
+                  <Image src={session.user.image} alt={session.user.name || "Profil"} fill sizes="(max-width: 768px) 100vw, 96px" className="object-cover" />
                 ) : (
                   <Coffee className="h-full w-full p-5 text-[#8B5E3C] bg-[#FDF6EE]" />
                 )}
               </div>
               <h2 className="font-judul text-2xl font-black text-[#4B2E1C] tracking-tight">{session.user?.name}</h2>
               <span className="mt-3 inline-flex items-center gap-1 px-3 py-1 bg-green-50 text-green-600 text-xs font-bold rounded-full border border-green-200">
-                <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                <span className="w-2 h-2 rounded-full bg-green-500"></span>
                 Active
               </span>
             </div>
@@ -158,7 +155,7 @@ export default async function JurnalPage() {
               
               <Link 
                 href="/jurnal/baru" 
-                className="inline-flex items-center gap-2 px-8 py-4 bg-[#4B2E1C] text-[#FDF6EE] rounded-full font-bold hover:bg-[#8B5E3C] transition-all shadow-md hover:shadow-xl w-fit group"
+                className="inline-flex items-center gap-2 px-8 py-4 bg-[#4B2E1C] text-[#FDF6EE] rounded-2xl font-bold hover:bg-[#8B5E3C] transition-all shadow-md hover:shadow-xl w-fit group"
               >
                 <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" /> Catat Seduhan Pertamamu
               </Link>

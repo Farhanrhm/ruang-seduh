@@ -90,7 +90,7 @@ export default async function BlogPostPage({
     "mainImage": mainImage.asset->{ url, metadata { dimensions { width, height, aspectRatio } } },
     publishedAt, body, "authorName": author->name, "authorImage": author->image
   }`;
-  const post = await client.fetch<BlogPost | null>(query, { slug });
+  const post = await client.fetch<BlogPost | null>(query, { slug }, { next: { revalidate: 3600 } });
 
   // Gunakan notFound() dari Next.js jika artikel tidak ada
   if (!post) {

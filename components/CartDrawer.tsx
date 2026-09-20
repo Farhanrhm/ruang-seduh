@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { X, Trash2, ShoppingBag, Plus, Minus, ArrowRight } from "lucide-react";
+import { X, Trash2, ShoppingBag, Plus, Minus } from "lucide-react";
 import { useCartStore } from "@/store/useCartStore";
 import { useCartHydration } from "@/lib/hooks/useCartHydration";
 
@@ -77,8 +77,8 @@ export default function CartDrawer() {
               <span className="font-teks text-[#8B5E3C] font-bold">Total Belanja</span>
               <span className="font-judul text-2xl font-black text-[#4B2E1C]">Rp {total.toLocaleString('id-ID')}</span>
             </div>
-            <Link href="/checkout" onClick={closeCart} className="w-full py-4 bg-[#4B2E1C] text-[#FDF6EE] rounded-xl font-bold hover:bg-[#8B5E3C] transition-all flex items-center justify-center gap-2 group shadow-lg hover:shadow-xl hover:-translate-y-0.5">
-              Checkout Sekarang <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            <Link href="/checkout" onClick={closeCart} className="w-full py-4 bg-[#4B2E1C] text-[#FDF6EE] rounded-xl font-bold hover:bg-[#8B5E3C] transition-all flex items-center justify-center shadow-lg hover:shadow-xl hover:-translate-y-0.5">
+              Checkout Sekarang
             </Link>
           </div>
         )}

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, Calendar } from "lucide-react";
+import { Calendar } from "lucide-react";
 import { client } from "@/sanity/lib/client";
 
 // ISR: Cache halaman blog selama 1 jam (3600 detik)
@@ -26,7 +26,7 @@ async function getPosts(): Promise<PostItem[]> {
       "authorName": author->name
     }
   `;
-  return await client.fetch(query);
+  return await client.fetch(query, {}, { next: { revalidate: 3600 } });
 }
 
 export default async function BlogPage() {
@@ -49,7 +49,7 @@ export default async function BlogPage() {
         {/* Grid Artikel dari Sanity */}
         {posts.length > 0 ? (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {posts.map((post) => (
+            {posts.map((post, index) => (
               <article key={post._id} className="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all border border-[#8B5E3C]/10 group flex flex-col">
                 <div className="h-56 overflow-hidden relative bg-[#FDF6EE]">
                   <div className="absolute inset-0 bg-[#8B5E3C]/10 group-hover:bg-transparent transition-colors z-10" />
@@ -58,6 +58,7 @@ export default async function BlogPage() {
                       src={post.imageUrl} 
                       alt={post.title} 
                       fill
+                      priority={index === 0}
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       className="object-cover group-hover:scale-105 transition-transform duration-700"
                     />
@@ -79,7 +80,7 @@ export default async function BlogPage() {
                   <div className="mt-auto pt-6 border-t border-[#8B5E3C]/10 flex items-center justify-between">
                     <span className="text-xs font-teks text-[#8B5E3C] font-medium">Oleh {post.authorName || 'Redaksi'}</span>
                     <Link href={`/blog/${post.slug}`} className="inline-flex items-center text-[#4B2E1C] font-bold text-sm hover:text-[#D4956A] transition-colors">
-                      Baca <ArrowRight className="w-4 h-4 ml-1" />
+                      Baca
                     </Link>
                   </div>
                 </div>

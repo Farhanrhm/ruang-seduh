@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CheckCircle2, ShoppingBag, ArrowRight, FileText, Mail } from "lucide-react";
+import { CheckCircle2, ShoppingBag, FileText, Mail } from "lucide-react";
 
 // Di Next.js 15+, searchParams adalah Promise
 export default async function CheckoutSuccessPage({ searchParams }: { searchParams: Promise<{ orderId?: string }> }) {
@@ -50,15 +50,15 @@ export default async function CheckoutSuccessPage({ searchParams }: { searchPara
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 relative z-10">
             <Link 
               href="/toko" 
-              className="w-full sm:w-auto px-8 py-4 bg-[#4B2E1C] text-[#FDF6EE] rounded-full font-bold hover:bg-[#8B5E3C] transition-all shadow-lg hover:shadow-xl hover:-translate-y-1 flex items-center justify-center gap-2 group"
+              className="w-full sm:w-auto px-8 py-4 bg-[#4B2E1C] text-[#FDF6EE] rounded-2xl font-bold hover:bg-[#8B5E3C] transition-all shadow-lg hover:shadow-xl hover:-translate-y-1 flex items-center justify-center gap-2 group"
             >
               <ShoppingBag className="w-5 h-5" /> Belanja Lagi
             </Link>
             <Link 
               href="/" 
-              className="w-full sm:w-auto px-8 py-4 bg-white text-[#4B2E1C] border-2 border-[#8B5E3C]/20 rounded-full font-bold hover:bg-[#FDF6EE] hover:border-[#D4956A] transition-all flex items-center justify-center gap-2 group"
+              className="w-full sm:w-auto px-8 py-4 bg-white text-[#4B2E1C] border-2 border-[#8B5E3C]/20 rounded-2xl font-bold hover:bg-[#FDF6EE] hover:border-[#D4956A] transition-all flex items-center justify-center gap-2 group"
             >
-              Beranda <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              Beranda
             </Link>
           </div>
 

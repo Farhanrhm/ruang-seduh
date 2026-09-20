@@ -25,13 +25,7 @@ export default function Hero() {
 
       {/* Hero Content */}
       <div className="container mx-auto px-4 z-10 text-center">
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 mb-8 animate-fade-in">
-          <Coffee className="w-4 h-4 text-[#D4956A]" />
-          <span className="text-xs font-bold text-[#FDF6EE] uppercase tracking-widest">
-            Temukan Karakter Kopimu
-          </span>
-        </div>
-        
+
         <h1 className="font-judul text-5xl md:text-7xl lg:text-8xl font-black text-[#FDF6EE] mb-8 leading-[1.1] tracking-tighter">
           Ruang <span className="text-[#D4956A]">Seduh.</span>
         </h1>
@@ -42,11 +36,6 @@ export default function Hero() {
 
         {/* Leaf Client Component dengan CLS-safe skeleton */}
         <HeroCTA />
-      </div>
-
-      {/* Scroll Indicator */}
-      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce opacity-50" aria-hidden="true">
-        <div className="w-1 h-12 rounded-full bg-gradient-to-b from-[#D4956A] to-transparent" />
       </div>
     </section>
   );
