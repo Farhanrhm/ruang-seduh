@@ -21,6 +21,7 @@ model User {
   likes         Like[]
   orders        Order[]
   sessions      Session[]
+  addresses     Address[]
 }
 
 model Account {
@@ -57,6 +58,27 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
+model Address {
+  id             String   @id @default(cuid())
+  userId         String
+  label          String?
+  recipientName  String
+  phoneNumber    String
+  province       String
+  city           String
+  district       String
+  postalCode     String
+  detailAddress  String
+  courierNote    String?
+  biteshipAreaId String
+  isDefault      Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
 model BrewJournal {
   id          String   @id @default(cuid())
   userId      String
@@ -74,42 +96,60 @@ model BrewJournal {
 }
 
 model Product {
-  id          String      @id @default(cuid())
-  name        String
-  slug        String      @unique
-  description String
-  price       Int
-  stock       Int         @default(0)
-  imageUrl    String?
-  category    Category
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  orders      OrderItem[]
+  id           String      @id @default(cuid())
+  sanityId     String?     @unique
+  name         String
+  slug         String      @unique
+  description  String
+  price        Int
+  stock        Int         @default(0)
+  weight       Int         @default(1)
+  grindOptions String[]
+  imageUrl     String?
+  category     Category
+  isActive     Boolean     @default(true)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  orders       OrderItem[]
 }
 
 model Order {
-  id          String      @id @default(cuid())
-  userId      String
-  midtransId  String?     @unique
-  status      OrderStatus @default(PENDING)
-  totalAmount Int
-  paymentType String?
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  user        User        @relation(fields: [userId], references: [id])
-  items       OrderItem[]
+  id             String      @id @default(cuid())
+  userId         String
+  midtransId     String?     @unique
+  snapToken      String?
+  status         OrderStatus @default(PENDING)
+  totalAmount    Int
+  paymentType    String?
+  recipientName  String
+  phoneNumber    String
+  province       String
+  city           String
+  district       String
+  postalCode     String
+  detailAddress  String
+  courierNote    String?
+  biteshipAreaId String
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  user           User        @relation(fields: [userId], references: [id])
+  items          OrderItem[]
 
   @@index([userId])
 }
 
 model OrderItem {
-  id        String  @id @default(cuid())
-  orderId   String
-  productId String
-  quantity  Int
-  price     Int
-  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  product   Product @relation(fields: [productId], references: [id])
+  id          String  @id @default(cuid())
+  orderId     String
+  productId   String
+  productName String
+  unitPrice   Int
+  weight      Int
+  quantity    Int
+  price       Int
+  grindSize   String?
+  order       Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product     Product @relation(fields: [productId], references: [id])
 }
 
 model CoffeeDirectory {

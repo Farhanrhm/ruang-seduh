@@ -94,6 +94,32 @@ export const productType = defineType({
       of: [{type: 'string'}],
       description: 'Tekan Enter setiap selesai menulis 1 note (Contoh: Dark Chocolate)',
     }),
+    defineField({
+      name: 'weight',
+      title: 'Berat (Gram)',
+      type: 'number',
+      description: 'Berat bersih produk dalam gram (wajib untuk hitung ongkir Biteship).',
+      validation: (Rule) => Rule.required().min(1),
+      initialValue: 200,
+    }),
+    defineField({
+      name: 'grindOptions',
+      title: 'Opsi Gilingan (Khusus Kopi)',
+      type: 'array',
+      of: [{type: 'string'}],
+      description: 'Kosongkan jika produk bukan biji kopi. Contoh: Biji Utuh, Espresso, V60, French Press',
+      options: {
+        list: [
+          {title: 'Biji Utuh', value: 'Biji Utuh'},
+          {title: 'Espresso', value: 'Espresso'},
+          {title: 'Moka Pot', value: 'Moka Pot'},
+          {title: 'Tubruk', value: 'Tubruk'},
+          {title: 'V60 / Pour Over', value: 'V60'},
+          {title: 'French Press', value: 'French Press'},
+          {title: 'Cold Brew', value: 'Cold Brew'},
+        ],
+      },
+    }),
   ],
   preview: {
     select: {
