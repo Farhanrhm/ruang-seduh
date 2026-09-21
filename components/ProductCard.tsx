@@ -96,7 +96,15 @@ export default function ProductCard({ product }: { product: any }) {
         <div className="mt-auto pt-2">
           <button
             onClick={() => {
-              addItem({ id: product.id, name: product.name, price: product.price, image: displayImage || "", quantity: 1 });
+              addItem({ 
+                id: product.id, 
+                name: product.name, 
+                price: product.price, 
+                image: displayImage || "", 
+                quantity: 1,
+                weight: product.weight || 200,
+                grindOptions: product.grindOptions || []
+              });
               toast.success(`${product.name} ditambahkan!`, { style: { background: '#4B2E1C', color: '#FDF6EE' } });
             }}
             className="w-full py-3.5 bg-[#FDF6EE] text-[#4B2E1C] border-2 border-[#8B5E3C]/10 rounded-2xl font-bold hover:bg-[#4B2E1C] hover:text-[#FDF6EE] hover:border-[#4B2E1C] transition-all flex items-center justify-center gap-2 text-sm shadow-sm"

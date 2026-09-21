@@ -5,6 +5,12 @@ import { WelcomeEmail } from "@/emails/WelcomeEmail";
 import { InvoiceEmail } from "@/emails/InvoiceEmail";
 import type { CartItem } from "@/store/useCartStore";
 
+export interface InvoiceEmailItem {
+  name: string;
+  quantity: number;
+  price: number;
+}
+
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function kirimEmailWelcome(email: string, name: string) {
@@ -23,7 +29,7 @@ export async function kirimEmailWelcome(email: string, name: string) {
 export async function kirimEmailInvoice(
   email: string,
   customerName: string,
-  cartItems: CartItem[],
+  cartItems: InvoiceEmailItem[] | CartItem[],
   total: number,
   orderId: string
 ) {

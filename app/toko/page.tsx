@@ -18,7 +18,9 @@ export default async function TokoPage() {
     process,
     roast,
     notes,
-    "createdAt": _createdAt
+    "createdAt": _createdAt,
+    weight,
+    grindOptions
   }`;
   
   const products = await client.fetch(query);

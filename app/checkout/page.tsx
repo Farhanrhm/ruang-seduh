@@ -10,5 +10,5 @@ export default async function CheckoutPage() {
     return <AuthPromptCheckout />;
   }
 
-  return <CheckoutForm />;
+  return <CheckoutForm prefillData={{ name: session.user.name || "", email: session.user.email || "" }} />;
 }

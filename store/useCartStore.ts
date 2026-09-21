@@ -7,10 +7,13 @@ export interface Product {
   price: number;
   image: string;
   category: string;
+  weight?: number;
+  grindOptions?: string[];
 }
 
 export interface CartItem extends Product {
   quantity: number;
+  grindSize?: string;
 }
 
 interface CartStore {
@@ -22,6 +25,7 @@ interface CartStore {
   removeItem: (productId: string) => void;
   decreaseQuantity: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
+  updateGrindSize: (productId: string, grindSize: string) => void;
   clearCart: () => void;
   getTotalPrice: () => number;
   getTotalItems: () => number;
@@ -75,6 +79,14 @@ export const useCartStore = create<CartStore>()(
           items: get().items.map((item) =>
             item.id === productId ? { ...item, quantity: Math.max(0, quantity) } : item
           ).filter((item) => item.quantity > 0),
+        });
+      },
+
+      updateGrindSize: (productId, grindSize) => {
+        set({
+          items: get().items.map((item) =>
+            item.id === productId ? { ...item, grindSize } : item
+          ),
         });
       },
 
