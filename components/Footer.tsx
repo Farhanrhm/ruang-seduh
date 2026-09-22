@@ -3,18 +3,45 @@
 import Link from "next/link";
 import { Mail, MapPin, Coffee } from "lucide-react";
 import toast from "react-hot-toast";
+import { useState } from "react";
 
 export default function Footer() {
-  const handleSubscribe = (e: React.FormEvent<HTMLFormElement>) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubscribe = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.target as HTMLFormElement;
-    
-    toast.success("Terima kasih! Cek kotak masukmu untuk rekomendasi kopi pertama dari kami.", {
-      icon: "☕",
-      style: { borderRadius: '12px', background: '#4B2E1C', color: '#FDF6EE' }
-    });
-    
-    form.reset();
+    const email = (form.elements.namedItem("email") as HTMLInputElement).value;
+
+    setIsSubmitting(true);
+    try {
+      const res = await fetch("/api/newsletter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        toast.error(data.error || "Gagal berlangganan. Coba lagi.", {
+          style: { borderRadius: "12px", background: "#4B2E1C", color: "#FDF6EE" },
+        });
+        return;
+      }
+
+      toast.success("Cek kotak masukmu! Email selamat datang sudah kami kirim.", {
+        icon: "☕",
+        style: { borderRadius: "12px", background: "#4B2E1C", color: "#FDF6EE" },
+      });
+      form.reset();
+    } catch {
+      toast.error("Koneksi bermasalah. Coba lagi sebentar.", {
+        style: { borderRadius: "12px", background: "#4B2E1C", color: "#FDF6EE" },
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -25,7 +52,7 @@ export default function Footer() {
           {/* Kolom 1: Brand, Bio, Kontak */}
           <div className="space-y-5">
             <Link href="/" className="flex items-center gap-2 text-2xl font-black font-judul tracking-tighter text-[#4B2E1C]">
-              <Coffee className="w-8 h-8 text-[#D4956A]" />
+              <Coffee className="w-8 h-8 text-[#8B5E3C]" />
               Ruang Seduh
             </Link>
             <p className="font-teks text-[#8B5E3C] leading-relaxed">
@@ -33,10 +60,10 @@ export default function Footer() {
             </p>
             <div className="pt-2 space-y-3 font-teks text-[#8B5E3C]">
               <div className="flex items-center gap-3 text-[#4B2E1C] font-medium">
-                <Mail className="w-4.5 h-4.5 text-[#D4956A]" /> halo@ruangseduh.id
+                <Mail className="w-4.5 h-4.5 text-[#8B5E3C]" /> halo@ruangseduh.id
               </div>
               <div className="flex items-center gap-3 text-[#4B2E1C] font-medium">
-                <MapPin className="w-4.5 h-4.5 text-[#D4956A]" /> Bandung, Indonesia
+                <MapPin className="w-4.5 h-4.5 text-[#8B5E3C]" /> Bandung, Indonesia
               </div>
             </div>
           </div>
@@ -45,10 +72,11 @@ export default function Footer() {
           <div className="space-y-5">
             <h4 className="font-judul font-bold text-xl">Eksplorasi</h4>
             <ul className="space-y-3 font-teks text-[#8B5E3C]">
-              <li><Link href="/panduan" className="hover:text-[#D4956A] hover:translate-x-1 flex items-center transition-all">Panduan Seduh</Link></li>
-              <li><Link href="/direktori" className="hover:text-[#D4956A] hover:translate-x-1 flex items-center transition-all">Peta Kopi Indonesia</Link></li>
-              <li><Link href="/jurnal" className="hover:text-[#D4956A] hover:translate-x-1 flex items-center transition-all">Jurnal Personal</Link></li>
-              <li><Link href="/blog" className="hover:text-[#D4956A] hover:translate-x-1 flex items-center transition-all">Artikel & Cerita</Link></li>
+              <li><Link href="/panduan" className="hover:text-[#A9683C] hover:translate-x-1 flex items-center transition-all">Panduan Seduh</Link></li>
+              <li><Link href="/direktori" className="hover:text-[#A9683C] hover:translate-x-1 flex items-center transition-all">Peta Kopi Indonesia</Link></li>
+              <li><Link href="/toko" className="hover:text-[#A9683C] hover:translate-x-1 flex items-center transition-all">Toko</Link></li>
+              <li><Link href="/jurnal" className="hover:text-[#A9683C] hover:translate-x-1 flex items-center transition-all">Jurnal Personal</Link></li>
+              <li><Link href="/blog" className="hover:text-[#A9683C] hover:translate-x-1 flex items-center transition-all">Artikel & Cerita</Link></li>
             </ul>
           </div>
 
@@ -59,17 +87,20 @@ export default function Footer() {
               Dapatkan tips singkat dan rekomendasi kopi pilihan setiap minggunya.
             </p>
             <form onSubmit={handleSubscribe} className="flex flex-col gap-3">
-              <input 
-                type="email" 
+              <input
+                type="email"
+                name="email"
                 required
-                placeholder="Alamat email kamu..." 
-                className="w-full px-5 py-3.5 rounded-xl border border-[#8B5E3C]/20 focus:outline-none focus:ring-2 focus:ring-[#D4956A]/50 bg-gray-50 font-teks transition-all placeholder:text-[#8B5E3C]/50"
+                disabled={isSubmitting}
+                placeholder="Alamat email kamu..."
+                className="w-full px-5 py-3.5 rounded-xl border border-[#8B5E3C]/20 focus:outline-none focus:ring-2 focus:ring-[#D4956A]/50 bg-gray-50 font-teks transition-all placeholder:text-[#8B5E3C]/50 disabled:opacity-50 disabled:cursor-not-allowed"
               />
-              <button 
-                type="submit" 
-                className="w-full px-5 py-3.5 bg-[#4B2E1C] text-[#FDF6EE] rounded-xl font-bold hover:bg-[#8B5E3C] transition-all flex items-center justify-center gap-2 group"
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full px-5 py-3.5 bg-[#4B2E1C] text-[#FDF6EE] rounded-xl font-bold hover:bg-[#8B5E3C] transition-all flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:bg-[#4B2E1C]"
               >
-                Berlangganan
+                {isSubmitting ? "Mengirim..." : "Berlangganan"}
               </button>
             </form>
           </div>

@@ -57,6 +57,15 @@ export async function POST(req: Request) {
       );
     }
 
+    // Validasi gross_amount mencegah manipulasi harga
+    if (Math.floor(parseFloat(payload.gross_amount)) !== Math.floor(order.totalAmount)) {
+      console.error(`Amount mismatch for order ${order.id}. Payload: ${payload.gross_amount}, DB: ${order.totalAmount}`);
+      return NextResponse.json(
+        { success: false, message: "Invalid amount." },
+        { status: 400 }
+      );
+    }
+
     const transactionStatus = payload.transaction_status;
     const fraudStatus = payload.fraud_status;
 

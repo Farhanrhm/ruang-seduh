@@ -1,5 +1,4 @@
 import Image from "next/image";
-import { Coffee } from "lucide-react";
 import HeroCTA from "@/components/HeroCTA";
 
 /**
@@ -37,6 +36,9 @@ export default function Hero() {
         {/* Leaf Client Component dengan CLS-safe skeleton */}
         <HeroCTA />
       </div>
+
+      {/* Gradient fade ke warna krem halaman, menyambungkan Hero ke section berikutnya */}
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#FDF6EE] to-transparent z-10 pointer-events-none" />
     </section>
   );
 }

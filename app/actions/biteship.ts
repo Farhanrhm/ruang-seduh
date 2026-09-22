@@ -1,45 +1,65 @@
 "use server";
+import { headers } from "next/headers";
+
+// Rate limiter for serverless environment (best-effort per instance)
+const rateLimitMap = new Map<string, { count: number, timestamp: number }>();
+const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
+const MAX_REQUESTS_PER_WINDOW = 10;
 
 export interface BiteshipArea {
   id: string;
   name: string;
-  administrative_division_level_1_name: string; // Province
-  administrative_division_level_2_name: string; // City
-  administrative_division_level_3_name: string; // District
+  administrative_division_level_1_name: string; // Provinsi
+  administrative_division_level_2_name: string; // Kota/Kabupaten
+  administrative_division_level_3_name: string; // Kecamatan
   postal_code: number;
 }
 
-// Simple in-memory cache for the server action
+// Simple in-memory cache for area searches with size limit to prevent memory leak
 const areaCache = new Map<string, { data: BiteshipArea[], timestamp: number }>();
-const CACHE_TTL = 1000 * 60 * 5; // 5 minutes
+const CACHE_TTL = 1000 * 60 * 60 * 24; // 24 hours
+const MAX_CACHE_SIZE = 500;
 
-export async function cariWilayahBiteship(keyword: string): Promise<{ success: boolean; data?: BiteshipArea[]; error?: string }> {
+export async function cariWilayahBiteship(query: string) {
+  if (!query || query.length < 3) return { success: false, error: "Query terlalu pendek" };
+
+  // Best-effort Rate Limiting
+  const headersList = await headers();
+  const ip = headersList.get("x-forwarded-for") || headersList.get("x-real-ip") || "unknown";
+  
+  if (ip !== "unknown") {
+    const now = Date.now();
+    const requestData = rateLimitMap.get(ip) || { count: 0, timestamp: now };
+    
+    if (now - requestData.timestamp < RATE_LIMIT_WINDOW) {
+      if (requestData.count >= MAX_REQUESTS_PER_WINDOW) {
+        return { success: false, error: "Terlalu banyak permintaan, coba lagi sebentar." };
+      }
+      requestData.count++;
+    } else {
+      requestData.count = 1;
+      requestData.timestamp = now;
+    }
+    
+    // Prevent unbounded growth of rateLimitMap
+    if (rateLimitMap.size > 1000) rateLimitMap.clear();
+    rateLimitMap.set(ip, requestData);
+  }
+
+  const cacheKey = query.toLowerCase().trim();
+  const cached = areaCache.get(cacheKey);
+  if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+    return { success: true, data: cached.data };
+  }
+
   try {
-    if (!keyword || keyword.length < 3) {
-      return { success: false, error: "Kata kunci minimal 3 karakter." };
-    }
-
-    const cacheKey = keyword.toLowerCase().trim();
-    const cached = areaCache.get(cacheKey);
-    if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
-      return { success: true, data: cached.data };
-    }
-
     const apiKey = process.env.BITESHIP_API_KEY;
     if (!apiKey) {
       console.error("BITESHIP_API_KEY is missing in environment variables.");
-      return { success: false, error: "Layanan pencarian wilayah sedang tidak tersedia, coba lagi sebentar." };
+      return { success: false, error: "Konfigurasi server bermasalah." };
     }
 
-    // Pengecekan environment prefix (hanya warning di log)
-    const isProd = process.env.NODE_ENV === "production";
-    if (isProd && apiKey.startsWith("biteship_test_")) {
-      console.warn("WARNING: Menggunakan Biteship TEST key di environment Production!");
-    } else if (!isProd && apiKey.startsWith("biteship_live_")) {
-      console.warn("WARNING: Menggunakan Biteship LIVE key di environment Development/Sandbox!");
-    }
-
-    const response = await fetch(`https://api.biteship.com/v1/maps/areas?countries=ID&input=${encodeURIComponent(keyword)}&type=single`, {
+    const response = await fetch(`https://api.biteship.com/v1/maps/areas?input=${encodeURIComponent(query)}`, {
       method: "GET",
       headers: {
         "Authorization": apiKey,
@@ -63,6 +83,9 @@ export async function cariWilayahBiteship(keyword: string): Promise<{ success: b
     
     if (result.success && result.areas) {
       const data = result.areas as BiteshipArea[];
+      if (areaCache.size >= MAX_CACHE_SIZE) {
+        areaCache.clear();
+      }
       areaCache.set(cacheKey, { data, timestamp: Date.now() });
       return { success: true, data };
     }
@@ -86,41 +109,42 @@ export interface ShippingRate {
   courier_service_name: string;
   duration: string;
   price: number;
+  isDummy?: boolean;
 }
 
-// Simple in-memory rate limiting (IP/Session based is better done via middleware or real cache, 
-// but for this phase we'll use a basic global counter or just rely on server-side execution speed).
-// We'll implement a basic one based on areaId and weight to avoid spamming the API.
+export type OngkirResult = 
+  | { success: true; data: ShippingRate[]; isDummy?: boolean }
+  | { success: false; code: string; message: string };
+
 const rateCache = new Map<string, { data: ShippingRate[], timestamp: number }>();
 const RATE_CACHE_TTL = 1000 * 60 * 10; // 10 minutes
 
-export async function hitungOngkirBiteship(destinationAreaId: string, totalWeightGram: number): Promise<{ success: boolean; data?: ShippingRate[]; error?: string }> {
+export async function hitungOngkirBiteship(destinationAreaId: string, totalWeightGram: number): Promise<OngkirResult> {
+  const useDummy = process.env.USE_DUMMY_SHIPPING === "true";
+  if (useDummy && process.env.NODE_ENV === "production") {
+    throw new Error("Konfigurasi tidak valid: Dummy shipping tidak boleh aktif di production!");
+  }
+
+  const dummyData: ShippingRate[] = [
+    { courier_name: "JNE", courier_service_name: "Reguler (Simulasi)", duration: "2-3 hari", price: 15000, isDummy: true },
+    { courier_name: "SiCepat", courier_service_name: "BEST (Simulasi)", duration: "1 hari", price: 20000, isDummy: true }
+  ];
+
   try {
-    if (!destinationAreaId) return { success: false, error: "Tujuan pengiriman belum dipilih." };
+    if (!destinationAreaId) return { success: false, code: "INVALID_INPUT", message: "Pilih alamat pengiriman untuk melihat ongkos kirim." };
+    if (totalWeightGram < 1) return { success: false, code: "INVALID_INPUT", message: "Berat produk tidak valid. Mohon periksa kembali keranjang Anda." };
     
-    if (totalWeightGram < 1) {
-      return { success: false, error: "Berat produk tidak valid. Mohon periksa kembali keranjang Anda." };
-    }
-    
-    // Asumsikan berat kemasan kardus/bubble wrap rata-rata 150g per pesanan
     const finalWeight = totalWeightGram + 150; 
     const apiKey = process.env.BITESHIP_API_KEY;
-    
-    if (!apiKey) {
-      console.error("BITESHIP_API_KEY is missing in environment variables.");
-      return { success: false, error: "Konfigurasi server bermasalah." };
-    }
-
     const originAreaId = process.env.BITESHIP_ORIGIN_AREA_ID;
     const activeCouriersRaw = process.env.BITESHIP_ACTIVE_COURIERS;
-
-    if (!originAreaId || !activeCouriersRaw) {
-      console.error("BITESHIP_ORIGIN_AREA_ID atau BITESHIP_ACTIVE_COURIERS tidak disetel di environment variables.");
-      return { success: false, error: "Konfigurasi toko bermasalah." };
+    
+    if (!apiKey || !originAreaId || !activeCouriersRaw) {
+      if (useDummy) return { success: true, data: dummyData, isDummy: true };
+      return { success: false, code: "CONFIG_MISSING", message: "Layanan ongkos kirim sedang tidak tersedia, coba lagi sebentar." };
     }
     
     const activeCouriers = activeCouriersRaw.replace(/\s+/g, '');
-
     const cacheKey = `${destinationAreaId}-${finalWeight}-${activeCouriers}`;
     const cached = rateCache.get(cacheKey);
     if (cached && Date.now() - cached.timestamp < RATE_CACHE_TTL) {
@@ -145,6 +169,15 @@ export async function hitungOngkirBiteship(destinationAreaId: string, totalWeigh
       ]
     };
 
+    if (process.env.NODE_ENV !== "production") {
+      console.log("\n[BITESHIP DIAGNOSTICS] Calculating rates...");
+      console.log(`- Origin Area ID: ${originAreaId || "(KOSONG)"} (sumber: env.BITESHIP_ORIGIN_AREA_ID)`);
+      console.log(`- Destination Area ID: ${destinationAreaId}`);
+      console.log(`- Active Couriers: ${activeCouriers}`);
+      console.log(`- Total Weight (items + packaging 150g): ${finalWeight}g`);
+      console.log(`- Payload Items: ${JSON.stringify(payload.items)}`);
+    }
+
     const response = await fetch("https://api.biteship.com/v1/rates/couriers", {
       method: "POST",
       headers: {
@@ -156,54 +189,39 @@ export async function hitungOngkirBiteship(destinationAreaId: string, totalWeigh
 
     const responseBodyText = await response.text().catch(() => "Gagal membaca body");
     
+    if (process.env.NODE_ENV !== "production") {
+      console.log(`[BITESHIP RESPONSE] Status: ${response.status}`);
+      console.log(`[BITESHIP RESPONSE BODY]: ${responseBodyText.substring(0, 1000)}`);
+    }
+    
     if (!response.ok) {
-      console.error(`Biteship Rates API error: ${response.status} - Body: ${responseBodyText.substring(0, 500)}`);
+      if (useDummy) return { success: true, data: dummyData, isDummy: true };
+      
       if (response.status === 429) {
-         return { success: false, error: "Terlalu banyak permintaan, tunggu sebentar." };
+         return { success: false, code: "RATE_LIMITED", message: "Terlalu banyak permintaan, tunggu sebentar." };
+      }
+      if (response.status === 401 || response.status === 403) {
+         return { success: false, code: "UNAUTHORIZED", message: "Layanan ongkos kirim sedang tidak tersedia, coba lagi sebentar." };
       }
       
-      let errorMessage = "Layanan ongkos kirim sedang tidak tersedia, coba lagi sebentar.";
       try {
         const parsedErr = JSON.parse(responseBodyText);
         if (parsedErr.error) {
-          errorMessage = `API Biteship: ${parsedErr.error}`;
+          console.error(`API Biteship Error: ${parsedErr.error}`); // Log the specific error server-side
         }
       } catch (e) {}
       
-      // Feature flag untuk dummy data
-      const useDummy = process.env.NODE_ENV !== "production" && process.env.USE_DUMMY_SHIPPING === "true";
-      
-      if (useDummy) {
-        console.warn(`Fallback ke dummy kurir karena: ${errorMessage}`);
-        return { 
-          success: true, 
-          data: [
-            {
-              courier_name: "JNE",
-              courier_service_name: "Reguler (Simulasi)",
-              duration: "2-3 hari",
-              price: 15000
-            },
-            {
-              courier_name: "SiCepat",
-              courier_service_name: "BEST (Simulasi)",
-              duration: "1 hari",
-              price: 20000
-            }
-          ] 
-        };
-      }
-      
-      return { success: false, error: errorMessage };
+      return { success: false, code: "UPSTREAM_ERROR", message: "Layanan ongkos kirim sedang tidak tersedia, coba lagi sebentar." };
     }
 
     const result = JSON.parse(responseBodyText);
     
     if (result.success && result.pricing) {
       if (result.pricing.length === 0) {
-        // Mode test bisa jadi membatasi rute
-        console.warn(`Peringatan: Biteship mengembalikan tarif kosong untuk Origin: ${originAreaId} ke Dest: ${destinationAreaId}. Payload: ${JSON.stringify(payload)}. Cek apakah kurir diaktifkan atau keterbatasan mode test.`);
-        return { success: true, data: [] };
+        if (process.env.NODE_ENV !== "production") {
+          console.warn(`[BITESHIP WARNING] Tarif kosong untuk Origin: ${originAreaId} ke Dest: ${destinationAreaId}.`);
+        }
+        return { success: false, code: "NO_COURIER_AVAILABLE", message: "Belum ada layanan pengiriman ke wilayah ini." };
       }
 
       const data: ShippingRate[] = result.pricing.map((p: any) => ({
@@ -213,48 +231,22 @@ export async function hitungOngkirBiteship(destinationAreaId: string, totalWeigh
         price: p.price,
       }));
       
+      if (rateCache.size >= MAX_CACHE_SIZE) {
+        rateCache.clear();
+      }
       rateCache.set(cacheKey, { data, timestamp: Date.now() });
       return { success: true, data };
     }
 
-    return { success: false, error: "Tidak ada kurir yang tersedia untuk rute ini." };
+    return { success: false, code: "UPSTREAM_ERROR", message: "Layanan ongkos kirim bermasalah." };
   } catch (error: any) {
     console.error("\n=== ERROR CATCH hitungOngkirBiteship ===");
     console.error("1. Pesan Error:", error.message || error);
     if (error.cause) console.error("2. Penyebab:", error.cause);
-    console.error("3. Payload yang dicoba dikirim:", JSON.stringify({
-      origin_area_id: process.env.BITESHIP_ORIGIN_AREA_ID,
-      destination_area_id: destinationAreaId,
-      couriers: process.env.BITESHIP_ACTIVE_COURIERS,
-      items: [{ weight: totalWeightGram + 150 }]
-    }, null, 2));
     console.error("==========================================\n");
     
-    // Feature flag untuk dummy data
-    const useDummy = process.env.NODE_ENV !== "production" && process.env.USE_DUMMY_SHIPPING === "true";
-    
-    if (useDummy) {
-      console.warn(`Fallback exception ke dummy kurir.`);
-      return { 
-        success: true, 
-        data: [
-          {
-            courier_name: "JNE",
-            courier_service_name: "Reguler (Simulasi)",
-            duration: "2-3 hari",
-            price: 15000
-          },
-          {
-            courier_name: "SiCepat",
-            courier_service_name: "BEST (Simulasi)",
-            duration: "1 hari",
-            price: 20000
-          }
-        ] 
-      };
-    }
+    if (useDummy) return { success: true, data: dummyData, isDummy: true };
 
-    return { success: false, error: "Layanan ongkos kirim sedang tidak tersedia, coba lagi sebentar." };
+    return { success: false, code: "UPSTREAM_ERROR", message: "Layanan ongkos kirim sedang tidak tersedia, coba lagi sebentar." };
   }
 }
-

@@ -7,6 +7,7 @@ import BadgeStatus from "@/components/ui/BadgeStatus";
 import PayButton from "@/app/profil/PayButton";
 import { useCartStore } from "@/store/useCartStore";
 import toast from "react-hot-toast";
+import { isDummyCourier } from "@/lib/biteshipUtils";
 
 type OrderItem = {
   id: string;
@@ -82,7 +83,7 @@ export default function OrderCard({ order }: { order: Order }) {
   // Ongkir Turunan (Sementara)
   const subtotal = order.items.reduce((acc, item) => acc + item.price * item.quantity, 0);
   const ongkir = order.totalAmount - subtotal;
-  const isSimulasi = order.paymentType?.toLowerCase().includes("simulasi");
+  const isSimulasi = isDummyCourier(order.paymentType);
   
   const isExpired = order.status === "PENDING" && !order.snapToken;
   // Di UI, jika kedaluwarsa kita anggap tampilannya sebagai CANCELLED (Redup)

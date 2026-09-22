@@ -47,10 +47,7 @@ export async function buatPesanan(
     });
 
     if (existingOrder) {
-      if (existingOrder.status === "PENDING" && existingOrder.midtransId) { // We'll use midtransId to store snap token temporarily if we want, or just re-generate
-        // But for simplicity, let's just generate a new token or return an error saying it's already processed
-        // Alternatively, if it exists and pending, we could re-fetch the token. But Midtrans snap token doesn't have an API to "get token by order id" easily without storing it.
-        // Let's store the snap token in `paymentType` temporarily since we don't have a dedicated column, OR just return error.
+      if (existingOrder.status === "PENDING" && existingOrder.midtransId) {
         return { success: false, error: "Pesanan ini sudah sedang diproses. Silakan refresh halaman." };
       }
       return { success: false, error: "Pesanan ini sudah diproses sebelumnya." };
@@ -90,7 +87,7 @@ export async function buatPesanan(
     // 3. Server-side Validation: Hitung ulang ongkir Biteship
     const ongkirRes = await hitungOngkirBiteship(data.biteshipAreaId, totalWeightGram);
     if (!ongkirRes.success || !ongkirRes.data) {
-      return { success: false, error: "Gagal memvalidasi ongkos kirim." };
+      return { success: false, error: (ongkirRes as any).message || "Gagal memvalidasi ongkos kirim." };
     }
 
     const selectedCourierRate = ongkirRes.data.find(
@@ -120,7 +117,7 @@ export async function buatPesanan(
         detailAddress: data.detailAlamat,
         courierNote: data.catatanPesanan || null,
         biteshipAreaId: data.biteshipAreaId,
-        paymentType: `${data.kurir} - ${data.layananKurir}`, // Simpan info kurir di sini untuk sementara atau di snapshot khusus
+        paymentType: `${data.kurir} - ${data.layananKurir}`, // Info kurir
         // Snapshot Items
         items: {
           create: cartItems.map((item) => {
@@ -166,7 +163,12 @@ export async function buatPesanan(
           quantity: 1,
           name: `Ongkir ${data.kurir.toUpperCase()} ${data.layananKurir}`.substring(0, 50),
         }
-      ]
+      ],
+      custom_expiry: {
+        order_time: new Date().toISOString().replace(/\.\d{3}Z$/, ' +0000'), // Format: "yyyy-MM-dd HH:mm:ss Z" expected by midtrans
+        expiry_duration: 60,
+        unit: "minute"
+      }
     };
 
     const snapResponse = await snap.createTransaction(parameter);

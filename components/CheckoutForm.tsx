@@ -170,13 +170,13 @@ export default function CheckoutForm({ prefillData }: { prefillData: { name: str
       }
 
       const res = await hitungOngkirBiteship(selectedAreaId, totalWeight);
-      if (res.success && res.data) {
+      if (res.success) {
         setShippingRates(res.data);
         if (res.data.length === 0) {
           setRatesError("Belum ada layanan pengiriman ke wilayah ini.");
         }
       } else {
-        setRatesError(res.error || "Layanan ongkos kirim sedang tidak tersedia, coba lagi sebentar.");
+        setRatesError(res.message || "Layanan ongkos kirim sedang tidak tersedia, coba lagi sebentar.");
       }
       setIsLoadingRates(false);
     }
@@ -330,9 +330,9 @@ export default function CheckoutForm({ prefillData }: { prefillData: { name: str
                               {searchError}
                             </li>
                           ) : searchResults.length > 0 ? (
-                            searchResults.map((area) => (
+                            searchResults.map((area, index) => (
                               <li 
-                                key={area.id} 
+                                key={`${area.id}-${index}`} 
                                 onClick={() => handleSelectArea(area)}
                                 className="px-5 py-3 hover:bg-[#FDF6EE] cursor-pointer transition-colors border-b border-[#8B5E3C]/5 last:border-0"
                               >
@@ -441,7 +441,7 @@ export default function CheckoutForm({ prefillData }: { prefillData: { name: str
                 {items.map((item) => (
                   <div key={item.id} className="flex gap-4 p-4 border border-[#8B5E3C]/10 rounded-2xl bg-gray-50/50">
                     <div className="relative w-20 h-20 rounded-xl overflow-hidden bg-white flex-shrink-0 border border-[#8B5E3C]/10">
-                      <Image src={item.image} alt={item.name} fill className="object-cover" />
+                      <Image src={item.image} alt={item.name} fill sizes="80px" className="object-cover" />
                     </div>
                     <div className="flex-1 space-y-2">
                       <div className="flex justify-between items-start gap-2">

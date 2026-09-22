@@ -30,7 +30,7 @@ export default function AuthButton() {
         </div>
         <button 
           onClick={() => signOut()} 
-          title="Keluar"
+          aria-label="Keluar"
           className="hover:text-[#D4956A] transition-colors"
         >
           <LogOut className="h-5 w-5" />
@@ -43,7 +43,7 @@ export default function AuthButton() {
   return (
     <button 
       onClick={() => signIn("google")} 
-      title="Masuk / Daftar"
+      aria-label="Masuk atau Daftar"
       className="hover:text-[#D4956A] transition-colors"
     >
       <User className="h-5 w-5" />
