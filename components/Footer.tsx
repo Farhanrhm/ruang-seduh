@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Mail, MapPin, Coffee } from "lucide-react";
 import toast from "react-hot-toast";
 import { useState } from "react";
@@ -51,14 +52,17 @@ export default function Footer() {
           
           {/* Kolom 1: Brand, Bio, Kontak */}
           <div className="space-y-5">
-            <Link href="/" className="flex items-center gap-2 text-2xl font-black font-judul tracking-tighter text-[#4B2E1C]">
-              <Coffee className="w-8 h-8 text-[#8B5E3C]" />
-              Ruang Seduh
-            </Link>
+            <Image 
+              src="/logo-clear.png" 
+              alt="Logo Ruang Seduh Kopi Spesialis" 
+              width={500} 
+              height={180} 
+              className="w-full max-w-[140px] md:max-w-[160px] h-auto object-contain drop-shadow-sm"
+            />
             <p className="font-teks text-[#8B5E3C] leading-relaxed">
               Duduk nyaman, siapkan alatmu. Kami di sini untuk menemani perjalananmu menemukan cangkir kopi terbaik setiap paginya.
             </p>
-            <div className="pt-2 space-y-3 font-teks text-[#8B5E3C]">
+            <div className="pt-1 space-y-3 font-teks text-[#8B5E3C]">
               <div className="flex items-center gap-3 text-[#4B2E1C] font-medium">
                 <Mail className="w-4.5 h-4.5 text-[#8B5E3C]" /> halo@ruangseduh.id
               </div>
@@ -93,7 +97,7 @@ export default function Footer() {
                 required
                 disabled={isSubmitting}
                 placeholder="Alamat email kamu..."
-                className="w-full px-5 py-3.5 rounded-xl border border-[#8B5E3C]/20 focus:outline-none focus:ring-2 focus:ring-[#D4956A]/50 bg-gray-50 font-teks transition-all placeholder:text-[#8B5E3C]/50 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full px-5 py-3.5 rounded-xl border border-[#8B5E3C]/20 focus:outline-none focus:ring-2 focus:ring-[#8B5E3C]/50 bg-gray-50 font-teks transition-all placeholder:text-[#8B5E3C]/50 disabled:opacity-50 disabled:cursor-not-allowed"
               />
               <button
                 type="submit"

@@ -3,13 +3,14 @@
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
 import AuthButton from "./AuthButton";
 import KeranjangBelanja from "./KeranjangBelanja";
 import { useState, useEffect } from "react";
 
 const NAV_LINKS = [
   { href: "/panduan",   label: "Panduan Seduh" },
-  { href: "/direktori", label: "Direktori Kopi" },
+  { href: "/direktori", label: "Peta Kopi" },
   { href: "/toko",      label: "Toko" },
   { href: "/jurnal",    label: "Jurnal Seduh" },
   { href: "/blog",      label: "Blog" },
@@ -56,10 +57,17 @@ export default function Navbar() {
 
             <Link
               href="/"
-              className="font-judul text-3xl font-black text-[#4B2E1C] tracking-tight"
+              className="flex items-center gap-2 group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#8B5E3C] focus-visible:ring-offset-2 rounded-lg"
               onClick={() => setIsMobileMenuOpen(false)}
             >
-              Ruang Seduh
+              <Image 
+                src="/logo-clear.png" 
+                alt="Logo Ruang Seduh Kopi Spesialis" 
+                width={300} 
+                height={100}
+                priority
+                className="h-10 w-auto md:h-12 object-contain group-hover:opacity-85 transition-opacity duration-200"
+              />
             </Link>
 
             {/* Navigasi Desktop */}
@@ -113,6 +121,15 @@ export default function Navbar() {
           role="dialog"
           aria-label="Menu navigasi"
         >
+          <div className="flex flex-col items-center justify-center mb-8 pb-8 border-b border-[#8B5E3C]/10">
+            <Image 
+              src="/logo-clear.png" 
+              alt="Logo Ruang Seduh Kopi Spesialis" 
+              width={300} 
+              height={100} 
+              className="h-16 w-auto object-contain drop-shadow-sm mb-4"
+            />
+          </div>
           <nav className="flex flex-col gap-6">
             {NAV_LINKS.map((link) => {
               const isActive =
