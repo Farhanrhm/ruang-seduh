@@ -73,7 +73,7 @@ export default function ProductCard({ product }: { product: any }) {
           <h3 className="font-judul text-xl font-bold text-[#4B2E1C] mb-1 leading-tight group-hover:text-[#D4956A] transition-colors line-clamp-2 min-h-[3rem]">
             {product.name}
           </h3>
-          <p className="font-teks text-[#D4956A] font-black text-xl price">{formatRupiah(product.price)}</p>
+          <p className="font-teks text-[#A9683C] font-black text-xl price">{formatRupiah(product.price)}</p>
         </div>
 
         {product.category === "BIJI KOPI" ? (

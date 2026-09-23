@@ -48,14 +48,14 @@ export default function KatalogToko({ initialProducts }: { initialProducts: any[
               placeholder="Cari produk..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-11 pr-5 py-4 bg-white rounded-2xl border border-[#8B5E3C]/10 focus:outline-none focus:ring-2 focus:ring-[#D4956A] transition-all shadow-sm font-teks placeholder:text-[#8B5E3C]/40"
+              className="w-full pl-11 pr-5 py-4 bg-white rounded-2xl border border-[#8B5E3C]/10 focus:outline-none focus:ring-2 focus:ring-[#8B5E3C] transition-all shadow-sm font-teks placeholder:text-[#8B5E3C]/40"
             />
           </div>
         </div>
 
         {/* Filter & Sort Controls */}
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 bg-white p-4 rounded-3xl border border-[#8B5E3C]/5 shadow-sm">
-          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-2 lg:pb-0">
+          <div className="flex items-center gap-2 overflow-x-auto overflow-y-hidden no-scrollbar pb-2 lg:pb-0">
             <SlidersHorizontal className="w-4 h-4 text-[#8B5E3C] mr-2 flex-shrink-0" />
             {CATEGORIES.map((cat) => (
               <button
@@ -76,7 +76,7 @@ export default function KatalogToko({ initialProducts }: { initialProducts: any[
               <select 
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="appearance-none w-full bg-[#FDF6EE] border-none rounded-xl pl-5 pr-10 py-2.5 text-xs font-black text-[#4B2E1C] uppercase tracking-widest focus:ring-2 focus:ring-[#D4956A] cursor-pointer"
+                className="appearance-none w-full bg-[#FDF6EE] border-none rounded-xl pl-5 pr-10 py-2.5 text-xs font-black text-[#4B2E1C] uppercase tracking-widest focus:ring-2 focus:ring-[#8B5E3C] cursor-pointer"
               >
                 {SORT_OPTIONS.map((opt) => (
                   <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -101,7 +101,7 @@ export default function KatalogToko({ initialProducts }: { initialProducts: any[
           </div>
           <h2 className="font-judul text-3xl font-black text-[#4B2E1C] mb-3">Produk Tidak Ditemukan</h2>
           <p className="font-teks text-[#8B5E3C] max-w-md mx-auto leading-relaxed">
-            Belum ada produk dari Admin atau pencarian tidak cocok.
+            Produk tidak ditemukan.
           </p>
         </div>
       )}

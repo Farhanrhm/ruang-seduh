@@ -278,17 +278,17 @@ export default function CheckoutForm({ prefillData }: { prefillData: { name: str
                 <div className="grid md:grid-cols-2 gap-5">
                   <div className="space-y-2">
                     <label htmlFor="nama" className="text-xs font-bold text-[#8B5E3C] uppercase tracking-wider">Nama Lengkap</label>
-                    <input id="nama" {...register("nama")} placeholder="Masukkan Nama Anda" className={`w-full px-5 py-3.5 bg-gray-50 border ${errors.nama ? 'border-red-500' : 'border-[#8B5E3C]/20'} rounded-xl focus:ring-2 focus:ring-[#D4956A] focus:bg-white outline-none transition-all font-teks`} aria-describedby={errors.nama ? "nama-error" : undefined} />
+                    <input id="nama" {...register("nama")} placeholder="Masukkan Nama Anda" className={`w-full px-5 py-3.5 bg-gray-50 border ${errors.nama ? 'border-red-500' : 'border-[#8B5E3C]/20'} rounded-xl focus:ring-2 focus:ring-[#8B5E3C] focus:bg-white outline-none transition-all font-teks`} aria-describedby={errors.nama ? "nama-error" : undefined} />
                     {errors.nama && <p id="nama-error" className="text-red-500 text-xs mt-1">{errors.nama.message}</p>}
                   </div>
                   <div className="space-y-2">
                     <label htmlFor="email" className="text-xs font-bold text-[#8B5E3C] uppercase tracking-wider">Email (Untuk Invoice)</label>
-                    <input id="email" type="email" {...register("email")} placeholder="Masukkan Email Anda" className={`w-full px-5 py-3.5 bg-gray-50 border ${errors.email ? 'border-red-500' : 'border-[#8B5E3C]/20'} rounded-xl focus:ring-2 focus:ring-[#D4956A] focus:bg-white outline-none transition-all font-teks`} aria-describedby={errors.email ? "email-error" : undefined} />
+                    <input id="email" type="email" {...register("email")} placeholder="Masukkan Email Anda" className={`w-full px-5 py-3.5 bg-gray-50 border ${errors.email ? 'border-red-500' : 'border-[#8B5E3C]/20'} rounded-xl focus:ring-2 focus:ring-[#8B5E3C] focus:bg-white outline-none transition-all font-teks`} aria-describedby={errors.email ? "email-error" : undefined} />
                     {errors.email && <p id="email-error" className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
                   </div>
                   <div className="space-y-2 md:col-span-2">
                     <label htmlFor="whatsapp" className="text-xs font-bold text-[#8B5E3C] uppercase tracking-wider">Nomor WhatsApp</label>
-                    <input id="whatsapp" type="tel" inputMode="tel" autoComplete="tel" {...register("whatsapp")} placeholder="Contoh: 08123456789" className={`w-full px-5 py-3.5 bg-gray-50 border ${errors.whatsapp ? 'border-red-500' : 'border-[#8B5E3C]/20'} rounded-xl focus:ring-2 focus:ring-[#D4956A] focus:bg-white outline-none transition-all font-teks`} aria-describedby={errors.whatsapp ? "whatsapp-error" : undefined} />
+                    <input id="whatsapp" type="tel" inputMode="tel" autoComplete="tel" {...register("whatsapp")} placeholder="Contoh: 08123456789" className={`w-full px-5 py-3.5 bg-gray-50 border ${errors.whatsapp ? 'border-red-500' : 'border-[#8B5E3C]/20'} rounded-xl focus:ring-2 focus:ring-[#8B5E3C] focus:bg-white outline-none transition-all font-teks`} aria-describedby={errors.whatsapp ? "whatsapp-error" : undefined} />
                     {errors.whatsapp && <p id="whatsapp-error" className="text-red-500 text-xs mt-1">{errors.whatsapp.message}</p>}
                   </div>
                 </div>
@@ -307,7 +307,7 @@ export default function CheckoutForm({ prefillData }: { prefillData: { name: str
                         value={searchQuery}
                         onChange={handleSearchChange}
                         placeholder="Ketik minimal 3 huruf (Cth: Bandung...)" 
-                        className={`w-full px-5 py-3.5 bg-gray-50 border ${errors.biteshipAreaId ? 'border-red-500' : 'border-[#8B5E3C]/20'} rounded-xl focus:ring-2 focus:ring-[#D4956A] focus:bg-white outline-none transition-all font-teks`} 
+                        className={`w-full px-5 py-3.5 bg-gray-50 border ${errors.biteshipAreaId ? 'border-red-500' : 'border-[#8B5E3C]/20'} rounded-xl focus:ring-2 focus:ring-[#8B5E3C] focus:bg-white outline-none transition-all font-teks`} 
                         onFocus={() => {
                           if (searchQuery.length >= 3) setIsDropdownOpen(true);
                         }}
@@ -370,19 +370,19 @@ export default function CheckoutForm({ prefillData }: { prefillData: { name: str
                   <div className="grid md:grid-cols-3 gap-5">
                     <div className="space-y-2 md:col-span-2">
                       <label htmlFor="detailAlamat" className="text-xs font-bold text-[#8B5E3C] uppercase tracking-wider">Alamat Lengkap</label>
-                      <textarea id="detailAlamat" rows={2} {...register("detailAlamat")} placeholder="Nama jalan, gedung, no. rumah, RT/RW..." className={`w-full px-5 py-3.5 bg-gray-50 border ${errors.detailAlamat ? 'border-red-500' : 'border-[#8B5E3C]/20'} rounded-xl focus:ring-2 focus:ring-[#D4956A] focus:bg-white outline-none transition-all font-teks resize-none`} />
+                      <textarea id="detailAlamat" rows={2} {...register("detailAlamat")} placeholder="Nama jalan, gedung, no. rumah, RT/RW..." className={`w-full px-5 py-3.5 bg-gray-50 border ${errors.detailAlamat ? 'border-red-500' : 'border-[#8B5E3C]/20'} rounded-xl focus:ring-2 focus:ring-[#8B5E3C] focus:bg-white outline-none transition-all font-teks resize-none`} />
                       {errors.detailAlamat && <p className="text-red-500 text-xs mt-1">{errors.detailAlamat.message}</p>}
                     </div>
                     <div className="space-y-2">
                       <label htmlFor="kodepos" className="text-xs font-bold text-[#8B5E3C] uppercase tracking-wider">Kode Pos</label>
-                      <input id="kodepos" type="text" {...register("kodepos")} placeholder="5 digit" className={`w-full px-5 py-3.5 bg-gray-50 border ${errors.kodepos ? 'border-red-500' : 'border-[#8B5E3C]/20'} rounded-xl focus:ring-2 focus:ring-[#D4956A] focus:bg-white outline-none transition-all font-teks`} />
+                      <input id="kodepos" type="text" {...register("kodepos")} placeholder="5 digit" className={`w-full px-5 py-3.5 bg-gray-50 border ${errors.kodepos ? 'border-red-500' : 'border-[#8B5E3C]/20'} rounded-xl focus:ring-2 focus:ring-[#8B5E3C] focus:bg-white outline-none transition-all font-teks`} />
                       {errors.kodepos && <p className="text-red-500 text-xs mt-1">{errors.kodepos.message}</p>}
                     </div>
                   </div>
 
                   <div className="space-y-2">
                     <label htmlFor="patokan" className="text-xs font-bold text-[#8B5E3C] uppercase tracking-wider">Patokan / Catatan (Opsional)</label>
-                    <input id="patokan" type="text" {...register("patokan")} placeholder="Warna pagar, posisi rumah, dll." className="w-full px-5 py-3.5 bg-gray-50 border border-[#8B5E3C]/20 rounded-xl focus:ring-2 focus:ring-[#D4956A] focus:bg-white outline-none transition-all font-teks" />
+                    <input id="patokan" type="text" {...register("patokan")} placeholder="Warna pagar, posisi rumah, dll." className="w-full px-5 py-3.5 bg-gray-50 border border-[#8B5E3C]/20 rounded-xl focus:ring-2 focus:ring-[#8B5E3C] focus:bg-white outline-none transition-all font-teks" />
                     {errors.patokan && <p className="text-red-500 text-xs mt-1">{errors.patokan.message}</p>}
                   </div>
 
@@ -398,7 +398,7 @@ export default function CheckoutForm({ prefillData }: { prefillData: { name: str
                     {simpanAlamat && (
                       <div className="pl-8 animate-in fade-in slide-in-from-top-2">
                         <label htmlFor="labelAlamat" className="text-xs font-bold text-[#8B5E3C] uppercase tracking-wider">Simpan Sebagai (Cth: Rumah, Kantor)</label>
-                        <input id="labelAlamat" type="text" {...register("labelAlamat")} placeholder="Contoh: Rumah" className="w-full mt-2 px-5 py-3.5 bg-gray-50 border border-[#8B5E3C]/20 rounded-xl focus:ring-2 focus:ring-[#D4956A] focus:bg-white outline-none transition-all font-teks" />
+                        <input id="labelAlamat" type="text" {...register("labelAlamat")} placeholder="Contoh: Rumah" className="w-full mt-2 px-5 py-3.5 bg-gray-50 border border-[#8B5E3C]/20 rounded-xl focus:ring-2 focus:ring-[#8B5E3C] focus:bg-white outline-none transition-all font-teks" />
                         {errors.labelAlamat && <p className="text-red-500 text-xs mt-1">{errors.labelAlamat.message}</p>}
                       </div>
                     )}
@@ -410,7 +410,7 @@ export default function CheckoutForm({ prefillData }: { prefillData: { name: str
                 <h3 className="font-judul text-xl font-bold text-[#4B2E1C] mb-6 flex items-center gap-2">
                   Catatan Pesanan
                 </h3>
-                <textarea rows={2} {...register("catatanPesanan")} placeholder="Catatan untuk penjual atau kurir (Opsional)" className={`w-full px-5 py-3.5 bg-gray-50 border ${errors.catatanPesanan ? 'border-red-500' : 'border-[#8B5E3C]/20'} rounded-xl focus:ring-2 focus:ring-[#D4956A] focus:bg-white outline-none transition-all font-teks resize-none`} />
+                <textarea rows={2} {...register("catatanPesanan")} placeholder="Catatan untuk penjual atau kurir (Opsional)" className={`w-full px-5 py-3.5 bg-gray-50 border ${errors.catatanPesanan ? 'border-red-500' : 'border-[#8B5E3C]/20'} rounded-xl focus:ring-2 focus:ring-[#8B5E3C] focus:bg-white outline-none transition-all font-teks resize-none`} />
                 {errors.catatanPesanan && <p className="text-red-500 text-xs mt-1">{errors.catatanPesanan.message}</p>}
               </div>
 
@@ -456,7 +456,7 @@ export default function CheckoutForm({ prefillData }: { prefillData: { name: str
                           <select
                             value={item.grindSize || ""}
                             onChange={(e) => updateGrindSize(item.id, e.target.value)}
-                            className={`w-full text-xs py-1.5 px-2 rounded-lg border ${!item.grindSize ? 'border-red-400 bg-red-50' : 'border-[#8B5E3C]/20 bg-white'} text-[#4B2E1C] font-teks outline-none focus:ring-2 focus:ring-[#D4956A]`}
+                            className={`w-full text-xs py-1.5 px-2 rounded-lg border ${!item.grindSize ? 'border-red-400 bg-red-50' : 'border-[#8B5E3C]/20 bg-white'} text-[#4B2E1C] font-teks outline-none focus:ring-2 focus:ring-[#8B5E3C]`}
                           >
                             <option value="" disabled>-- Pilih Varian Gilingan --</option>
                             {item.grindOptions.map((opt) => (
@@ -538,7 +538,7 @@ export default function CheckoutForm({ prefillData }: { prefillData: { name: str
                               name="shipping_rate"
                               checked={watch("kurir") === rate.courier_name && watch("layananKurir") === rate.courier_service_name}
                               readOnly
-                              className="w-4 h-4 text-[#D4956A] focus:ring-[#D4956A] border-gray-300"
+                              className="w-4 h-4 text-[#D4956A] focus:ring-[#8B5E3C] border-gray-300"
                             />
                           </div>
                           <div className="flex-1">

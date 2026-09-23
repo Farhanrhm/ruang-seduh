@@ -52,7 +52,7 @@ export default function FormKomentar({ slug, userId }: { slug: string; userId?: 
           placeholder="Tulis pendapat atau pertanyaanmu di sini..."
           disabled={isPending}
           maxLength={500}
-          className="w-full bg-white border border-[#8B5E3C]/20 rounded-3xl p-5 pr-16 min-h-[140px] focus:outline-none focus:ring-2 focus:ring-[#D4956A] focus:border-transparent resize-y font-teks text-[#4B2E1C] shadow-sm transition-all"
+          className="w-full bg-white border border-[#8B5E3C]/20 rounded-3xl p-5 pr-16 min-h-[140px] focus:outline-none focus:ring-2 focus:ring-[#8B5E3C] focus:border-transparent resize-y font-teks text-[#4B2E1C] shadow-sm transition-all"
         />
         <div className="absolute bottom-4 left-5 text-[10px] font-bold text-[#8B5E3C]/40 uppercase tracking-widest">
           {text.length} / 500

@@ -29,7 +29,7 @@ export default function SearchDirektori() {
         placeholder="Cari daerah atau roast..." 
         defaultValue={searchParams.get('q')?.toString()}
         onChange={(e) => handleSearch(e.target.value)}
-        className="w-full px-6 py-4 pl-14 rounded-2xl border border-[#8B5E3C]/20 bg-white focus:outline-none focus:ring-2 focus:ring-[#D4956A]/30 font-teks text-[#4B2E1C] transition-all shadow-sm placeholder:text-[#8B5E3C]/40"
+        className="w-full px-6 py-4 pl-14 rounded-2xl border border-[#8B5E3C]/20 bg-white focus:outline-none focus:ring-2 focus:ring-[#8B5E3C]/30 font-teks text-[#4B2E1C] transition-all shadow-sm placeholder:text-[#8B5E3C]/40"
       />
       <Search className={`absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 transition-colors ${isPending ? 'text-[#D4956A] animate-pulse' : 'text-[#8B5E3C]/50 group-focus-within:text-[#D4956A]'}`} />
     </div>
