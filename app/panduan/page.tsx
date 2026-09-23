@@ -113,7 +113,7 @@ export default async function PanduanPage() {
             )}
           </div>
         ) : (
-          <p className="text-center text-[#8B5E3C] italic mt-10">Tolong tunggu admin untuk menambahkan panduan baru.</p>
+          <p className="text-center text-[#8B5E3C] italic mt-10">Belum ada panduan yang tersedia saat ini.</p>
         )}
       </div>
     </div>

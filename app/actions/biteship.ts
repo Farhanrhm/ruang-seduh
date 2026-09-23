@@ -243,7 +243,7 @@ export async function hitungOngkirBiteship(destinationAreaId: string, totalWeigh
     console.error("\n=== ERROR CATCH hitungOngkirBiteship ===");
     console.error("1. Pesan Error:", error.message || error);
     if (error.cause) console.error("2. Penyebab:", error.cause);
-    console.error("==========================================\n");
+    console.error("\n[Biteship] Gagal memuat tarif kurir.");
     
     if (useDummy) return { success: true, data: dummyData, isDummy: true };
 

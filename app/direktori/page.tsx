@@ -13,9 +13,7 @@ export default async function DirektoriPage({
   const resolvedParams = await searchParams;
   const query = resolvedParams.q || "";
 
-  // ====================================================================
-  // DATA ASLI NUSANTARA (Auto-Seed jika kosong)
-  // ====================================================================
+  // Seed data awal jika database masih kosong
   const count = await prisma.coffeeDirectory.count();
   if (count === 0) {
     await prisma.coffeeDirectory.createMany({
@@ -48,7 +46,7 @@ export default async function DirektoriPage({
         {/* Header Section - Light Theme */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16 border-b border-[#8B5E3C]/10 pb-10">
           <div>
-            <h1 className="font-judul text-4xl md:text-5xl font-black text-[#4B2E1C] tracking-tighter">Direktori Kopi Nusantara</h1>
+            <h1 className="font-judul text-4xl md:text-5xl font-black text-[#4B2E1C] tracking-tighter">Peta Kopi Nusantara</h1>
             <p className="font-teks text-[#8B5E3C] text-lg max-w-xl mt-4 leading-relaxed">
               Temukan karakteristik unik dari setiap biji kopi yang tumbuh di tanah air.
             </p>

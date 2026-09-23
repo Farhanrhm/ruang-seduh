@@ -5,9 +5,7 @@ import { simpanJurnalBaru } from "@/app/actions/jurnal";
 import Link from "next/link";
 import { ArrowLeft, Save, Coffee, BarChart3, Scale, Timer, Droplets, Info } from "lucide-react";
 
-// ====================================================================
 // KAMUS RASIO STANDAR INTERNASIONAL (Smart Presets)
-// ====================================================================
 const standarSeduh: Record<string, { kopi: number; rasio: number; hint: string }> = {
   "V60 Pour Over": { kopi: 15, rasio: 15, hint: "Standar manual brew yang seimbang (Clean & Bright)." },
   "French Press": { kopi: 30, rasio: 15, hint: "Rasio besar untuk body yang tebal dan kaya rasa." },
@@ -79,7 +77,7 @@ export default function JurnalBaruPage() {
             <div className="flex-1 w-full space-y-3">
               <label htmlFor="coffeeBean" className="block text-sm font-bold text-[#8B5E3C] uppercase tracking-wider mb-1">Nama Biji Kopi</label>
               <input type="text" id="coffeeBean" name="coffeeBean" required placeholder="Contoh: Gayo Washed, Toraja Sapan..." 
-                className="w-full px-6 py-4 rounded-2xl border border-[#8B5E3C]/20 focus:outline-none focus:ring-2 focus:ring-[#D4956A]/50 bg-gray-50/50 hover:bg-gray-50 focus:bg-white transition-all shadow-sm font-judul text-lg font-bold text-[#4B2E1C] placeholder:font-teks placeholder:text-[#8B5E3C]/50 placeholder:font-normal" />
+                className="w-full px-6 py-4 rounded-2xl border border-[#8B5E3C]/20 focus:outline-none focus:ring-2 focus:ring-[#8B5E3C]/50 bg-gray-50/50 hover:bg-gray-50 focus:bg-white transition-all shadow-sm font-judul text-lg font-bold text-[#4B2E1C] placeholder:font-teks placeholder:text-[#8B5E3C]/50 placeholder:font-normal" />
             </div>
           </div>
 
@@ -93,7 +91,7 @@ export default function JurnalBaruPage() {
                 
                 <select id="brewMethod" name="brewMethod" required defaultValue="" 
                   onChange={(e) => handlePilihMetode(e.target.value)}
-                  className="w-full px-6 py-4 rounded-2xl border border-[#8B5E3C]/20 focus:outline-none focus:ring-2 focus:ring-[#D4956A]/50 bg-gray-50/50 shadow-sm font-judul font-bold text-lg text-[#4B2E1C] appearance-none cursor-pointer">
+                  className="w-full px-6 py-4 rounded-2xl border border-[#8B5E3C]/20 focus:outline-none focus:ring-2 focus:ring-[#8B5E3C]/50 bg-gray-50/50 shadow-sm font-judul font-bold text-lg text-[#4B2E1C] appearance-none cursor-pointer">
                   <option value="" disabled>Pilih metode seduh...</option>
                   {Object.keys(standarSeduh).map((alat) => (
                     <option key={alat} value={alat}>{alat}</option>
@@ -114,21 +112,21 @@ export default function JurnalBaruPage() {
                       <Coffee className="w-4.5 h-4.5" /> Kopi (g)
                     </span>
                     <input type="number" value={kopi || ""} onChange={(e) => hitungDariKopi(Number(e.target.value))}
-                      className="w-24 px-3 py-2 text-center rounded-xl border border-[#8B5E3C]/20 focus:outline-none focus:ring-2 focus:ring-[#D4956A] bg-white text-[#4B2E1C] font-black text-lg" />
+                      className="w-24 px-3 py-2 text-center rounded-xl border border-[#8B5E3C]/20 focus:outline-none focus:ring-2 focus:ring-[#8B5E3C] bg-white text-[#4B2E1C] font-black text-lg" />
                   </div>
                   <div className="flex items-center justify-between gap-4">
                     <span className="font-teks font-bold text-[#8B5E3C] flex items-center gap-2">
                       <Scale className="w-4.5 h-4.5" /> Rasio 1:
                     </span>
                     <input type="number" step="0.1" value={rasio || ""} onChange={(e) => hitungDariRasio(Number(e.target.value))}
-                      className="w-24 px-3 py-2 text-center rounded-xl border border-[#8B5E3C]/20 focus:outline-none focus:ring-2 focus:ring-[#D4956A] bg-white text-[#4B2E1C] font-black text-lg" />
+                      className="w-24 px-3 py-2 text-center rounded-xl border border-[#8B5E3C]/20 focus:outline-none focus:ring-2 focus:ring-[#8B5E3C] bg-white text-[#4B2E1C] font-black text-lg" />
                   </div>
                   <div className="flex items-center justify-between gap-4 pt-5 border-t border-[#8B5E3C]/10 mt-1">
                     <span className="font-teks font-bold text-[#D4956A] flex items-center gap-2">
                       <Droplets className="w-4.5 h-4.5" /> Air ({metode === 'Espresso' ? 'ml' : 'g'})
                     </span>
                     <input type="number" value={air || ""} onChange={(e) => hitungDariAir(Number(e.target.value))}
-                      className="w-24 px-3 py-2 text-center rounded-xl border-2 border-[#D4956A] focus:outline-none focus:ring-2 focus:ring-[#D4956A] bg-[#D4956A] text-white font-black text-lg" />
+                      className="w-24 px-3 py-2 text-center rounded-xl border-2 border-[#D4956A] focus:outline-none focus:ring-2 focus:ring-[#8B5E3C] bg-[#D4956A] text-white font-black text-lg" />
                   </div>
                 </div>
                 
@@ -147,7 +145,7 @@ export default function JurnalBaruPage() {
                 <Timer className="w-4 h-4 text-[#D4956A]" /> Catatan Rasa & Hasil
               </label>
               <textarea id="tastingNote" name="tastingNote" required placeholder="Gimana rasanya? Terlalu asam, pas, atau pahit? Catat profil rasa dominannya di sini..." 
-                className="w-full flex-1 p-6 rounded-3xl border border-[#8B5E3C]/20 focus:outline-none focus:ring-2 focus:ring-[#D4956A]/50 bg-gray-50/50 hover:bg-gray-50 focus:bg-white transition-all shadow-sm font-teks resize-none leading-relaxed text-lg placeholder:text-[#8B5E3C]/40 min-h-[300px]"></textarea>
+                className="w-full flex-1 p-6 rounded-3xl border border-[#8B5E3C]/20 focus:outline-none focus:ring-2 focus:ring-[#8B5E3C]/50 bg-gray-50/50 hover:bg-gray-50 focus:bg-white transition-all shadow-sm font-teks resize-none leading-relaxed text-lg placeholder:text-[#8B5E3C]/40 min-h-[300px]"></textarea>
             </div>
           </div>
 

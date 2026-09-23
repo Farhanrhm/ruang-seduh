@@ -10,9 +10,6 @@ import TombolHapus from "@/components/TombolHapus";
 export default async function JurnalPage() {
   const session = await getServerSession(authOptions);
 
-  // ==========================================
-  // 1. TAMPILAN PERINGATAN (JIKA BELUM LOGIN) 
-  // ==========================================
   if (!session?.user?.id) {
     return (
       <div className="min-h-[85vh] flex items-center justify-center bg-[#FDF6EE] px-4 py-12 relative overflow-hidden">
@@ -35,9 +32,6 @@ export default async function JurnalPage() {
     );
   }
 
-  // =====================================================================
-  // 2. TAMPILAN NORMAL (JIKA SUDAH LOGIN)
-  // =====================================================================
   
   const daftarJurnal = await prisma.brewJournal.findMany({
     where: { userId: session.user.id },

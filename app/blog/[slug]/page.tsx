@@ -168,9 +168,7 @@ export default async function BlogPostPage({
           <PortableText value={post.body} components={ptComponents} />
         </div>
 
-        {/* ======================================================== */}
         {/* BAGIAN KOMENTAR KOMPLEKS */}
-        {/* ======================================================== */}
         <div className="mt-20 pt-16 max-w-3xl mx-auto">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
             <div className="flex items-center gap-3">

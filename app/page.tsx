@@ -29,7 +29,7 @@ export default function Home() {
                 <div>
                   <h3 className="font-judul text-3xl font-bold text-[#4B2E1C] mb-3 group-hover:text-[#D4956A] transition-colors">Peta Kopi Nusantara</h3>
                   <p className="font-teks text-[#8B5E3C] leading-relaxed text-lg">
-                    Eksplorasi direktori biji kopi dari seluruh penjuru Indonesia. Temukan karakteristik unik dengan filter profil rasa yang detail untuk referensi seduhanmu.
+                    Katalog profil rasa biji kopi nusantara untuk referensi seduhanmu.
                   </p>
                 </div>
               </Link>
@@ -56,7 +56,7 @@ export default function Home() {
                 </div>
                 <h3 className="font-judul text-2xl font-bold text-[#4B2E1C] mb-3 group-hover:text-[#D4956A] transition-colors">Panduan Seduh</h3>
                 <p className="font-teks text-[#8B5E3C] leading-relaxed flex-1">
-                  Pelajari teknik manual brew dari dasar hingga mahir dengan langkah yang jelas.
+                  Panduan langkah demi langkah teknik manual brew untuk pemula hingga mahir.
                 </p>
               </Link>
             </ScrollReveal>
