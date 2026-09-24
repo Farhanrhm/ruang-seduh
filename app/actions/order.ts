@@ -7,7 +7,8 @@ import { z } from "zod";
 import type { CartItem } from "@/store/useCartStore";
 import { sanitizeErrorMessage } from "@/lib/sanitize";
 import { CheckoutSchema, type CheckoutOutput } from "@/lib/validations/checkout";
-import { snap } from "@/lib/midtrans";
+import { snap, coreApi } from "@/lib/midtrans";
+import { revalidatePath } from "next/cache";
 import { hitungOngkirBiteship } from "@/app/actions/biteship";
 
 export type BuatPesananResult =
@@ -189,3 +190,109 @@ export async function buatPesanan(
     return { success: false, error: sanitizeErrorMessage(error, "Gagal membuat pesanan. Silakan coba lagi.") };
   }
 }
+
+/**
+ * Server Action untuk sinkronisasi paksa pesanan PENDING yang melampaui buffer 65 menit.
+ * Memanggil API Midtrans (Single Source of Truth) untuk menghindari race conditions.
+ */
+export async function syncPendingOrders(): Promise<{ success: boolean; message: string }> {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) {
+    return { success: false, message: "Unauthorized" };
+  }
+
+  try {
+    // Cari pesanan PENDING yang usianya lebih dari 65 menit
+    const expireThreshold = new Date(Date.now() - 65 * 60 * 1000);
+    
+    const pendingOrders = await prisma.order.findMany({
+      where: {
+        userId: session.user.id,
+        status: "PENDING",
+        createdAt: { lt: expireThreshold }
+      },
+      include: {
+        items: true,
+      }
+    });
+
+    if (pendingOrders.length === 0) {
+      return { success: true, message: "No expired pending orders found." };
+    }
+
+    let updatedCount = 0;
+
+    for (const order of pendingOrders) {
+      try {
+        // Cek status real-time ke Midtrans
+        const statusResponse = await coreApi.transaction.status(order.id);
+        const transactionStatus = statusResponse.transaction_status;
+        const fraudStatus = statusResponse.fraud_status;
+
+        let finalStatus: "PAID" | "PENDING" | "CANCELLED" | null = null;
+
+        if (transactionStatus === "capture") {
+          finalStatus = fraudStatus === "accept" ? "PAID" : "PENDING";
+        } else if (transactionStatus === "settlement") {
+          finalStatus = "PAID";
+        } else if (
+          transactionStatus === "cancel" ||
+          transactionStatus === "deny" ||
+          transactionStatus === "expire"
+        ) {
+          finalStatus = "CANCELLED";
+        }
+
+        if (finalStatus === "CANCELLED") {
+          await prisma.order.update({
+            where: { id: order.id },
+            data: { status: "CANCELLED" }
+          });
+          // Note: Kita tidak me-restore stok di sini karena saat PENDING stok belum dikurangi.
+          updatedCount++;
+        } else if (finalStatus === "PAID") {
+          // Kasus race condition di mana webhook gagal masuk tapi aslinya sudah dibayar
+          await prisma.$transaction(async (tx) => {
+            await tx.order.update({
+              where: { id: order.id },
+              data: { status: "PAID" }
+            });
+
+            for (const item of order.items) {
+              await tx.product.update({
+                where: { id: item.productId },
+                data: { stock: { decrement: item.quantity } }
+              });
+            }
+          });
+          updatedCount++;
+        }
+
+      } catch (err: any) {
+        // Jika API Midtrans mereturn 404, artinya user membuat order tapi tidak pernah meneruskan token
+        // ke popup Midtrans, jadi Midtrans belum mencatatnya.
+        // Dalam kasus ini, karena sudah 65 menit, kita anggap CANCELLED.
+        const errorMessage = err?.message || err?.ApiResponse?.status_message || "";
+        if (errorMessage.includes("404") || errorMessage.includes("not found")) {
+          await prisma.order.update({
+            where: { id: order.id },
+            data: { status: "CANCELLED" }
+          });
+          updatedCount++;
+        } else {
+          console.error(`Gagal mengecek status Midtrans untuk order ${order.id}:`, err);
+        }
+      }
+    }
+
+    if (updatedCount > 0) {
+      revalidatePath("/profil/pesanan");
+    }
+
+    return { success: true, message: `Synced ${updatedCount} orders.` };
+  } catch (error) {
+    console.error("[syncPendingOrders] Error:", error);
+    return { success: false, message: "Internal server error during sync." };
+  }
+}
+
