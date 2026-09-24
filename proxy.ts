@@ -1,6 +1,9 @@
 import withAuth from "next-auth/middleware";
 
 export default withAuth({
+  pages: {
+    signIn: "/masuk",
+  },
   callbacks: {
     authorized: ({ token }) => !!token,
   },

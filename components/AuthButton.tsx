@@ -44,7 +44,7 @@ export default function AuthButton() {
   // Jika sedang mengecek sesi (loading), tampilkan skeleton lingkaran
   if (status === "loading") {
     return (
-      <div className="h-10 w-10 rounded-full bg-[#8B5E3C]/10 animate-pulse border border-[#8B5E3C]/5" />
+      <div className="h-9 w-[88px] rounded-full bg-[#8B5E3C]/10 animate-pulse border border-[#8B5E3C]/5" />
     );
   }
 
@@ -150,7 +150,7 @@ export default function AuthButton() {
             {/* Footer / Keluar */}
             <div className="p-2 border-t border-[#8B5E3C]/10">
               <button 
-                onClick={() => { closeMenu(); signOut(); }}
+                onClick={() => { closeMenu(); signOut({ callbackUrl: '/' }); }}
                 className="group flex w-full items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors focus:outline-none focus:bg-red-50"
                 role="menuitem"
               >

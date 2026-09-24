@@ -5,6 +5,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Providers from "@/components/Providers"; 
 import CartDrawerWrapper from "@/components/CartDrawerWrapper";
+import ScrollToTop from "@/components/ScrollToTop";
 import { Toaster } from 'react-hot-toast';
 
 const lora = Lora({ 
@@ -38,6 +39,7 @@ export default function RootLayout({
           <main>{children}</main>
           <Footer />
           <CartDrawerWrapper />
+          <ScrollToTop />
         </Providers>
       </body>
     </html>

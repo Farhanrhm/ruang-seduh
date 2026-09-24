@@ -30,10 +30,19 @@ export default function Navbar() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Cegah scroll body saat mobile menu terbuka
+  // Cegah scroll body saat mobile menu terbuka, dan tambahkan deteksi ESC
   useEffect(() => {
-    document.body.style.overflow = isMobileMenuOpen ? "hidden" : "";
-    return () => { document.body.style.overflow = ""; };
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = "hidden";
+      const handleEscape = (e: KeyboardEvent) => {
+        if (e.key === "Escape") setIsMobileMenuOpen(false);
+      };
+      window.addEventListener("keydown", handleEscape);
+      return () => {
+        document.body.style.overflow = "";
+        window.removeEventListener("keydown", handleEscape);
+      };
+    }
   }, [isMobileMenuOpen]);
 
   // Scroll shadow — muncul setelah 60px (MOTION 2: navbar bereaksi terhadap konten)
@@ -101,12 +110,13 @@ export default function Navbar() {
 
               {/* Tombol Hamburger Mobile */}
               <button
-                aria-label={isMobileMenuOpen ? "Tutup Menu" : "Buka Menu"}
+                aria-label={isMobileMenuOpen ? "Tutup Menu Utama" : "Buka Menu Utama"}
                 aria-expanded={isMobileMenuOpen}
-                onClick={() => setIsMobileMenuOpen((prev) => !prev)}
-                className="md:hidden hover:text-[#A9683C] transition-colors"
+                aria-controls="mobile-nav-drawer"
+                onClick={() => setIsMobileMenuOpen(true)}
+                className="md:hidden hover:text-[#A9683C] transition-colors focus:outline-none focus:ring-2 focus:ring-[#8B5E3C] rounded-md"
               >
-                {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                <Menu className="h-6 w-6" />
               </button>
             </div>
 
@@ -114,43 +124,67 @@ export default function Navbar() {
         </div>
       </header>
 
-      {/* Mobile Menu Overlay */}
-      {isMobileMenuOpen && (
-        <div
-          className="fixed inset-0 z-40 bg-[#FDF6EE] flex flex-col pt-24 pb-10 px-8 md:hidden"
-          role="dialog"
-          aria-label="Menu navigasi"
-        >
-          <div className="flex flex-col items-center justify-center mb-8 pb-8 border-b border-[#8B5E3C]/10">
-            <Image 
-              src="/logo-clear.png" 
-              alt="Logo Ruang Seduh Kopi Spesialis" 
-              width={300} 
-              height={100} 
-              className="h-16 w-auto object-contain drop-shadow-sm mb-4"
-            />
-          </div>
-          <nav className="flex flex-col gap-6">
-            {NAV_LINKS.map((link) => {
-              const isActive =
-                pathname === link.href ||
-                (link.href !== "/" && pathname.startsWith(link.href));
-              return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className={`font-judul text-3xl font-black transition-colors border-b border-[#8B5E3C]/10 pb-5 ${
-                    isActive ? "text-[#D4956A]" : "text-[#4B2E1C] hover:text-[#A9683C]"
-                  }`}
-                >
-                  {link.label}
-                </Link>
-              );
-            })}
-          </nav>
+      {/* Mobile Menu Backdrop */}
+      <div
+        className={`fixed inset-0 bg-[#4B2E1C]/40 backdrop-blur-sm z-[60] transition-opacity duration-500 md:hidden ${
+          isMobileMenuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+        }`}
+        onClick={() => setIsMobileMenuOpen(false)}
+        aria-hidden="true"
+      />
+
+      {/* Mobile Menu Side-Drawer */}
+      <div
+        id="mobile-nav-drawer"
+        className={`fixed inset-y-0 right-0 w-4/5 max-w-sm bg-[#FDF6EE] shadow-2xl z-[70] flex flex-col transition-transform duration-500 ease-[0.22,1,0.36,1] md:hidden ${
+          isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
+        } ${!isMobileMenuOpen ? "pointer-events-none" : ""}`}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Menu Utama"
+        style={{ paddingTop: 'max(env(safe-area-inset-top), 1.5rem)' }}
+      >
+        {/* Header Drawer */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#8B5E3C]/10">
+          <Image 
+            src="/logo-clear.png" 
+            alt="Logo Ruang Seduh Kopi Spesialis" 
+            width={120} 
+            height={40} 
+            className="h-8 w-auto object-contain drop-shadow-sm"
+          />
+          <button
+            onClick={() => setIsMobileMenuOpen(false)}
+            aria-label="Tutup Menu Utama"
+            className="p-2 text-[#8B5E3C] hover:bg-[#8B5E3C]/10 rounded-xl transition-all focus:outline-none focus:ring-2 focus:ring-[#8B5E3C]"
+          >
+            <X className="w-6 h-6" />
+          </button>
         </div>
-      )}
+
+        {/* List Navigasi */}
+        <nav className="flex flex-col gap-2 px-6 py-8 overflow-y-auto">
+          {NAV_LINKS.map((link) => {
+            const isActive =
+              pathname === link.href ||
+              (link.href !== "/" && pathname.startsWith(link.href));
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={() => setIsMobileMenuOpen(false)}
+                className={`font-judul text-2xl font-black transition-all border-b border-[#8B5E3C]/5 py-4 ${
+                  isActive 
+                    ? "text-[#D4956A] translate-x-2" 
+                    : "text-[#4B2E1C] hover:text-[#A9683C] hover:translate-x-2"
+                }`}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
+        </nav>
+      </div>
     </>
   );
 }

@@ -40,7 +40,7 @@ export default function CartDrawer() {
     <>
       {/* Backdrop — fade-in/out bersamaan dengan slide drawer */}
       <div
-        className={`fixed inset-0 bg-[#4B2E1C]/40 backdrop-blur-sm z-50 transition-opacity duration-300 ${
+        className={`fixed inset-0 bg-[#4B2E1C]/40 backdrop-blur-sm z-[60] transition-opacity duration-300 ${
           isVisible ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
         }`}
         onClick={handleClose}
@@ -49,7 +49,7 @@ export default function CartDrawer() {
 
       {/* Drawer Panel — slide dari kanan */}
       <div
-        className={`fixed inset-y-0 right-0 w-full sm:w-[400px] bg-[#FDF6EE] shadow-2xl z-50 flex flex-col transition-transform duration-300 ease-in-out ${
+        className={`fixed inset-y-0 right-0 w-full sm:w-[400px] bg-[#FDF6EE] shadow-2xl z-[60] flex flex-col transition-transform duration-300 ease-in-out ${
           isVisible ? "translate-x-0" : "translate-x-full"
         }`}
         role="dialog"
@@ -77,10 +77,21 @@ export default function CartDrawer() {
         {/* Isi Keranjang */}
         <div className="flex-1 overflow-y-auto p-6 space-y-4">
           {items.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full text-center opacity-70">
-              <ShoppingBag className="w-16 h-16 text-[#8B5E3C]/30 mb-4" />
-              <p className="font-judul text-xl font-bold text-[#4B2E1C] mb-2">Keranjang Kosong</p>
-              <p className="font-teks text-sm text-[#8B5E3C]">Yuk, eksplorasi biji kopi terbaik kami!</p>
+            <div className="flex flex-col items-center justify-center h-full text-center px-4">
+              <div className="w-24 h-24 bg-[#FDF6EE] rounded-full flex items-center justify-center mb-6 shadow-inner border border-[#8B5E3C]/10">
+                <ShoppingBag className="w-10 h-10 text-[#D4956A]" />
+              </div>
+              <p className="font-judul text-2xl font-black text-[#4B2E1C] mb-3">Keranjang Masih Kosong</p>
+              <p className="font-teks text-[#8B5E3C] leading-relaxed mb-8">
+                Belum ada biji kopi yang kamu pilih. Yuk, mulai jelajahi koleksi kopi terbaik kami untuk menemani hari-harimu!
+              </p>
+              <Link 
+                href="/toko" 
+                onClick={closeCart}
+                className="w-full sm:w-auto px-8 py-3.5 bg-[#4B2E1C] text-[#FDF6EE] rounded-xl font-bold hover:bg-[#8B5E3C] transition-all shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-[#8B5E3C] focus:ring-offset-2"
+              >
+                Mulai Belanja
+              </Link>
             </div>
           ) : (
             items.map((item: any, index: number) => (
