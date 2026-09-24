@@ -44,7 +44,7 @@ export default function HeroCTA() {
 
       <Link
         href="/panduan"
-        className="px-8 py-4 bg-transparent text-[#FDF6EE] border-2 border-white/20 rounded-2xl font-black text-lg hover:bg-white/10 transition-all"
+        className="px-8 py-4 bg-white/10 backdrop-blur-sm text-[#FDF6EE] border-2 border-white/40 rounded-2xl font-black text-lg hover:bg-white/20 hover:border-white/70 transition-all active:scale-95 focus-visible:ring-2 focus-visible:ring-white"
       >
         Pelajari Teknik
       </Link>

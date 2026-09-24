@@ -113,7 +113,15 @@ export default async function PanduanPage() {
             )}
           </div>
         ) : (
-          <p className="text-center text-[#8B5E3C] italic mt-10">Belum ada panduan yang tersedia saat ini.</p>
+          <div className="bg-white py-20 px-6 rounded-[2.5rem] text-center border border-[#8B5E3C]/10 shadow-sm flex flex-col items-center mt-10 max-w-3xl mx-auto">
+            <div className="w-24 h-24 bg-[#FDF6EE] text-[#D4956A] rounded-full flex items-center justify-center mb-8 shadow-inner border border-[#8B5E3C]/5">
+              <BookOpen className="w-12 h-12" />
+            </div>
+            <h3 className="font-judul text-3xl font-bold text-[#4B2E1C] mb-4">Belum Ada Panduan</h3>
+            <p className="font-teks text-base text-[#8B5E3C] max-w-md mx-auto leading-relaxed">
+              Panduan teknik seduh belum tersedia untuk saat ini. Kami sedang menyiapkan konten berkualitas untuk Anda.
+            </p>
+          </div>
         )}
       </div>
     </div>

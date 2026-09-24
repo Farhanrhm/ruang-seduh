@@ -63,7 +63,7 @@ export default function ProductCard({ product }: { product: any }) {
           </div>
         )}
 
-        <div className="absolute top-4 left-4 bg-white px-3.5 py-1.5 rounded-full text-[9px] font-black text-[#8B5E3C] uppercase tracking-widest shadow-sm border border-[#8B5E3C]/10">
+        <div className="absolute top-4 left-4 bg-black/30 backdrop-blur-sm text-white px-3.5 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest shadow-sm border border-white/10">
           {product.category || "PRODUK"}
         </div>
       </div>
@@ -114,7 +114,7 @@ export default function ProductCard({ product }: { product: any }) {
             className={`w-full py-3.5 rounded-2xl font-bold transition-all duration-300 flex items-center justify-center gap-2 text-sm shadow-sm border-2 ${
               isAdded
                 ? "bg-[#4A7C59] text-white border-[#4A7C59] scale-[0.98]"
-                : "bg-[#FDF6EE] text-[#4B2E1C] border-[#8B5E3C]/10 hover:bg-[#4B2E1C] hover:text-[#FDF6EE] hover:border-[#4B2E1C]"
+                : "bg-[#FDF6EE] text-[#4B2E1C] border-[#8B5E3C]/10 hover:bg-[#4B2E1C] hover:text-[#FDF6EE] hover:border-[#4B2E1C] active:scale-95"
             }`}
           >
             {isAdded ? (
