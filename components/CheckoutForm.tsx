@@ -131,7 +131,11 @@ export default function CheckoutForm({ prefillData }: { prefillData: { name: str
     setValue("provinsi", area.administrative_division_level_1_name, { shouldValidate: true });
     setValue("kota", area.administrative_division_level_2_name, { shouldValidate: true });
     setValue("kecamatan", area.administrative_division_level_3_name, { shouldValidate: true });
-    setValue("kodepos", area.postal_code.toString(), { shouldValidate: true });
+    
+    // Cerdas: Jika postal_code kosong, coba ekstrak 5 digit angka dari area.name (seperti "Kiaracondong... 40283")
+    const extractedPostal = area.name.match(/\b\d{5}\b/);
+    const finalPostalCode = area.postal_code ? area.postal_code.toString() : (extractedPostal ? extractedPostal[0] : "00000");
+    setValue("kodepos", finalPostalCode, { shouldValidate: true });
     
     setSearchQuery(area.name);
     setIsDropdownOpen(false);
