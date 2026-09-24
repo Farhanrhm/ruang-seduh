@@ -43,12 +43,12 @@ export default async function ProfilPage() {
               <Image src={session.user.image} alt="Profil" width={96} height={96} className="object-cover h-full w-full" />
             ) : (
               <div className="h-full w-full bg-[#8B5E3C]/10 flex items-center justify-center font-bold text-[#4B2E1C] text-3xl">
-                {session.user.name?.[0] || "U"}
+                {(user?.name || session.user.name)?.[0] || "U"}
               </div>
             )}
           </div>
           <div>
-            <h1 className="font-judul text-2xl sm:text-3xl font-bold text-[#4B2E1C] mb-1">{session.user.name}</h1>
+            <h1 className="font-judul text-2xl sm:text-3xl font-bold text-[#4B2E1C] mb-1">{user?.name || session.user.name}</h1>
             <p className="font-teks text-sm text-[#8B5E3C] mb-2">{session.user.email}</p>
             <span className="inline-block px-3 py-1 bg-[#4B2E1C] text-[#FDF6EE] text-[10px] font-bold uppercase tracking-widest rounded-md">
               Member Ruang Seduh
