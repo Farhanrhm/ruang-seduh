@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { isValidSignature, SIGNATURE_HEADER_NAME } from "@sanity/webhook";
+import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import type { Category } from "@prisma/client";
 
@@ -54,6 +55,9 @@ export async function POST(req: Request) {
         where: { sanityId: _id },
         data: { isActive: false },
       });
+      revalidatePath("/toko");
+      revalidatePath(`/toko/${slug}`);
+      revalidatePath("/");
       return NextResponse.json({ success: true, message: "Product deactivated" });
     }
 
@@ -88,6 +92,10 @@ export async function POST(req: Request) {
         isActive: true,
       },
     });
+
+    revalidatePath("/toko");
+    revalidatePath(`/toko/${slug}`);
+    revalidatePath("/");
 
     return NextResponse.json({ success: true, message: "Product synced" });
   } catch (error) {
