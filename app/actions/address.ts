@@ -69,7 +69,7 @@ export async function tambahAlamat(data: AddressInput) {
   } catch (error) {
     console.error("[tambahAlamat] Error:", error);
     if (error instanceof z.ZodError) {
-      return { success: false, error: error.errors?.[0]?.message || "Data alamat tidak valid." };
+      return { success: false, error: (error as any).errors?.[0]?.message || "Data alamat tidak valid." };
     }
     return { success: false, error: "Gagal menyimpan alamat. Silakan coba lagi." };
   }
@@ -141,7 +141,7 @@ export async function editAlamat(data: EditAddressInput) {
   } catch (error) {
     console.error("[editAlamat] Error:", error);
     if (error instanceof z.ZodError) {
-      return { success: false, error: error.errors?.[0]?.message || "Data alamat tidak valid." };
+      return { success: false, error: (error as any).errors?.[0]?.message || "Data alamat tidak valid." };
     }
     return { success: false, error: "Gagal mengubah alamat. Silakan coba lagi." };
   }
