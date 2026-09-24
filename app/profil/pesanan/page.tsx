@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import Script from "next/script";
 import OrderListWithTabs from "@/components/order/OrderListWithTabs";
+import OrderSyncTrigger from "@/components/order/OrderSyncTrigger";
 import { Package, ShoppingBag } from "lucide-react";
 import Link from "next/link";
 
@@ -60,6 +61,9 @@ export default async function PesananPage() {
         strategy="lazyOnload"
       />
       
+      {/* Pemicu sinkronisasi asinkron (siluman) untuk membatalkan order kedaluwarsa via Midtrans API */}
+      <OrderSyncTrigger />
+
       <div className="flex items-center justify-between pb-2 border-b border-[#8B5E3C]/10">
         <h2 className="font-judul text-2xl font-bold text-[#4B2E1C] flex items-center gap-3">
           <Package className="w-6 h-6 text-[#D4956A]" /> Riwayat Pesanan
