@@ -57,3 +57,7 @@ Claude.md
 
 # kiro
 .kiro/
+
+# Sanity Seed Data
+*.ndjson
+
