@@ -1,6 +1,6 @@
 <div align="center">
   <img src="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/coffee.svg" alt="Ruang Seduh Logo" width="120" height="120" />
-  <h1>☕ Ruang Seduh</h1>
+  <h1>Ruang Seduh</h1>
   <p><strong>Platform Eksplorasi & Jurnal Kopi Digital Nusantara.</strong></p>
   
   <p>
@@ -11,43 +11,43 @@
   </p>
 </div>
 
-Ruang Seduh adalah aplikasi web modern yang dirancang khusus untuk para pecinta kopi (*Home Brewers*) di Indonesia. Dari mencatat resep seduhan harian, mengeksplorasi biji kopi Nusantara, hingga belajar teknik *manual brew* yang presisi.
+Ruang Seduh adalah aplikasi web untuk para pembuat kopi rumahan di Indonesia. Aplikasi ini menyediakan alat untuk mencatat resep seduhan harian, mengeksplorasi biji kopi, dan membaca panduan teknik seduh manual.
 
 ---
 
-## ✨ Fitur Utama
+## Fitur Utama
 
-- 🛒 **Katalog Toko Kopi:** Beli biji kopi pilihan (Lokal & Impor) dengan detail *Roast Level*, *Process*, dan *Tasting Notes*.
-- 📝 **Jurnal Seduh Personal:** Kalkulator rasio bawaan (*Smart Presets*) untuk mencatat eksperimen (rasio, suhu, alat, dan catatan rasa). Dilengkapi *Empty State* dan UI kelas *enterprise*.
-- 📖 **Panduan Seduh Interaktif:** Tutorial *step-by-step* berbagai metode seduh yang dikelola secara dinamis via Sanity CMS.
-- 💬 **Ruang Diskusi:** Berinteraksi dengan komunitas melalui sistem komentar bersarang (*Nested Comments*) yang mendukung *Like*, *Replies*, serta fitur *Moderasi Admin*.
-- 💳 **Checkout Seamless:** Pengalaman belanja mulus dengan keranjang (*Zustand state*) dan notifikasi *Invoice* otomatis ke email melalui Resend.
-- 🎨 **UI/UX Premium:** Antarmuka responsif dengan desain *glassmorphism* dan palet warna bumi (krem/cokelat) yang nyaman di mata.
+- Beli biji kopi (lokal maupun impor) dengan informasi tingkat sangrai, proses pengolahan, dan catatan rasa.
+- Catat rasio, suhu, alat, dan hasil seduhan harian menggunakan kalkulator rasio bawaan.
+- Baca panduan langkah demi langkah untuk berbagai metode seduh.
+- Berdiskusi dengan pengguna lain melalui sistem komentar berbalas yang mendukung fitur suka dan moderasi.
+- Belanja biji kopi melalui keranjang belanja dengan pengiriman faktur otomatis ke email.
+- Akses aplikasi melalui ponsel atau komputer dengan antarmuka yang menyesuaikan ukuran layar.
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 - **Core:** Next.js 15 (App Router), React 19, TypeScript
-- **Styling:** Tailwind CSS, Lucide Icons, Framer Motion (opsional)
+- **Styling:** Tailwind CSS, Lucide Icons
 - **Database & ORM:** PostgreSQL, Prisma Client
 - **Headless CMS:** Sanity.io
 - **Autentikasi:** NextAuth.js
-- **Form & UX:** `react-textarea-autosize`, Server Actions (`useFormStatus`)
+- **Form:** react-textarea-autosize, Server Actions (useFormStatus)
 - **Email:** Resend API
 - **State Management:** Zustand
 
 ---
 
-## 🚀 Memulai Proyek Secara Lokal
+## Memulai Proyek Secara Lokal
 
 Ikuti langkah-langkah di bawah ini untuk menjalankan Ruang Seduh di komputer Anda.
 
 ### 1. Prasyarat
-- Node.js 18+ atau versi lebih baru
+- Node.js 18 atau versi lebih baru
 - npm, yarn, atau pnpm
-- Akun PostgreSQL (misal: Supabase, Vercel Postgres, atau lokal)
-- Akun Sanity (untuk mengelola konten artikel)
+- Basis data PostgreSQL (Supabase, Vercel Postgres, atau lokal)
+- Akun Sanity untuk mengelola konten artikel
 
 ### 2. Kloning Repositori & Instalasi
 ```bash
@@ -56,32 +56,27 @@ cd ruang-seduh
 npm install
 ```
 
-### 3. Pengaturan *Environment Variables*
-Buat file `.env` dan `.env.local` di *root directory*. Lihat contoh format variabel yang dibutuhkan di file `.env.example` (jika ada), atau pastikan Anda memiliki kunci untuk:
+### 3. Pengaturan Environment Variables
+Buat file konfigurasi environment di direktori utama. Anda membutuhkan kunci untuk:
 - `DATABASE_URL`
-- rahasia *NextAuth* (`NEXTAUTH_SECRET`, `NEXTAUTH_URL`)
-- *Credentials* Resend (`RESEND_API_KEY`)
-- *Credentials* Sanity (`NEXT_PUBLIC_SANITY_PROJECT_ID`, `NEXT_PUBLIC_SANITY_DATASET`)
+- `NEXTAUTH_SECRET` dan `NEXTAUTH_URL`
+- `RESEND_API_KEY`
+- `NEXT_PUBLIC_SANITY_PROJECT_ID` dan `NEXT_PUBLIC_SANITY_DATASET`
 
-### 4. Setup Database (Prisma)
+### 4. Setup Database
 Sinkronkan skema database Anda:
 ```bash
 npx prisma db push
 npx prisma generate
 ```
 
-### 5. Jalankan *Development Server*
+### 5. Jalankan Development Server
 ```bash
 npm run dev
 ```
-Aplikasi sekarang berjalan di [http://localhost:3000](http://localhost:3000).
+Aplikasi sekarang berjalan di http://localhost:3000.
 
 ---
 
-## 🤝 Kontribusi
-Kami menyambut kontribusi dari komunitas pecinta kopi! Jika Anda menemukan kutu (*bug*) atau memiliki ide fitur baru, silakan buka *Issue* atau kirimkan *Pull Request*.
-
-<div align="center">
-  <p>Dibuat dengan 🤎 untuk Home Brewers Indonesia.</p>
-</div>
-
+## Kontribusi
+Jika Anda menemukan masalah (bug) atau memiliki kode perbaikan, silakan buka Issue atau kirimkan Pull Request.
