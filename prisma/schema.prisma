@@ -87,8 +87,11 @@ model BrewJournal {
   coffeeBean  String
   brewMethod  String
   ratio       String
+  waterTemp   Int?
+  grindSize   String?
+  brewTime    Int?
+  starRating  Int?
   tastingNote String?
-  rating      Rating   @default(NEEDS_IMPROVEMENT)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -193,11 +196,7 @@ enum Role {
   ADMIN
 }
 
-enum Rating {
-  SUCCESS
-  COULD_BE_BETTER
-  NEEDS_IMPROVEMENT
-}
+
 
 enum Category {
   BEANS

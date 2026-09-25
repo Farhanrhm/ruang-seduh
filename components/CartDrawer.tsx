@@ -100,8 +100,12 @@ export default function CartDrawer() {
                 className="cart-item-enter flex gap-4 bg-white p-4 rounded-2xl border border-[#8B5E3C]/10 shadow-sm"
                 style={{ animationDelay: `${50 + index * 60}ms` }}
               >
-                <div className="relative w-20 h-20 rounded-xl overflow-hidden bg-[#FDF6EE] flex-shrink-0">
-                  <Image src={item.image} alt={item.name} fill sizes="80px" className="object-cover" />
+                <div className="relative w-20 h-20 rounded-xl overflow-hidden bg-[#FDF6EE] flex-shrink-0 flex items-center justify-center border border-[#8B5E3C]/10">
+                  {item.image ? (
+                    <Image src={item.image} alt={item.name} fill sizes="80px" className="object-cover" />
+                  ) : (
+                    <ShoppingBag className="w-8 h-8 text-[#D4956A]/50" />
+                  )}
                 </div>
                 <div className="flex-1 flex flex-col justify-between">
                   <div className="flex justify-between items-start gap-2">

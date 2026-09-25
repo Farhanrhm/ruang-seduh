@@ -3,7 +3,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import Image from "next/image"; 
-import { Coffee, Calendar, BarChart3, Plus, Compass, LogIn, Edit, ChevronRight } from "lucide-react";
+import { Coffee, Calendar, BarChart3, Plus, Compass, LogIn, Edit, ChevronRight, Timer } from "lucide-react";
 import TombolLogin from "@/components/TombolLogin"; 
 import TombolHapus from "@/components/TombolHapus";
 
@@ -71,13 +71,15 @@ export default async function JurnalPage() {
                   <div className="p-3 bg-[#FDF6EE] rounded-2xl group-hover:bg-[#D4956A] transition-colors duration-300">
                     <Coffee className="w-6 h-6 text-[#8B5E3C] group-hover:text-white transition-colors duration-300" />
                   </div>
-                  <span className={`text-[10px] font-black uppercase tracking-wider px-3 py-1.5 rounded-full border shadow-sm ${
-                    jurnal.rating === 'SUCCESS' ? 'bg-green-50 text-green-700 border-green-200' : 
-                    jurnal.rating === 'COULD_BE_BETTER' ? 'bg-yellow-50 text-yellow-700 border-yellow-200' : 
-                    'bg-red-50 text-red-700 border-red-200'
-                  }`}>
-                    {jurnal.rating.replace(/_/g, ' ')}
-                  </span>
+                  {jurnal.starRating ? (
+                    <span className="text-[10px] font-black uppercase tracking-wider px-3 py-1.5 rounded-full border shadow-sm bg-yellow-50 text-yellow-700 border-yellow-200 flex items-center gap-1">
+                      {jurnal.starRating} BINTANG
+                    </span>
+                  ) : (
+                    <span className="text-[10px] font-black uppercase tracking-wider px-3 py-1.5 rounded-full border shadow-sm bg-gray-50 text-gray-500 border-gray-200">
+                      BELUM DINILAI
+                    </span>
+                  )}
                 </div>
 
                 {/* Info Utama */}
@@ -94,13 +96,34 @@ export default async function JurnalPage() {
                     <span className="font-teks text-xs font-bold bg-[#FDF6EE] text-[#8B5E3C] px-2.5 py-1.5 rounded-lg border border-[#8B5E3C]/5">
                       Rasio {jurnal.ratio}
                     </span>
+                    {jurnal.waterTemp && (
+                      <span className="font-teks text-xs font-bold bg-[#FDF6EE] text-[#8B5E3C] px-2.5 py-1.5 rounded-lg border border-[#8B5E3C]/5">
+                        {jurnal.waterTemp}°C
+                      </span>
+                    )}
+                    {jurnal.grindSize && (
+                      <span className="font-teks text-xs font-bold bg-[#FDF6EE] text-[#8B5E3C] px-2.5 py-1.5 rounded-lg border border-[#8B5E3C]/5">
+                        {jurnal.grindSize}
+                      </span>
+                    )}
+                    {jurnal.brewTime && (
+                      <span className="font-teks text-xs font-bold bg-[#FDF6EE] text-[#8B5E3C] px-2.5 py-1.5 rounded-lg border border-[#8B5E3C]/5">
+                        {Math.floor(jurnal.brewTime / 60)}:{(jurnal.brewTime % 60).toString().padStart(2, '0')}
+                      </span>
+                    )}
                   </div>
                   
                   {/* Catatan Rasa (Tasting Note) */}
                   <div className="relative">
-                    <p className="font-teks text-[#8B5E3C] text-sm italic line-clamp-3 leading-relaxed">
-                      "{jurnal.tastingNote}"
-                    </p>
+                    <details className="group/details">
+                      <summary className="font-teks text-sm font-bold text-[#D4956A] cursor-pointer flex items-center justify-between [&::-webkit-details-marker]:hidden select-none border border-[#8B5E3C]/10 px-3 py-2 rounded-xl bg-gray-50/50 hover:bg-[#FDF6EE] transition-colors">
+                        <span className="flex items-center gap-2"><Timer className="w-4 h-4"/> Catatan Rasa & Hasil</span>
+                        <ChevronRight className="w-4 h-4 group-open/details:rotate-90 transition-transform duration-200" />
+                      </summary>
+                      <p className="font-teks text-[#8B5E3C] text-sm italic leading-relaxed p-3 mt-2 bg-white border border-[#8B5E3C]/10 rounded-xl shadow-inner whitespace-pre-wrap">
+                        "{jurnal.tastingNote}"
+                      </p>
+                    </details>
                   </div>
                 </div>
 
@@ -115,9 +138,6 @@ export default async function JurnalPage() {
                     <TombolHapus id={jurnal.id} />
                     <Link href={`/jurnal/${jurnal.id}/edit`} className="p-2 text-[#8B5E3C] hover:text-[#D4956A] hover:bg-[#FDF6EE] rounded-xl transition-all" title="Edit Jurnal">
                       <Edit className="w-4 h-4" />
-                    </Link>
-                    <Link href={`/jurnal/${jurnal.id}`} className="ml-1 flex items-center justify-center p-2 bg-[#FDF6EE] text-[#D4956A] hover:bg-[#D4956A] hover:text-white rounded-xl transition-all group/btn" title="Lihat Detail">
-                      <ChevronRight className="w-4 h-4 group-hover/btn:translate-x-0.5 transition-transform" />
                     </Link>
                   </div>
                 </div>

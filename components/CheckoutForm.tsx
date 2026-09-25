@@ -18,6 +18,7 @@ import Script from "next/script";
 export default function CheckoutForm({ prefillData }: { prefillData: { name: string; email: string } }) {
   const { items, clearCart, updateQuantity, updateGrindSize, removeItem } = useCartStore();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const isSubmittingRef = useRef(false);
   const router = useRouter();
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -201,16 +202,22 @@ export default function CheckoutForm({ prefillData }: { prefillData: { name: str
   const isGrindSizeIncomplete = items.some(item => item.grindOptions && item.grindOptions.length > 0 && !item.grindSize);
 
   const onSubmit = async (data: CheckoutOutput) => {
+    if (isSubmittingRef.current) return;
+    isSubmittingRef.current = true;
     setIsSubmitting(true);
     
-    // Idempotency key dihasilkan di sisi client
-    const idempotencyKey = crypto.randomUUID();
+    // Idempotency key dihasilkan di sisi client (dengan fallback untuk browser tanpa crypto.randomUUID)
+    const idempotencyKey = typeof crypto !== 'undefined' && crypto.randomUUID 
+      ? crypto.randomUUID() 
+      : Date.now().toString(36) + Math.random().toString(36).substring(2);
 
     try {
       const result = await buatPesanan(data, items, idempotencyKey);
 
       if (!result.success) {
         toast.error(result.error || "Gagal memproses pesanan.");
+        isSubmittingRef.current = false;
+        setIsSubmitting(false);
       } else {
         // Trigger Midtrans Snap Popup
         if (result.snapToken && (window as any).snap) {
@@ -218,31 +225,42 @@ export default function CheckoutForm({ prefillData }: { prefillData: { name: str
             onSuccess: function (midtransResult: any) {
               clearCart();
               localStorage.removeItem("checkout_draft");
+              isSubmittingRef.current = false;
+              setIsSubmitting(false);
               router.push(`/checkout/sukses?order_id=${result.orderId}`);
             },
             onPending: function (midtransResult: any) {
               clearCart();
               localStorage.removeItem("checkout_draft");
               toast.success("Pesanan dibuat. Silakan selesaikan pembayaran.", { duration: 5000 });
+              isSubmittingRef.current = false;
+              setIsSubmitting(false);
               router.push(`/profil`); // Idealnya ke halaman detail pesanan
             },
             onError: function (midtransResult: any) {
               toast.error("Pembayaran gagal diproses oleh Midtrans.");
+              isSubmittingRef.current = false;
+              setIsSubmitting(false);
             },
             onClose: function () {
               toast.error("Anda menutup jendela pembayaran.");
               clearCart();
               localStorage.removeItem("checkout_draft");
+              isSubmittingRef.current = false;
+              setIsSubmitting(false);
               router.push(`/profil`);
             }
           });
         } else {
           toast.error("Midtrans Snap belum siap.");
+          isSubmittingRef.current = false;
+          setIsSubmitting(false);
         }
       }
-    } catch (error) {
-      toast.error("Terjadi kesalahan sistem. Silakan coba lagi.");
-    } finally {
+    } catch (error: any) {
+      console.error("Checkout Error:", error);
+      toast.error(`Kesalahan sistem: ${error?.message || "Silakan coba lagi"}`);
+      isSubmittingRef.current = false;
       setIsSubmitting(false);
     }
   };
@@ -444,8 +462,12 @@ export default function CheckoutForm({ prefillData }: { prefillData: { name: str
               <div className="space-y-4 mb-6 max-h-[400px] overflow-y-auto pr-2">
                 {items.map((item) => (
                   <div key={item.id} className="flex gap-4 p-4 border border-[#8B5E3C]/10 rounded-2xl bg-gray-50/50">
-                    <div className="relative w-20 h-20 rounded-xl overflow-hidden bg-white flex-shrink-0 border border-[#8B5E3C]/10">
-                      <Image src={item.image} alt={item.name} fill sizes="80px" className="object-cover" />
+                    <div className="relative w-20 h-20 rounded-xl overflow-hidden bg-[#FDF6EE] flex-shrink-0 flex items-center justify-center border border-[#8B5E3C]/10">
+                      {item.image ? (
+                        <Image src={item.image} alt={item.name} fill sizes="80px" className="object-cover" />
+                      ) : (
+                        <span className="text-[10px] text-center font-bold text-[#8B5E3C]/50 px-2 uppercase">Tanpa<br/>Gambar</span>
+                      )}
                     </div>
                     <div className="flex-1 space-y-2">
                       <div className="flex justify-between items-start gap-2">

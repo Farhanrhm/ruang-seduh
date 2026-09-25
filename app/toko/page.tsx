@@ -1,8 +1,8 @@
 import { client } from "@/sanity/lib/client";
 import KatalogToko from "@/components/KatalogToko";
 
-// ISR: Cache katalog toko selama 60 detik
-export const revalidate = 60; 
+// ISR: Cache dinonaktifkan (0) agar perubahan gambar Sanity langsung muncul
+export const revalidate = 0; 
 
 export default async function TokoPage() {
   const query = `*[_type == "product"] | order(_createdAt desc) {

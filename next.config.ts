@@ -10,21 +10,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'images.unsplash.com',
-        port: '',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'lh3.googleusercontent.com',
-        port: '',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'cdn.sanity.io',
-        port: '',
-        pathname: '/**',
+        hostname: '**',
       },
     ],
   },
@@ -44,7 +30,7 @@ const nextConfig: NextConfig = {
           {
             key: 'Content-Security-Policy',
             // CSP yang lebih aman dan sudah mengizinkan koneksi Sanity API serta Iframe Studio
-            value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://app.sandbox.midtrans.com https://app.midtrans.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https://*.sanity.io wss://*.sanity.io https://app.sandbox.midtrans.com https://app.midtrans.com; frame-ancestors 'self' https://*.sanity.io https://sanity.io;",
+            value: "default-src 'self'; frame-src 'self' https://app.sandbox.midtrans.com https://app.midtrans.com; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://app.sandbox.midtrans.com https://app.midtrans.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https://*.sanity.io wss://*.sanity.io https://app.sandbox.midtrans.com https://app.midtrans.com; frame-ancestors 'self' https://*.sanity.io https://sanity.io;",
           },
         ],
       },
