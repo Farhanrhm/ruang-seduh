@@ -48,7 +48,7 @@ export default function Footer() {
   return (
     <footer className="bg-white border-t border-[#8B5E3C]/10 pt-20 pb-10 text-[#4B2E1C]">
       <div className="container mx-auto px-4 md:px-8 max-w-7xl">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12 mb-16">
           
           {/* Kolom 1: Brand, Bio, Kontak */}
           <div className="space-y-5">
@@ -84,7 +84,17 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Kolom 3: Newsletter */}
+          {/* Kolom 3: Bantuan & Legal */}
+          <div className="space-y-5">
+            <h4 className="font-judul font-bold text-xl">Bantuan & Legal</h4>
+            <ul className="space-y-3 font-teks text-[#8B5E3C]">
+              <li><Link href="/syarat-ketentuan" className="hover:text-[#A9683C] hover:translate-x-1 flex items-center transition-all">Syarat & Ketentuan</Link></li>
+              <li><Link href="/kebijakan-pengembalian" className="hover:text-[#A9683C] hover:translate-x-1 flex items-center transition-all">Kebijakan Pengembalian</Link></li>
+              <li><Link href="/kebijakan-privasi" className="hover:text-[#A9683C] hover:translate-x-1 flex items-center transition-all">Kebijakan Privasi</Link></li>
+            </ul>
+          </div>
+
+          {/* Kolom 4: Newsletter */}
           <div className="space-y-5">
             <h4 className="font-judul font-bold text-xl">Satu Tegukan</h4>
             <p className="font-teks text-[#8B5E3C] leading-relaxed">
