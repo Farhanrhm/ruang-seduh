@@ -17,6 +17,40 @@ export default async function CheckoutSuccessPage({
         where: { id: rawOrderId },
         include: { items: true },
       });
+
+      if (order && order.status === "PENDING") {
+        try {
+          const { coreApi } = await import("@/lib/midtrans");
+          const statusResponse = await coreApi.transaction.status(order.id);
+          const transactionStatus = statusResponse.transaction_status;
+          const fraudStatus = statusResponse.fraud_status;
+
+          let finalStatus = null;
+          if (transactionStatus === "capture") {
+            finalStatus = fraudStatus === "accept" ? "PAID" : "PENDING";
+          } else if (transactionStatus === "settlement") {
+            finalStatus = "PAID";
+          } else if (["cancel", "deny", "expire"].includes(transactionStatus)) {
+            finalStatus = "CANCELLED";
+          }
+
+          if (finalStatus === "PAID") {
+            const { processSuccessfulOrder } = await import("@/lib/orderService");
+            await processSuccessfulOrder(order.id);
+            order.status = "PAID";
+          } else if (finalStatus === "CANCELLED") {
+            const { processCancelledOrder } = await import("@/lib/orderService");
+            await processCancelledOrder(order.id);
+            order.status = "CANCELLED";
+          }
+        } catch (error: any) {
+          // Abaikan error 404 dari Midtrans jika transaksi belum tercatat
+          const errorMessage = error?.message || error?.ApiResponse?.status_message || "";
+          if (!errorMessage.includes("404") && !errorMessage.includes("not found")) {
+            console.error("Gagal sinkronisasi status pesanan di halaman sukses:", error);
+          }
+        }
+      }
     } catch {
       order = null;
     }
