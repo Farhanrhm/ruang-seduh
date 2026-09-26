@@ -17,8 +17,11 @@ export default function SyaratKetentuan() {
           <p className="text-lg mb-3">
             Selamat datang di Ruang Seduh. Syarat dan Ketentuan ini merujuk pada prinsip <strong>Undang-Undang Perlindungan Konsumen No. 8 Tahun 1999</strong> yang berlaku di Republik Indonesia.
           </p>
-          <p className="text-lg">
+          <p className="text-lg mb-3">
             Dengan mengakses dan menggunakan situs web kami, Anda secara sadar menyetujui untuk terikat oleh Syarat dan Ketentuan ini. Harap baca dengan saksama sebelum melakukan transaksi apa pun.
+          </p>
+          <p className="text-lg">
+            Segala sengketa yang timbul dari layanan ini akan diselesaikan secara musyawarah. Jika tidak tercapai mufakat, maka akan diselesaikan melalui yurisdiksi Pengadilan Negeri Bandung.
           </p>
         </section>
         
@@ -56,6 +59,27 @@ export default function SyaratKetentuan() {
           <h2 className="text-2xl font-judul mb-4">6. Keadaan Kahar (Force Majeure)</h2>
           <p className="text-lg">
             Ruang Seduh dibebaskan dari segala tuntutan hukum atau ganti rugi atas keterlambatan, kegagalan pengiriman, atau kerusakan produk yang murni diakibatkan oleh kejadian di luar kendali wajar kami (Force Majeure), termasuk namun tidak terbatas pada bencana alam, huru-hara, kebijakan pemerintah, kecelakaan tak terduga, atau kelumpuhan sistem pihak ketiga penyedia jasa logistik.
+          </p>
+        </section>
+
+        <section>
+          <h2 className="text-2xl font-judul mb-4">7. Kesalahan Sistem dan Harga (Typo Pricing)</h2>
+          <p className="text-lg">
+            Ruang Seduh berhak membatalkan pesanan secara sepihak dan mengembalikan dana pengguna apabila terjadi kesalahan sistem yang mengakibatkan harga atau deskripsi produk tampil tidak semestinya (misalnya: salah ketik harga menjadi terlalu rendah).
+          </p>
+        </section>
+
+        <section>
+          <h2 className="text-2xl font-judul mb-4">8. Tanggung Jawab Akun Pengguna</h2>
+          <p className="text-lg">
+            Apabila Anda membuat akun di situs ini, segala aktivitas transaksi dan kerahasiaan kata sandi (password) adalah tanggung jawab penuh Anda selaku pemilik akun. Kami berhak menonaktifkan akun yang terindikasi melakukan penipuan.
+          </p>
+        </section>
+
+        <section>
+          <h2 className="text-2xl font-judul mb-4">9. Hak Kekayaan Intelektual (HAKI)</h2>
+          <p className="text-lg">
+            Seluruh aset visual, logo, foto produk, desain web, dan teks di situs ini adalah hak milik Ruang Seduh. Dilarang keras menyalin atau menggunakan aset tersebut untuk tujuan komersial tanpa izin tertulis dari kami.
           </p>
         </section>
       </div>

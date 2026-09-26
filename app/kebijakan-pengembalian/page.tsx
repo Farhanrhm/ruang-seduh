@@ -16,7 +16,7 @@ export default function KebijakanPengembalian() {
         <section>
           <h2 className="text-2xl font-judul mb-4">1. Ketentuan Umum Pengembalian</h2>
           <p className="text-lg">
-            Kepuasan Anda saat berbelanja alat dan biji kopi adalah prioritas utama kami. Jika Anda tidak sepenuhnya puas dengan pembelian Anda atau menemukan kendala, kami siap membantu. Pengembalian barang (retur) hanya berlaku untuk kasus <strong>cacat produk bawaan pabrik, kesalahan pengiriman dari pihak kami, atau kerusakan mayor selama transit</strong> (diwajibkan melampirkan bukti video unboxing tanpa jeda).
+            Kepuasan Anda saat berbelanja alat dan biji kopi adalah prioritas utama kami. Jika Anda tidak sepenuhnya puas dengan pembelian Anda atau menemukan kendala, kami siap membantu. Pengembalian barang (retur) hanya berlaku untuk kasus <strong>cacat produk bawaan pabrik, kesalahan pengiriman dari pihak kami, atau kerusakan mayor selama transit</strong>. Klaim kerusakan atau salah kirim wajib dilaporkan maksimal <strong>2x24 jam</strong> sejak status resi ekspedisi dinyatakan "Diterima", disertai bukti video unboxing tanpa jeda.
           </p>
         </section>
         
@@ -36,21 +36,28 @@ export default function KebijakanPengembalian() {
           <ul className="list-disc pl-5 space-y-2 text-lg">
             <li>Barang <strong>belum pernah digunakan</strong> untuk menyeduh dan kondisinya sama persis seperti saat Anda menerimanya.</li>
             <li>Seluruh kelengkapan, buku manual, dan kemasan asli bawaan (termasuk segel plastik) dalam keadaan utuh.</li>
+            <li>Barang retur harus dikemas seaman saat Ruang Seduh mengirimkannya (menggunakan bubble wrap dan kardus luar) agar boks asli produk (retail box) tidak rusak atau ditempel resi langsung oleh pihak ekspedisi.</li>
             <li>Dapat menunjukkan struk digital atau invoice pembelian resmi dari Ruang Seduh.</li>
           </ul>
         </section>
 
         <section>
-          <h2 className="text-2xl font-judul mb-4">4. Proses Pengajuan Retur</h2>
-          <p className="text-lg">
+          <h2 className="text-2xl font-judul mb-4">4. Proses Pengajuan Retur & Ongkos Kirim</h2>
+          <p className="text-lg mb-3">
             Untuk memulai proses pengajuan retur, silakan hubungi tim dukungan layanan pelanggan (Customer Support) kami melalui email di <a href="mailto:support@ruangseduh.com" className="text-[var(--color-brand-accent-strong)] hover:underline font-medium">support@ruangseduh.com</a>. Mohon cantumkan <strong>Nomor Pesanan (Order ID)</strong> Anda dan lampirkan <strong>Video Unboxing</strong> yang jelas sebagai bukti pendukung klaim.
+          </p>
+          <p className="text-lg">
+            Biaya pengiriman untuk retur produk akibat cacat pabrik atau kesalahan pengiriman dari pihak Ruang Seduh akan kami tanggung sepenuhnya (maksimal subsidi ongkos kirim Rp50.000).
           </p>
         </section>
 
         <section>
           <h2 className="text-2xl font-judul mb-4">5. Mekanisme Pengembalian Dana (Refund)</h2>
+          <p className="text-lg mb-3">
+            Setelah barang retur Anda tiba di fasilitas kami, tim Quality Control akan melakukan pengecekan. Kami akan segera memberi tahu Anda mengenai persetujuan atau penolakan pengembalian dana tersebut. Jika disetujui, dana akan diproses untuk dikembalikan secara otomatis ke metode pembayaran asli Anda, yang biasanya membutuhkan waktu <strong>3 hingga 5 hari kerja</strong>.
+          </p>
           <p className="text-lg">
-            Setelah barang retur Anda tiba di fasilitas kami, tim Quality Control akan melakukan pengecekan. Kami akan segera memberi tahu Anda mengenai persetujuan atau penolakan pengembalian dana tersebut. Jika disetujui, dana akan diproses untuk dikembalikan secara otomatis ke metode pembayaran asli Anda, yang biasanya membutuhkan waktu <strong>3 hingga 5 hari kerja</strong> tergantung pada bank atau penyedia pembayaran Anda.
+            Apabila pengembalian dana ke metode pembayaran awal tidak memungkinkan secara teknis (misal: pembayaran via Virtual Account atau gerai minimarket), tim kami akan meminta nomor rekening bank aktif Anda untuk memproses transfer manual.
           </p>
         </section>
 
