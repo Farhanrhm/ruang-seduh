@@ -232,10 +232,10 @@ export default function CheckoutForm({ prefillData }: { prefillData: { name: str
             onPending: function (midtransResult: any) {
               clearCart();
               localStorage.removeItem("checkout_draft");
-              toast.success("Pesanan dibuat. Silakan selesaikan pembayaran.", { duration: 5000 });
+              toast.success("Pesanan dibuat. Menunggu pembayaran.", { duration: 5000 });
               isSubmittingRef.current = false;
               setIsSubmitting(false);
-              router.push(`/profil`); // Idealnya ke halaman detail pesanan
+              router.push(`/checkout/sukses?order_id=${result.orderId}`);
             },
             onError: function (midtransResult: any) {
               toast.error("Pembayaran gagal diproses oleh Midtrans.");
@@ -243,12 +243,10 @@ export default function CheckoutForm({ prefillData }: { prefillData: { name: str
               setIsSubmitting(false);
             },
             onClose: function () {
-              toast.error("Anda menutup jendela pembayaran.");
-              clearCart();
-              localStorage.removeItem("checkout_draft");
+              toast.error("Popup pembayaran ditutup tanpa menyelesaikan pembayaran.");
+              // JANGAN redirect dan JANGAN hapus keranjang sesuai instruksi
               isSubmittingRef.current = false;
               setIsSubmitting(false);
-              router.push(`/profil`);
             }
           });
         } else {

@@ -27,14 +27,14 @@ export default function PayButton({ snapToken }: { snapToken: string }) {
       },
       onPending: function () {
         toast.success("Menunggu konfirmasi pembayaran.");
-        setIsProcessing(false);
+        window.location.reload(); // Refresh to update status
       },
       onError: function () {
         toast.error("Pembayaran gagal.");
         setIsProcessing(false);
       },
       onClose: function () {
-        toast.error("Anda menutup jendela pembayaran.");
+        toast.error("Popup pembayaran ditutup tanpa menyelesaikan pembayaran.");
         setIsProcessing(false);
       }
     });
