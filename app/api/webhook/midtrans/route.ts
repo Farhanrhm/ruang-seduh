@@ -103,66 +103,18 @@ export async function POST(req: Request) {
     }
 
     if (nextOrderStatus === "PAID") {
-      await prisma.$transaction(async (tx) => {
-        await tx.order.update({
-          where: { id: order.id },
-          data: {
-            status: "PAID",
-            midtransId: payload.transaction_id || order.midtransId,
-            paymentType: payload.payment_type || order.paymentType,
-          },
-        });
-
-        for (const item of order.items) {
-          await tx.product.update({
-            where: { id: item.productId },
-            data: {
-              stock: { decrement: item.quantity },
-            },
-          });
-        }
-      });
-
-      // Send invoice email asynchronously without blocking the webhook response
-      if (order.user?.email) {
-        const emailItems = order.items.map((item) => ({
-          name: `${item.productName}${item.grindSize ? ` (${item.grindSize})` : ""}`,
-          price: item.price,
-          quantity: item.quantity,
-        }));
-
-        kirimEmailInvoice(
-          order.user.email,
-          order.recipientName || order.user.name || "Pelanggan",
-          emailItems,
-          order.totalAmount,
-          order.id
-        ).catch((err) => {
-          console.error("Failed to send invoice email:", err);
-        });
-      }
+      const { processSuccessfulOrder } = await import("@/lib/orderService");
+      await processSuccessfulOrder(
+        order.id, 
+        payload.transaction_id || order.midtransId || undefined, 
+        payload.payment_type || order.paymentType || undefined
+      );
     } else if (nextOrderStatus === "CANCELLED") {
-      await prisma.$transaction(async (tx) => {
-        await tx.order.update({
-          where: { id: order.id },
-          data: {
-            status: "CANCELLED",
-            midtransId: payload.transaction_id || order.midtransId,
-          },
-        });
-
-        // Restore stock only if the order was previously marked as PAID
-        if (order.status === "PAID") {
-          for (const item of order.items) {
-            await tx.product.update({
-              where: { id: item.productId },
-              data: {
-                stock: { increment: item.quantity },
-              },
-            });
-          }
-        }
-      });
+      const { processCancelledOrder } = await import("@/lib/orderService");
+      await processCancelledOrder(
+        order.id, 
+        payload.transaction_id || order.midtransId || undefined
+      );
     } else if (nextOrderStatus === "PENDING") {
       await prisma.order.update({
         where: { id: order.id },

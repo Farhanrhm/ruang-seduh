@@ -244,28 +244,14 @@ export async function syncPendingOrders(): Promise<{ success: boolean; message: 
         }
 
         if (finalStatus === "CANCELLED") {
-          await prisma.order.update({
-            where: { id: order.id },
-            data: { status: "CANCELLED" }
-          });
-          // Note: Kita tidak me-restore stok di sini karena saat PENDING stok belum dikurangi.
-          updatedCount++;
+          const { processCancelledOrder } = await import("@/lib/orderService");
+          const processed = await processCancelledOrder(order.id);
+          if (processed) updatedCount++;
         } else if (finalStatus === "PAID") {
           // Kasus race condition di mana webhook gagal masuk tapi aslinya sudah dibayar
-          await prisma.$transaction(async (tx) => {
-            await tx.order.update({
-              where: { id: order.id },
-              data: { status: "PAID" }
-            });
-
-            for (const item of order.items) {
-              await tx.product.update({
-                where: { id: item.productId },
-                data: { stock: { decrement: item.quantity } }
-              });
-            }
-          });
-          updatedCount++;
+          const { processSuccessfulOrder } = await import("@/lib/orderService");
+          const processed = await processSuccessfulOrder(order.id);
+          if (processed) updatedCount++;
         }
 
       } catch (err: any) {
@@ -274,10 +260,8 @@ export async function syncPendingOrders(): Promise<{ success: boolean; message: 
         // Dalam kasus ini, karena sudah 65 menit, kita anggap CANCELLED.
         const errorMessage = err?.message || err?.ApiResponse?.status_message || "";
         if (errorMessage.includes("404") || errorMessage.includes("not found")) {
-          await prisma.order.update({
-            where: { id: order.id },
-            data: { status: "CANCELLED" }
-          });
+          const { processCancelledOrder } = await import("@/lib/orderService");
+          await processCancelledOrder(order.id);
           updatedCount++;
         } else {
           console.error(`Gagal mengecek status Midtrans untuk order ${order.id}:`, err);
