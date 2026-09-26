@@ -61,3 +61,5 @@ Claude.md
 # Sanity Seed Data
 *.ndjson
 
+# AI Agent files
+mandatory_implementation_plan.md
