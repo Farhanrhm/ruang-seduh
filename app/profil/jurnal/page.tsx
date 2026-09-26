@@ -61,13 +61,15 @@ export default async function ProfilJurnalPage() {
                 className="bg-white rounded-2xl p-5 border border-[#8B5E3C]/10 shadow-sm hover:shadow-md transition-all flex flex-col"
               >
                 <div className="flex justify-between items-start mb-4">
-                  <span className={`text-[9px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full border ${
-                    jurnal.rating === 'SUCCESS' ? 'bg-green-50 text-green-700 border-green-200' : 
-                    jurnal.rating === 'COULD_BE_BETTER' ? 'bg-yellow-50 text-yellow-700 border-yellow-200' : 
-                    'bg-red-50 text-red-700 border-red-200'
-                  }`}>
-                    {jurnal.rating.replace(/_/g, ' ')}
-                  </span>
+                  {jurnal.starRating ? (
+                    <span className="text-[10px] font-black uppercase tracking-wider px-3 py-1.5 rounded-full border shadow-sm bg-yellow-50 text-yellow-700 border-yellow-200 flex items-center gap-1">
+                      ⭐ {jurnal.starRating}
+                    </span>
+                  ) : (
+                    <span className="text-[10px] font-black uppercase tracking-wider px-3 py-1.5 rounded-full border shadow-sm bg-gray-50 text-gray-500 border-gray-200">
+                      BELUM DINILAI
+                    </span>
+                  )}
                   <span className="flex items-center gap-1.5 text-[10px] font-bold text-[#8B5E3C]">
                     <Calendar className="w-3 h-3 text-[#D4956A]" /> 
                     {new Date(jurnal.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
