@@ -9,7 +9,7 @@ import KeranjangBelanja from "./KeranjangBelanja";
 import { useState, useEffect } from "react";
 
 const NAV_LINKS = [
-  { href: "/panduan",   label: "Panduan Seduh" },
+  { href: "/panduan",   label: "Panduan" },
   { href: "/direktori", label: "Peta Kopi" },
   { href: "/toko",      label: "Toko" },
   { href: "/jurnal",    label: "Jurnal Seduh" },
