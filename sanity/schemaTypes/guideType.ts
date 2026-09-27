@@ -44,6 +44,26 @@ export const guideType = defineType({
       type: 'string',
     }),
     defineField({
+      name: 'tasteProfile',
+      title: 'Karakter Seduhan / Profil Rasa',
+      type: 'string',
+      description: 'Misal: "Sangat Bersih & Terang" atau "Tebal & Bold"',
+    }),
+    defineField({
+      name: 'tools',
+      title: 'Alat Dibutuhkan',
+      type: 'array',
+      of: [
+        {
+          type: 'object',
+          fields: [
+            { name: 'name', title: 'Nama Alat', type: 'string', validation: (Rule) => Rule.required() },
+            { name: 'productLink', title: 'Tautan Produk Toko (Opsional)', type: 'string', description: 'Masukkan slug produk jika dijual di toko (misal: "hario-v60")' },
+          ],
+        },
+      ],
+    }),
+    defineField({
       name: 'body',
       title: 'Langkah-langkah Seduh',
       type: 'blockContent',

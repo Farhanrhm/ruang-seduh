@@ -3,8 +3,9 @@ import { urlFor } from "@/sanity/lib/image";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Clock, BarChart3, Wrench, BookOpen } from "lucide-react";
+import { ArrowLeft, Clock, BarChart3, Wrench, BookOpen, ShoppingBag } from "lucide-react";
 import { PortableText } from "@portabletext/react";
+import BookmarkButton from "@/components/BookmarkButton";
 
 // ISR: Cache panduan detail selama 24 jam (86400 detik)
 export const revalidate = 86400;
@@ -64,13 +65,21 @@ export default async function GuideDetailPage({
               className="object-cover" 
               priority 
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex items-end p-8 md:p-12">
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex items-end justify-between p-8 md:p-12">
               <h1 className="font-judul text-4xl md:text-5xl lg:text-6xl font-black text-white leading-[1.1] tracking-tighter">
                 {guide.title}
               </h1>
+              
+              <div className="hidden md:block">
+                <BookmarkButton slug={slug} title={guide.title} />
+              </div>
             </div>
           </div>
         )}
+        
+        <div className="md:hidden flex justify-end mb-6 -mt-6">
+           <BookmarkButton slug={slug} title={guide.title} />
+        </div>
 
         {/* Bar Info Singkat */}
         <div className="flex flex-wrap gap-4 mb-12 pb-10 border-b border-[#8B5E3C]/10">
@@ -92,23 +101,39 @@ export default async function GuideDetailPage({
 
         <div className="grid md:grid-cols-12 gap-12">
           {/* Sidebar Alat */}
-          <div className="md:col-span-4 space-y-8">
-            <div className="bg-white p-8 rounded-[2rem] border border-[#8B5E3C]/10 shadow-sm sticky top-28">
-              <h3 className="font-judul text-xl font-bold text-[#4B2E1C] mb-6 flex items-center gap-2">
-                <Wrench className="w-5 h-5 text-[#D4956A]" /> Alat Dibutuhkan
-              </h3>
-              <ul className="space-y-3">
-                {guide.tools?.map((tool: string, i: number) => (
-                  <li key={i} className="flex items-center gap-3 text-[#8B5E3C] font-teks font-medium bg-[#FDF6EE] px-4 py-3 rounded-xl border border-[#8B5E3C]/5">
-                    <span className="w-1.5 h-1.5 bg-[#D4956A] rounded-full"></span> {tool}
-                  </li>
-                ))}
-              </ul>
+          {guide.tools && guide.tools.length > 0 && (
+            <div className="md:col-span-4 space-y-8">
+              <div className="bg-white p-8 rounded-[2rem] border border-[#8B5E3C]/10 shadow-sm sticky top-28">
+                <h3 className="font-judul text-xl font-bold text-[#4B2E1C] mb-6 flex items-center gap-2">
+                  <Wrench className="w-5 h-5 text-[#D4956A]" /> Alat Dibutuhkan
+                </h3>
+                <ul className="space-y-3">
+                  {guide.tools.map((tool: { name: string, productLink?: string }, i: number) => (
+                    <li key={i}>
+                      {tool.productLink ? (
+                        <Link href={`/toko/${tool.productLink}`} className="flex items-center justify-between text-[#8B5E3C] font-teks font-medium bg-[#FDF6EE] px-4 py-3 rounded-xl border border-[#8B5E3C]/10 hover:border-[#D4956A]/50 hover:bg-[#D4956A]/10 transition-all group cursor-pointer shadow-sm">
+                          <div className="flex items-center gap-3">
+                            <span className="w-1.5 h-1.5 bg-[#D4956A] rounded-full group-hover:scale-150 transition-transform"></span> 
+                            <span className="group-hover:text-[#4B2E1C] font-bold transition-colors">{tool.name}</span>
+                          </div>
+                          <span className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-white bg-[#D4956A] px-2 py-1 rounded-md shadow-sm group-hover:bg-[#4B2E1C] transition-colors">
+                            <ShoppingBag className="w-3 h-3" /> Beli
+                          </span>
+                        </Link>
+                      ) : (
+                        <div className="flex items-center gap-3 text-[#8B5E3C] font-teks font-medium bg-gray-50 px-4 py-3 rounded-xl border border-gray-100">
+                          <span className="w-1.5 h-1.5 bg-gray-300 rounded-full"></span> {tool.name}
+                        </div>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Isi Panduan */}
-          <div className="md:col-span-8 font-teks bg-white p-8 md:p-12 rounded-[2rem] border border-[#8B5E3C]/10 shadow-sm">
+          <div className={`${guide.tools && guide.tools.length > 0 ? 'md:col-span-8' : 'md:col-span-12 w-full max-w-4xl mx-auto'} font-teks bg-white p-8 md:p-12 rounded-[2rem] border border-[#8B5E3C]/10 shadow-sm`}>
             <div className="flex items-center gap-3 mb-8 pb-6 border-b border-[#8B5E3C]/10">
               <BookOpen className="w-8 h-8 text-[#D4956A]" />
               <h2 className="font-judul text-3xl font-black text-[#4B2E1C]">Langkah Seduh</h2>

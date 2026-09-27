@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import crypto from "crypto";
 import { prisma } from "@/lib/prisma";
-import { kirimEmailInvoice } from "@/app/actions/email";
+import { kirimEmailInvoice } from "@/lib/email-service";
 
 interface MidtransNotificationPayload {
   order_id: string;

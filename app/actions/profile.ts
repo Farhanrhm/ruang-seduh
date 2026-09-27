@@ -4,6 +4,12 @@ import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
+import { z } from "zod";
+
+const ProfileSchema = z.object({
+  name: z.string().trim().min(3, "Nama lengkap harus terdiri dari minimal 3 karakter.").max(100, "Nama maksimal 100 karakter."),
+  newsletter: z.boolean(),
+});
 
 export async function updateProfile(name: string, newsletter: boolean) {
   try {
@@ -12,15 +18,16 @@ export async function updateProfile(name: string, newsletter: boolean) {
       return { success: false, error: "Unauthorized" };
     }
 
-    if (!name || name.trim().length < 3) {
-      return { success: false, error: "Nama lengkap harus terdiri dari minimal 3 karakter." };
+    const parsed = ProfileSchema.safeParse({ name, newsletter });
+    if (!parsed.success) {
+      return { success: false, error: parsed.error.issues[0]?.message || "Input tidak valid." };
     }
 
     await prisma.user.update({
       where: { id: session.user.id },
       data: {
-        name: name.trim(),
-        newsletter: newsletter
+        name: parsed.data.name,
+        newsletter: parsed.data.newsletter
       }
     });
 
@@ -31,3 +38,4 @@ export async function updateProfile(name: string, newsletter: boolean) {
     return { success: false, error: "Gagal memperbarui profil. Silakan coba lagi." };
   }
 }
+

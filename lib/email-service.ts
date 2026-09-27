@@ -1,5 +1,3 @@
-"use server";
-
 import { Resend } from "resend";
 import { WelcomeEmail } from "@/emails/WelcomeEmail";
 import { InvoiceEmail } from "@/emails/InvoiceEmail";

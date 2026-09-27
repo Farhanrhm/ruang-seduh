@@ -8,5 +8,5 @@ import {productType} from './productType'
 import { guideType } from './guideType'
 
 export const schema: { types: SchemaTypeDefinition[] } = {
-  types: [blockContentType, categoryType, postType, authorType, productType],
+  types: [blockContentType, categoryType, postType, authorType, productType, guideType],
 }

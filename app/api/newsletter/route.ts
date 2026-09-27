@@ -2,8 +2,35 @@ import { NextRequest, NextResponse } from "next/server";
 import { resend } from "@/lib/resend";
 import { WelcomeEmail } from "@/emails/WelcomeEmail";
 
+const rateLimitMap = new Map<string, { count: number; timestamp: number }>();
+const RATE_LIMIT_WINDOW = 10 * 60 * 1000; // 10 minutes
+const MAX_REQUESTS = 3;
+
 export async function POST(request: NextRequest) {
   try {
+    // Rate limiting by IP
+    const ip = request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || "unknown";
+    if (ip !== "unknown") {
+      const now = Date.now();
+      const entry = rateLimitMap.get(ip) || { count: 0, timestamp: now };
+
+      if (now - entry.timestamp < RATE_LIMIT_WINDOW) {
+        if (entry.count >= MAX_REQUESTS) {
+          return NextResponse.json(
+            { error: "Terlalu banyak permintaan. Coba lagi nanti." },
+            { status: 429 }
+          );
+        }
+        entry.count++;
+      } else {
+        entry.count = 1;
+        entry.timestamp = now;
+      }
+
+      if (rateLimitMap.size > 1000) rateLimitMap.clear();
+      rateLimitMap.set(ip, entry);
+    }
+
     const body = await request.json();
     const { email } = body;
 
@@ -41,3 +68,4 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+

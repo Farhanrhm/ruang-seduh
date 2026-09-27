@@ -22,7 +22,20 @@ model User {
   orders        Order[]
   sessions      Session[]
   addresses     Address[]
-  newsletter    Boolean       @default(true)
+  newsletter    Boolean        @default(true)
+  savedArticles SavedArticle[]
+}
+
+model SavedArticle {
+  id        String   @id @default(cuid())
+  userId    String
+  slug      String
+  type      String   @default("guide")
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, slug])
+  @@index([userId])
 }
 
 model Account {
