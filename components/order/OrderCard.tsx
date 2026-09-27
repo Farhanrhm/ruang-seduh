@@ -8,6 +8,7 @@ import PayButton from "@/app/profil/PayButton";
 import { useCartStore } from "@/store/useCartStore";
 import toast from "react-hot-toast";
 import { isDummyCourier } from "@/lib/biteshipUtils";
+import { formatOrderId } from "@/lib/formatUtils";
 
 type OrderItem = {
   id: string;
@@ -56,7 +57,7 @@ export default function OrderCard({ order }: { order: Order }) {
   const [showDetails, setShowDetails] = useState(false);
   const addItem = useCartStore((state: unknown) => (state as CartState).addItem);
 
-  const shortId = `#RS-${order.id.substring(0, 8).toUpperCase()}`;
+  const shortId = formatOrderId(order.id);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(order.id);

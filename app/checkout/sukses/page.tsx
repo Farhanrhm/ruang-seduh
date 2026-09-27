@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { CheckCircle2, ShoppingBag, FileText, Mail, MapPin, PackageCheck, Clock } from "lucide-react";
 import { prisma } from "@/lib/prisma";
+import { formatOrderId } from "@/lib/formatUtils";
 
 export default async function CheckoutSuccessPage({
   searchParams,
@@ -56,7 +57,8 @@ export default async function CheckoutSuccessPage({
     }
   }
 
-  const displayOrderId = order?.id || rawOrderId || `RS-${new Date().getFullYear()}${String(new Date().getMonth() + 1).padStart(2, "0")}-${Math.floor(1000 + Math.random() * 9000)}`;
+  const baseOrderId = order?.id || rawOrderId || "";
+  const displayOrderId = baseOrderId ? formatOrderId(baseOrderId) : `RS-${new Date().getFullYear()}${String(new Date().getMonth() + 1).padStart(2, "0")}-${Math.floor(1000 + Math.random() * 9000)}`;
 
   const formatRupiah = (amount: number) =>
     new Intl.NumberFormat("id-ID", {
