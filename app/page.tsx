@@ -70,7 +70,7 @@ export default function Home() {
                 <div>
                   <h3 className="font-judul text-2xl font-bold text-[#4B2E1C] mb-2 group-hover:text-[#D4956A] transition-colors">Blog & Komunitas</h3>
                   <p className="font-teks text-[#8B5E3C] leading-relaxed">
-                    Baca artikel seputar industri kopi, tips rahasia dari ahli, dan cerita inspiratif langsung dari petani lokal.
+                    Baca artikel industri kopi, panduan seduh, serta cerita dari para petani lokal.
                   </p>
                 </div>
               </Link>

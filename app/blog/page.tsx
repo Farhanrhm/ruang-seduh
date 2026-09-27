@@ -42,7 +42,7 @@ export default async function BlogPage() {
             Jurnal & Cerita
           </h1>
           <p className="font-teks text-[#8B5E3C] text-lg max-w-2xl">
-            Artikel seputar kopi, cerita dari kebun, dan tips menyeduh dari para ahli.
+            Kumpulan tulisan, cerita perjalanan kopi, dan panduan menyeduh.
           </p>
         </div>
 

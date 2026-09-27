@@ -30,7 +30,7 @@ export default function Hero() {
         </h1>
         
         <p className="font-teks text-lg md:text-xl text-gray-300 max-w-2xl mx-auto mb-12 leading-relaxed">
-          Catat setiap tetesan rasa, jelajahi biji kopi nusantara, dan temukan teknik seduh yang paling pas untuk harimu.
+          Eksplorasi ragam biji kopi nusantara dan catat resep seduhan harianmu.
         </p>
 
         {/* Leaf Client Component dengan CLS-safe skeleton */}
