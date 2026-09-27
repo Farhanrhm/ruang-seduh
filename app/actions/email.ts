@@ -3,6 +3,7 @@
 import { Resend } from "resend";
 import { WelcomeEmail } from "@/emails/WelcomeEmail";
 import { InvoiceEmail } from "@/emails/InvoiceEmail";
+import { formatOrderId } from "@/lib/formatUtils";
 import type { CartItem } from "@/store/useCartStore";
 
 export interface InvoiceEmailItem {
@@ -34,10 +35,11 @@ export async function kirimEmailInvoice(
   orderId: string
 ) {
   try {
+    const formattedId = formatOrderId(orderId);
     await resend.emails.send({
       from: "Ruang Seduh Store <onboarding@resend.dev>",
       to: email,
-      subject: `Invoice Pesanan Anda - ${orderId}`,
+      subject: `Invoice Pesanan Anda - ${formattedId}`,
       react: InvoiceEmail({
         name: customerName,
         orderId: orderId,
