@@ -6,6 +6,7 @@ import { authOptions } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { sanitizeErrorMessage } from "@/lib/sanitize";
+import sanitizeHtml from "sanitize-html";
 
 const KomentarSchema = z.object({
   text: z
@@ -26,9 +27,14 @@ export async function tambahKomentar(slug: string, text: string, parentId?: stri
   }
 
   try {
+    const cleanText = sanitizeHtml(parsed.data.text, {
+      allowedTags: [], // Remove all HTML tags
+      allowedAttributes: {}, // Remove all attributes
+    });
+
     await prisma.comment.create({
       data: {
-        text: parsed.data.text,
+        text: cleanText,
         postSlug: parsed.data.slug,
         userId: session.user.id,
         parentId: parsed.data.parentId || null,
