@@ -101,40 +101,63 @@ export async function buatPesanan(
 
     const calculatedTotalAmount = calculatedTotalProduk + selectedCourierRate.price;
 
-    // 4. Buat Order di Database (Status PENDING)
-    const order = await prisma.order.create({
-      data: {
-        id: idempotencyKey, // Use idempotency key as Order ID
-        userId: session.user.id,
-        totalAmount: calculatedTotalAmount,
-        status: "PENDING",
-        // Snapshot Alamat Pengiriman
-        recipientName: data.nama,
-        phoneNumber: data.whatsapp,
-        province: data.provinsi,
-        city: data.kota,
-        district: data.kecamatan,
-        postalCode: data.kodepos,
-        detailAddress: data.detailAlamat,
-        courierNote: data.catatanPesanan || null,
-        biteshipAreaId: data.biteshipAreaId,
-        paymentType: `${data.kurir} - ${data.layananKurir}`, // Info kurir
-        // Snapshot Items
-        items: {
-          create: cartItems.map((item) => {
-            const dbProduct = dbProducts.find(p => p.id === item.id || p.sanityId === item.id)!;
-            return {
-              productId: dbProduct.id,
-              productName: dbProduct.name,
-              unitPrice: dbProduct.price,
-              weight: dbProduct.weight || 200,
-              quantity: item.quantity,
-              price: dbProduct.price,
-              grindSize: item.grindSize || null,
-            };
-          }),
+    // 4. Buat Order di Database dan Reserve Stok (Status PENDING)
+    const order = await prisma.$transaction(async (tx) => {
+      // Atomic Stock Reservation
+      for (const item of cartItems) {
+        const dbProduct = dbProducts.find(p => p.id === item.id || p.sanityId === item.id)!;
+        
+        // Kurangi stok HANYA jika ketersediaan mencukupi (mencegah race condition)
+        const updateResult = await tx.product.updateMany({
+          where: {
+            id: dbProduct.id,
+            stock: { gte: item.quantity }
+          },
+          data: {
+            stock: { decrement: item.quantity }
+          }
+        });
+
+        // Jika count 0, berarti dalam sepersekian detik stok diambil orang lain
+        if (updateResult.count === 0) {
+          throw new Error(`Stok untuk ${dbProduct.name} habis saat proses checkout.`);
+        }
+      }
+
+      return await tx.order.create({
+        data: {
+          id: idempotencyKey, // Use idempotency key as Order ID
+          userId: session.user.id,
+          totalAmount: calculatedTotalAmount,
+          status: "PENDING",
+          // Snapshot Alamat Pengiriman
+          recipientName: data.nama,
+          phoneNumber: data.whatsapp,
+          province: data.provinsi,
+          city: data.kota,
+          district: data.kecamatan,
+          postalCode: data.kodepos,
+          detailAddress: data.detailAlamat,
+          courierNote: data.catatanPesanan || null,
+          biteshipAreaId: data.biteshipAreaId,
+          paymentType: `${data.kurir} - ${data.layananKurir}`, // Info kurir
+          // Snapshot Items
+          items: {
+            create: cartItems.map((item) => {
+              const dbProduct = dbProducts.find(p => p.id === item.id || p.sanityId === item.id)!;
+              return {
+                productId: dbProduct.id,
+                productName: dbProduct.name,
+                unitPrice: dbProduct.price,
+                weight: dbProduct.weight || 200,
+                quantity: item.quantity,
+                price: dbProduct.price,
+                grindSize: item.grindSize || null,
+              };
+            }),
+          },
         },
-      },
+      });
     });
 
     // 5. Minta Snap Token ke Midtrans

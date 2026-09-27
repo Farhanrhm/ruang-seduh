@@ -6,7 +6,6 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Loader2, ShieldCheck, MapPin, User, Minus, Plus, Trash2, AlertCircle } from "lucide-react";
 import Link from "next/link";
-import { kirimEmailInvoice } from "@/app/actions/email";
 import { buatPesanan } from "@/app/actions/order";
 import { cariWilayahBiteship, hitungOngkirBiteship, type BiteshipArea, type ShippingRate } from "@/app/actions/biteship";
 import toast from "react-hot-toast";
