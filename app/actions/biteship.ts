@@ -1,5 +1,7 @@
 "use server";
 import { headers } from "next/headers";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 // Rate limiter for serverless environment (best-effort per instance)
 const rateLimitMap = new Map<string, { count: number, timestamp: number }>();
@@ -21,6 +23,11 @@ const CACHE_TTL = 1000 * 60 * 60 * 24; // 24 hours
 const MAX_CACHE_SIZE = 500;
 
 export async function cariWilayahBiteship(query: string) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) {
+    return { success: false, error: "Silakan login terlebih dahulu." };
+  }
+
   if (!query || query.length < 3) return { success: false, error: "Query terlalu pendek" };
 
   // Best-effort Rate Limiting
@@ -120,6 +127,32 @@ const rateCache = new Map<string, { data: ShippingRate[], timestamp: number }>()
 const RATE_CACHE_TTL = 1000 * 60 * 10; // 10 minutes
 
 export async function hitungOngkirBiteship(destinationAreaId: string, totalWeightGram: number): Promise<OngkirResult> {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) {
+    return { success: false, code: "UNAUTHORIZED", message: "Silakan login terlebih dahulu." };
+  }
+
+  // Best-effort Rate Limiting
+  const headersList = await headers();
+  const ip = headersList.get("x-forwarded-for") || headersList.get("x-real-ip") || "unknown";
+  
+  if (ip !== "unknown") {
+    const now = Date.now();
+    const requestData = rateLimitMap.get(`ongkir_${ip}`) || { count: 0, timestamp: now };
+    
+    if (now - requestData.timestamp < RATE_LIMIT_WINDOW) {
+      if (requestData.count >= MAX_REQUESTS_PER_WINDOW) {
+        return { success: false, code: "RATE_LIMITED", message: "Terlalu banyak permintaan, coba lagi sebentar." };
+      }
+      requestData.count++;
+    } else {
+      requestData.count = 1;
+      requestData.timestamp = now;
+    }
+    
+    if (rateLimitMap.size > 1000) rateLimitMap.clear();
+    rateLimitMap.set(`ongkir_${ip}`, requestData);
+  }
   const useDummy = process.env.USE_DUMMY_SHIPPING === "true";
   if (useDummy && process.env.NODE_ENV === "production") {
     throw new Error("Konfigurasi tidak valid: Dummy shipping tidak boleh aktif di production!");
