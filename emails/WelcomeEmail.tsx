@@ -6,9 +6,9 @@ import {
   Heading,
   Hr,
   Html,
+  Text,
   Preview,
   Section,
-  Text,
 } from "@react-email/components";
 import * as React from "react";
 
@@ -38,7 +38,7 @@ export const WelcomeEmail = ({
               Selamat datang di komunitas Ruang Seduh! Kami sangat senang Anda bergabung bersama kami.
             </Text>
             <Text style={text}>
-              Di sini, Anda tidak hanya menemukan biji kopi Nusantara pilihan, tetapi juga panduan teknik seduh manual, dan fitur Jurnal personal untuk mencatat setiap eksperimen rasio seduhan Anda.
+              Di Ruang Seduh, Anda bisa berbelanja biji kopi Nusantara, membaca panduan seduh manual, serta mencatat resep eksperimen kopi Anda di Jurnal.
             </Text>
 
             {/* Tombol Aksi */}
@@ -51,7 +51,7 @@ export const WelcomeEmail = ({
             <Hr style={divider} />
 
             <Text style={footerText}>
-              Mari buat secangkir kopi yang hangat hari ini. Jika butuh bantuan atau memiliki pertanyaan, jangan ragu untuk membalas email ini!
+              Selamat menyeduh! Jika ada pertanyaan, langsung balas email ini.
             </Text>
           </Section>
 
@@ -75,7 +75,7 @@ const content = { padding: "40px 30px" };
 const greeting = { color: "#4B2E1C", fontSize: "22px", fontWeight: "bold", margin: "0 0 15px" };
 const text = { color: "#8B5E3C", fontSize: "15px", lineHeight: "24px", margin: "0 0 20px" };
 const buttonContainer = { textAlign: "center" as const, margin: "35px 0" };
-const button = { backgroundColor: "#D4956A", color: "#FDF6EE", padding: "14px 28px", borderRadius: "8px", fontWeight: "bold", fontSize: "16px", textDecoration: "none", display: "inline-block", border: "1px solid #b57a52" };
+const button = { backgroundColor: "#4B2E1C", color: "#FDF6EE", padding: "14px 28px", borderRadius: "8px", fontWeight: "bold", fontSize: "16px", textDecoration: "none", display: "inline-block", border: "1px solid #4B2E1C" };
 const divider = { borderColor: "#eaddd3", margin: "30px 0" };
 const footerText = { color: "#8B5E3C", fontSize: "14px", lineHeight: "22px", margin: "0", textAlign: "center" as const, fontStyle: "italic" };
 const footer = { backgroundColor: "#FDF6EE", padding: "20px", textAlign: "center" as const, borderTop: "1px solid #eaddd3" };
