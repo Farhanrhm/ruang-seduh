@@ -54,6 +54,7 @@ const ptComponents = {
             alt="Ilustrasi Blog" 
             width={1200} 
             height={800} 
+            sizes="(max-width: 768px) 100vw, 800px"
             className="w-full h-auto object-contain max-h-[80vh]" 
           />
         </div>
@@ -74,15 +75,14 @@ const ptComponents = {
   }
 };
 
+import BlogAuthGate from "@/components/blog/BlogAuthGate";
+
 export default async function BlogPostPage({ 
-  params, 
-  searchParams 
+  params
 }: { 
   params: Promise<{ slug: string }>; 
-  searchParams: Promise<{ sort?: string }>; 
 }) {
   const { slug } = await params;
-  const { sort = "terbaru" } = await searchParams;
 
   // 1. Ambil Data Artikel dari Sanity
   const query = `*[_type == "post" && slug.current == $slug][0]{
@@ -97,20 +97,7 @@ export default async function BlogPostPage({
     notFound();
   }
 
-  // 2. Cek Auth Gate — cegah pembaca gelap mengakses konten eksklusif
-  const session = await getServerSession(authOptions);
-  if (checkGate(session) === "blocked") {
-    const imageUrl = post.mainImage?.url;
-    return <AuthPromptBlog title={post.title} imageUrl={imageUrl} slug={slug} />;
-  }
-  const userDB = session?.user?.id ? await prisma.user.findUnique({ where: { id: session.user.id } }) : null;
-  const isAdmin = userDB?.role === "ADMIN";
-
-  // 3. Ambil Daftar Komentar dengan Logika Sorting
-  let orderBy: any = { createdAt: "desc" };
-  if (sort === "terlama") orderBy = { createdAt: "asc" };
-  if (sort === "populer") orderBy = { likes: { _count: "desc" } };
-
+  // 3. Ambil Daftar Komentar (Statis default: Terbaru)
   const komentarList = await prisma.comment.findMany({
     where: { postSlug: slug, parentId: null }, 
     include: { 
@@ -120,7 +107,7 @@ export default async function BlogPostPage({
     },
     orderBy: [
       { isPinned: "desc" }, 
-      orderBy
+      { createdAt: "desc" }
     ]
   });
 
@@ -128,6 +115,7 @@ export default async function BlogPostPage({
   const isPortrait = imageMetadata && imageMetadata.height > imageMetadata.width;
 
   return (
+    <BlogAuthGate postTitle={post.title} imageUrl={post.mainImage?.url} slug={slug}>
     <div className="bg-[#FDF6EE] min-h-screen pt-24 pb-24 text-[#4B2E1C]">
       <div className="container mx-auto px-4 max-w-4xl">
         <Link href="/blog" className="inline-flex items-center gap-2 text-[#8B5E3C] hover:text-[#4B2E1C] font-bold mb-12 transition-colors bg-white px-5 py-2.5 rounded-full shadow-sm border border-[#8B5E3C]/10 w-fit group">
@@ -182,13 +170,12 @@ export default async function BlogPostPage({
             <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-xl border border-[#8B5E3C]/10 shadow-sm">
               <span className="text-xs font-bold text-[#8B5E3C] uppercase tracking-wider">Urutkan:</span>
               <div className="flex gap-3 text-sm font-bold">
-                <Link href={`?sort=terbaru`} scroll={false} className={`hover:text-[#D4956A] ${sort === 'terbaru' ? 'text-[#D4956A]' : ''}`}>Terbaru</Link>
-                <Link href={`?sort=populer`} scroll={false} className={`hover:text-[#D4956A] ${sort === 'populer' ? 'text-[#D4956A]' : ''}`}>Populer</Link>
+                <span className="text-[#D4956A]">Terbaru</span>
               </div>
             </div>
           </div>
           
-          <FormKomentar slug={slug} userId={session?.user?.id} />
+          <FormKomentar slug={slug} />
 
           <div className="mt-12 space-y-10">
             {komentarList.map((komentar) => (
@@ -219,7 +206,6 @@ export default async function BlogPostPage({
                       <TombolAksiKomentar 
                         commentId={komentar.id} 
                         slug={slug} 
-                        isAdmin={isAdmin} 
                         isPinned={komentar.isPinned}
                       />
                     </div>
@@ -227,16 +213,12 @@ export default async function BlogPostPage({
                     <p className="text-xs text-[#8B5E3C] mb-3">{new Date(komentar.createdAt).toLocaleDateString('id-ID')}</p>
                     <p className="font-teks text-[#4B2E1C] leading-relaxed mb-4 whitespace-pre-wrap">{komentar.text}</p>
 
-                    {/* Tombol Like Interaktif */}
-                    <div className="flex items-center gap-6">
                       <TombolLike 
                         commentId={komentar.id}
                         slug={slug}
                         initialLikes={komentar.likes.length}
-                        hasLiked={komentar.likes.some((like: any) => like.userId === session?.user?.id)}
-                        isGuest={!session?.user?.id}
+                        likes={komentar.likes}
                       />
-                    </div>
                   </div>
                 </div>
               </div>
@@ -249,5 +231,6 @@ export default async function BlogPostPage({
         </div>
       </div>
     </div>
+    </BlogAuthGate>
   );
 }
