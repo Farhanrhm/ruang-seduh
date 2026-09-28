@@ -58,7 +58,7 @@ export default async function PesananPage() {
       <Script 
         src={process.env.NODE_ENV === 'production' ? "https://app.midtrans.com/snap/snap.js" : "https://app.sandbox.midtrans.com/snap/snap.js"}
         data-client-key={process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY || 'SB-Mid-client-DUMMY'}
-        strategy="lazyOnload"
+        strategy="afterInteractive"
       />
       
       {/* Pemicu sinkronisasi asinkron (siluman) untuk membatalkan order kedaluwarsa via Midtrans API */}

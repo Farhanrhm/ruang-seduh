@@ -9,6 +9,7 @@ import {
   Text,
   Preview,
   Section,
+  Link,
 } from "@react-email/components";
 import * as React from "react";
 
@@ -58,6 +59,12 @@ export const WelcomeEmail = ({
           {/* Footer Terang */}
           <Section style={footer}>
             <Text style={footerCopyright}>© {new Date().getFullYear()} Ruang Seduh. Dirancang dengan sepenuh hati.</Text>
+            <Text style={footerUnsubscribe}>
+              Tidak ingin menerima email promosi lagi?{" "}
+              <Link href="https://ruang-seduh-nu.vercel.app/profil/pengaturan" style={unsubscribeLink}>
+                Berhenti berlangganan (Unsubscribe)
+              </Link>
+            </Text>
           </Section>
         </Container>
       </Body>
@@ -79,6 +86,8 @@ const button = { backgroundColor: "#4B2E1C", color: "#FDF6EE", padding: "14px 28
 const divider = { borderColor: "#eaddd3", margin: "30px 0" };
 const footerText = { color: "#8B5E3C", fontSize: "14px", lineHeight: "22px", margin: "0", textAlign: "center" as const, fontStyle: "italic" };
 const footer = { backgroundColor: "#FDF6EE", padding: "20px", textAlign: "center" as const, borderTop: "1px solid #eaddd3" };
-const footerCopyright = { color: "#8B5E3C", fontSize: "12px", margin: "0" };
+const footerCopyright = { color: "#8B5E3C", fontSize: "12px", margin: "0 0 10px" };
+const footerUnsubscribe = { color: "#a08675", fontSize: "11px", margin: "0" };
+const unsubscribeLink = { color: "#a08675", textDecoration: "underline" };
 
 export default WelcomeEmail;

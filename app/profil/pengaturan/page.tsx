@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { Settings } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import ProfileForm from "@/components/profile/ProfileForm";
+import DeleteAccount from "@/components/profile/DeleteAccount";
 
 export default async function PengaturanPage() {
   const session = await getServerSession(authOptions);
@@ -36,6 +37,8 @@ export default async function PengaturanPage() {
           initialNewsletter={user.newsletter} 
         />
       </div>
+
+      <DeleteAccount />
     </div>
   );
 }

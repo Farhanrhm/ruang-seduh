@@ -39,3 +39,40 @@ export async function updateProfile(name: string, newsletter: boolean) {
   }
 }
 
+export async function deleteAccount() {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id) {
+      return { success: false, error: "Unauthorized" };
+    }
+
+    const userId = session.user.id;
+
+    // Transaksi database: Hapus PII dan data interaksi, pertahankan Order dengan anonimisasi.
+    await prisma.$transaction([
+      prisma.account.deleteMany({ where: { userId } }),
+      prisma.session.deleteMany({ where: { userId } }),
+      prisma.address.deleteMany({ where: { userId } }),
+      prisma.brewJournal.deleteMany({ where: { userId } }),
+      prisma.comment.deleteMany({ where: { userId } }),
+      prisma.like.deleteMany({ where: { userId } }),
+      prisma.savedArticle.deleteMany({ where: { userId } }),
+      
+      prisma.user.update({
+        where: { id: userId },
+        data: {
+          name: "Pengguna Anonim",
+          email: `anonim-${userId}@ruangseduh.local`,
+          image: null,
+          newsletter: false,
+        }
+      })
+    ]);
+
+    return { success: true };
+  } catch (error) {
+    console.error("[deleteAccount] Error:", error);
+    return { success: false, error: "Gagal menghapus akun. Silakan coba lagi nanti." };
+  }
+}
+
