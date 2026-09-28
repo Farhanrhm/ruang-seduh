@@ -21,6 +21,11 @@ interface InvoiceEmailProps {
   items: any[];
   total: number;
   guestToken?: string | null;
+  subtotal: number;
+  ongkir: number;
+  city: string;
+  paymentType: string;
+  createdAt: Date;
 }
 
 export const InvoiceEmail = ({
@@ -32,13 +37,24 @@ export const InvoiceEmail = ({
   ],
   total = 205000,
   guestToken,
+  subtotal = 205000,
+  ongkir = 0,
+  city = "-",
+  paymentType = "-",
+  createdAt = new Date(),
 }: InvoiceEmailProps) => {
   const formatRupiah = (price: number) =>
     new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(price);
 
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://ruangseduh.id";
   const statusLink = guestToken 
-    ? `https://ruang-seduh-nu.vercel.app/pesanan/status?token=${guestToken}`
-    : `https://ruang-seduh-nu.vercel.app/profil/pesanan`;
+    ? `${appUrl}/pesanan/status?token=${guestToken}`
+    : `${appUrl}/profil/pesanan`;
+
+  const formattedDate = new Intl.DateTimeFormat("id-ID", {
+    day: "numeric", month: "short", year: "numeric",
+    hour: "2-digit", minute: "2-digit", timeZone: "Asia/Jakarta"
+  }).format(new Date(createdAt)) + " WIB";
 
   return (
     <Html>
@@ -62,6 +78,20 @@ export const InvoiceEmail = ({
             <Section style={invoiceBox}>
               <Text style={invoiceLabel}>NO. INVOICE</Text>
               <Text style={invoiceNumber}>{formatOrderId(orderId)}</Text>
+              <Text style={invoiceDate}>{formattedDate}</Text>
+            </Section>
+
+            <Section style={infoBox}>
+              <Row>
+                <Column style={infoCol}>
+                  <Text style={infoLabel}>Dikirim ke:</Text>
+                  <Text style={infoValue}>{name}<br />{city}</Text>
+                </Column>
+                <Column style={infoCol}>
+                  <Text style={infoLabel}>Metode Bayar:</Text>
+                  <Text style={infoValue}>{paymentType.toUpperCase()}</Text>
+                </Column>
+              </Row>
             </Section>
 
             <Hr style={divider} />
@@ -80,6 +110,26 @@ export const InvoiceEmail = ({
                   </Column>
                 </Row>
               ))}
+            </Section>
+
+            {/* Rincian Subtotal & Ongkir */}
+            <Section>
+              <Row style={{ marginBottom: "8px" }}>
+                <Column style={itemColName}>
+                  <Text style={subtotalLabel}>Subtotal Produk</Text>
+                </Column>
+                <Column style={itemColPrice}>
+                  <Text style={subtotalValue}>{formatRupiah(subtotal)}</Text>
+                </Column>
+              </Row>
+              <Row style={{ marginBottom: "15px" }}>
+                <Column style={itemColName}>
+                  <Text style={subtotalLabel}>Ongkos Kirim</Text>
+                </Column>
+                <Column style={itemColPrice}>
+                  <Text style={subtotalValue}>{ongkir > 0 ? formatRupiah(ongkir) : "Gratis"}</Text>
+                </Column>
+              </Row>
             </Section>
 
             <Hr style={divider} />
@@ -128,7 +178,12 @@ const greeting = { color: "#4B2E1C", fontSize: "22px", fontWeight: "bold", margi
 const text = { color: "#8B5E3C", fontSize: "15px", lineHeight: "24px", margin: "0 0 25px" };
 const invoiceBox = { backgroundColor: "#FDF6EE", padding: "20px", borderRadius: "12px", textAlign: "center" as const, marginBottom: "30px", border: "1px solid #eaddd3" };
 const invoiceLabel = { color: "#8B5E3C", fontSize: "10px", fontWeight: "bold", letterSpacing: "2px", margin: "0 0 5px" };
-const invoiceNumber = { color: "#4B2E1C", fontSize: "20px", fontWeight: "bold", margin: "0", wordBreak: "break-all" as const };
+const invoiceNumber = { color: "#4B2E1C", fontSize: "20px", fontWeight: "bold", margin: "0 0 5px 0", wordBreak: "break-all" as const };
+const invoiceDate = { color: "#8B5E3C", fontSize: "12px", margin: "0" };
+const infoBox = { backgroundColor: "#f9f9f9", padding: "15px", borderRadius: "8px", marginBottom: "20px", border: "1px solid #eeeeee" };
+const infoCol = { width: "50%", verticalAlign: "top" as const };
+const infoLabel = { color: "#8B5E3C", fontSize: "11px", textTransform: "uppercase" as const, margin: "0 0 4px 0" };
+const infoValue = { color: "#4B2E1C", fontSize: "13px", margin: "0", fontWeight: "500", lineHeight: "1.4" };
 const divider = { borderColor: "#eaddd3", margin: "20px 0" };
 const sectionTitle = { color: "#4B2E1C", fontSize: "16px", fontWeight: "bold", marginBottom: "15px" };
 const itemRow = {};
@@ -137,6 +192,8 @@ const itemColPrice = { width: "30%", textAlign: "right" as const, paddingBottom:
 const itemName = { color: "#4B2E1C", fontSize: "15px", margin: "0 0 4px 0", fontWeight: "500" };
 const itemQty = { color: "#8B5E3C", fontSize: "13px", margin: "0" };
 const itemPrice = { color: "#4B2E1C", fontSize: "15px", margin: "0", fontWeight: "500" };
+const subtotalLabel = { color: "#8B5E3C", fontSize: "14px", margin: "0" };
+const subtotalValue = { color: "#8B5E3C", fontSize: "14px", margin: "0" };
 const totalLabel = { color: "#4B2E1C", fontSize: "18px", fontWeight: "bold", margin: "0" };
 const totalValue = { color: "#D4956A", fontSize: "22px", fontWeight: "bold", margin: "0" };
 const footerText = { color: "#8B5E3C", fontSize: "14px", lineHeight: "22px", margin: "40px 0 0 0", textAlign: "center" as const, fontStyle: "italic" };

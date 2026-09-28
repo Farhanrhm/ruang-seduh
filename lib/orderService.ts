@@ -36,16 +36,26 @@ export async function processSuccessfulOrder(orderId: string, midtransId?: strin
           quantity: item.quantity,
         }));
 
-        kirimEmailInvoice(
-          targetEmail,
-          order.recipientName || order.user?.name || "Pelanggan",
-          emailItems,
-          order.totalAmount,
-          order.id,
-          order.guestToken
-        ).catch((err) => {
+        const subtotal = emailItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+        const ongkir = order.totalAmount - subtotal;
+
+        try {
+          await kirimEmailInvoice(
+            targetEmail,
+            order.recipientName || order.user?.name || "Pelanggan",
+            emailItems,
+            order.totalAmount,
+            order.id,
+            order.guestToken,
+            subtotal,
+            ongkir,
+            order.city,
+            paymentType || order.paymentType || "transfer",
+            order.createdAt
+          );
+        } catch (err) {
           console.error("Failed to send invoice email:", err);
-        });
+        }
       }
     }
   });
