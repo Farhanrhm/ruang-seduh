@@ -25,6 +25,8 @@ export const metadata: Metadata = {
   description: "Platform belajar menyeduh kopi rumahan secara menyenangkan.",
 };
 
+import WebVitals from "@/components/WebVitals";
+
 export default function RootLayout({
   children,
 }: {
@@ -33,6 +35,7 @@ export default function RootLayout({
   return (
     <html lang="id" suppressHydrationWarning>
       <body className={`${lora.variable} ${inter.variable} font-teks antialiased bg-[#FDF6EE] text-[#4B2E1C]`} suppressHydrationWarning>
+        <WebVitals />
         <Providers>
           <Toaster position="bottom-center" />
           <Navbar />
