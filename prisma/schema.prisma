@@ -132,12 +132,14 @@ model Product {
 
 model Order {
   id             String      @id @default(cuid())
-  userId         String
+  userId         String?
   midtransId     String?     @unique
   snapToken      String?
+  guestToken     String?     @unique
   status         OrderStatus @default(PENDING)
   totalAmount    Int
   paymentType    String?
+  email          String      @default("")
   recipientName  String
   phoneNumber    String
   province       String
@@ -149,10 +151,11 @@ model Order {
   biteshipAreaId String
   createdAt      DateTime    @default(now())
   updatedAt      DateTime    @updatedAt
-  user           User        @relation(fields: [userId], references: [id])
+  user           User?       @relation(fields: [userId], references: [id])
   items          OrderItem[]
 
   @@index([userId])
+  @@index([guestToken])
 }
 
 model OrderItem {

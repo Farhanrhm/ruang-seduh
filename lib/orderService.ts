@@ -28,7 +28,8 @@ export async function processSuccessfulOrder(orderId: string, midtransId?: strin
       // Stok sudah dikurangi saat proses checkout (buatPesanan), jadi tidak perlu dikurangi lagi di sini.
       
       // Kirim email invoice hanya sekali saat transisi dari PENDING ke PAID
-      if (order.user?.email) {
+      const targetEmail = order.email || order.user?.email;
+      if (targetEmail) {
         const emailItems = order.items.map((item) => ({
           name: `${item.productName}${item.grindSize ? ` (${item.grindSize})` : ""}`,
           price: item.price,
@@ -36,11 +37,12 @@ export async function processSuccessfulOrder(orderId: string, midtransId?: strin
         }));
 
         kirimEmailInvoice(
-          order.user.email,
-          order.recipientName || order.user.name || "Pelanggan",
+          targetEmail,
+          order.recipientName || order.user?.name || "Pelanggan",
           emailItems,
           order.totalAmount,
-          order.id
+          order.id,
+          order.guestToken
         ).catch((err) => {
           console.error("Failed to send invoice email:", err);
         });

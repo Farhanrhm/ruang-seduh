@@ -5,12 +5,15 @@ import { hapusKomentar, togglePin } from "@/app/actions/komentar";
 import { Pin, Trash2, Loader2, AlertTriangle, X, Check } from "lucide-react";
 import toast from "react-hot-toast";
 
-export default function TombolAksiKomentar({ commentId, slug, isAdmin, isPinned }: any) {
+import { useSession } from "next-auth/react";
+
+export default function TombolAksiKomentar({ commentId, slug, isPinned }: any) {
+  const { data: session } = useSession();
   const [isPending, startTransition] = useTransition();
   const [showConfirm, setShowConfirm] = useState(false); // State untuk konfirmasi UI
 
   // Jika bukan Admin, jangan tampilkan apa-apa sama sekali
-  if (!isAdmin) return null;
+  if ((session?.user as any)?.role !== "ADMIN") return null;
 
   const handlePin = () => {
     startTransition(async () => {

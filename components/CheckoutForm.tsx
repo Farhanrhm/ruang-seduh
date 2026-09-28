@@ -14,7 +14,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { CheckoutSchema, type CheckoutInput, type CheckoutOutput } from "@/lib/validations/checkout";
 import Script from "next/script";
 
-export default function CheckoutForm({ prefillData }: { prefillData: { name: string; email: string } }) {
+export default function CheckoutForm({ prefillData, savedAddresses = [] }: { prefillData: { name: string; email: string }; savedAddresses?: any[] }) {
   const { items, clearCart, updateQuantity, updateGrindSize, removeItem } = useCartStore();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const isSubmittingRef = useRef(false);
@@ -90,7 +90,6 @@ export default function CheckoutForm({ prefillData }: { prefillData: { name: str
       catatanPesanan: "",
       kurir: "",
       layananKurir: "",
-      syaratKetentuan: false,
     },
   });
 
@@ -178,6 +177,10 @@ export default function CheckoutForm({ prefillData }: { prefillData: { name: str
         setShippingRates(res.data);
         if (res.data.length === 0) {
           setRatesError("Belum ada layanan pengiriman ke wilayah ini.");
+        } else {
+          // Auto select cheapest rate
+          const cheapest = res.data.reduce((prev: ShippingRate, curr: ShippingRate) => prev.price < curr.price ? prev : curr);
+          handleSelectRate(cheapest);
         }
       } else {
         setRatesError(res.message || "Layanan ongkos kirim sedang tidak tersedia, coba lagi sebentar.");
@@ -226,7 +229,8 @@ export default function CheckoutForm({ prefillData }: { prefillData: { name: str
               localStorage.removeItem("checkout_draft");
               isSubmittingRef.current = false;
               setIsSubmitting(false);
-              router.push(`/checkout/sukses?order_id=${result.orderId}`);
+              const query = result.guestToken ? `?order_id=${result.orderId}&token=${result.guestToken}` : `?order_id=${result.orderId}`;
+              router.push(`/checkout/sukses${query}`);
             },
             onPending: function (midtransResult: any) {
               clearCart();
@@ -234,7 +238,11 @@ export default function CheckoutForm({ prefillData }: { prefillData: { name: str
               toast.success("Pesanan dibuat. Menunggu pembayaran.", { duration: 5000 });
               isSubmittingRef.current = false;
               setIsSubmitting(false);
-              router.push(`/checkout/sukses?order_id=${result.orderId}`);
+              if (result.guestToken) {
+                router.push(`/pesanan/status?token=${result.guestToken}`);
+              } else {
+                router.push("/profil/pesanan");
+              }
             },
             onError: function (midtransResult: any) {
               toast.error("Pembayaran gagal diproses oleh Midtrans.");
@@ -242,10 +250,16 @@ export default function CheckoutForm({ prefillData }: { prefillData: { name: str
               setIsSubmitting(false);
             },
             onClose: function () {
-              toast.error("Popup pembayaran ditutup tanpa menyelesaikan pembayaran.");
-              // JANGAN redirect dan JANGAN hapus keranjang sesuai instruksi
+              toast.error("Anda belum menyelesaikan pembayaran. Silakan bayar melalui riwayat pesanan.");
+              clearCart();
+              localStorage.removeItem("checkout_draft");
               isSubmittingRef.current = false;
               setIsSubmitting(false);
+              if (result.guestToken) {
+                router.push(`/pesanan/status?token=${result.guestToken}`);
+              } else {
+                router.push("/profil/pesanan");
+              }
             }
           });
         } else {
@@ -278,7 +292,7 @@ export default function CheckoutForm({ prefillData }: { prefillData: { name: str
       <Script 
         src={process.env.NODE_ENV === 'production' ? "https://app.midtrans.com/snap/snap.js" : "https://app.sandbox.midtrans.com/snap/snap.js"}
         data-client-key={process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY || 'SB-Mid-client-DUMMY'}
-        strategy="lazyOnload"
+        strategy="afterInteractive"
       />
       <div className="container mx-auto px-4 max-w-6xl">
         <Link href="/toko" className="inline-flex items-center gap-2 text-[#8B5E3C] hover:text-[#4B2E1C] font-bold mb-8 bg-white px-4 py-2 rounded-2xl shadow-sm border border-[#8B5E3C]/10 w-fit">
@@ -290,6 +304,43 @@ export default function CheckoutForm({ prefillData }: { prefillData: { name: str
         <div className="grid lg:grid-cols-12 gap-10">
           <div className="lg:col-span-7">
             <form id="checkout-form" onSubmit={handleSubmit(onSubmit)} className="bg-white p-8 md:p-10 rounded-[2rem] border border-[#8B5E3C]/10 shadow-sm space-y-8">
+              {/* Buku Alamat */}
+              {savedAddresses && savedAddresses.length > 0 && (
+                <div className="pb-6 border-b border-[#8B5E3C]/10 mb-6">
+                  <h3 className="font-judul text-xl font-bold text-[#4B2E1C] mb-4 flex items-center gap-2">
+                    <MapPin className="w-5 h-5 text-[#D4956A]" /> Pilih Alamat Tersimpan
+                  </h3>
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    {savedAddresses.map((addr) => (
+                      <button
+                        key={addr.id}
+                        type="button"
+                        onClick={() => {
+                          setValue("nama", addr.recipientName, { shouldValidate: true });
+                          setValue("whatsapp", addr.phoneNumber, { shouldValidate: true });
+                          setValue("detailAlamat", addr.detailAddress, { shouldValidate: true });
+                          setValue("kodepos", addr.postalCode, { shouldValidate: true });
+                          setValue("catatanPesanan", addr.courierNote || "", { shouldValidate: true });
+                          handleSelectArea({
+                            id: addr.biteshipAreaId,
+                            name: `${addr.district}, ${addr.city}, ${addr.province} ${addr.postalCode}`,
+                            administrative_division_level_1_name: addr.province,
+                            administrative_division_level_2_name: addr.city,
+                            administrative_division_level_3_name: addr.district,
+                            postal_code: parseInt(addr.postalCode)
+                          });
+                          toast.success(`Alamat "${addr.label || 'Utama'}" diterapkan!`);
+                        }}
+                        className="text-left p-4 rounded-xl border border-[#8B5E3C]/20 hover:border-[#D4956A] hover:bg-[#FDF6EE] transition-all"
+                      >
+                        <p className="font-bold text-[#4B2E1C] text-sm">{addr.label || "Utama"} - {addr.recipientName}</p>
+                        <p className="text-xs text-[#8B5E3C] mt-1 line-clamp-2">{addr.detailAddress}, {addr.district}, {addr.city}</p>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               <div>
                 <h3 className="font-judul text-xl font-bold text-[#4B2E1C] mb-6 flex items-center gap-2">
                   <User className="w-5 h-5 text-[#D4956A]" /> Informasi Kontak
@@ -434,16 +485,9 @@ export default function CheckoutForm({ prefillData }: { prefillData: { name: str
               </div>
 
               <div className="pt-6 border-t border-[#8B5E3C]/10 space-y-4">
-                <label className="flex items-start gap-3 cursor-pointer group">
-                  <div className="relative flex items-center justify-center mt-1">
-                    <input type="checkbox" {...register("syaratKetentuan")} className="peer appearance-none w-5 h-5 border-2 border-[#8B5E3C]/30 rounded-md checked:bg-[#D4956A] checked:border-[#D4956A] transition-colors cursor-pointer" aria-describedby={errors.syaratKetentuan ? "snk-error" : undefined} />
-                    <ShieldCheck className="w-3 h-3 text-white absolute opacity-0 peer-checked:opacity-100 pointer-events-none" />
-                  </div>
-                  <span className="text-sm text-[#4B2E1C] font-teks leading-relaxed">
-                    Saya menyetujui <Link href="/syarat-ketentuan" className="font-bold text-[#D4956A] hover:underline">Syarat & Ketentuan</Link> serta <Link href="/kebijakan-pengembalian" className="font-bold text-[#D4956A] hover:underline">Kebijakan Pengembalian</Link> Ruang Seduh.
-                  </span>
-                </label>
-                {errors.syaratKetentuan && <p id="snk-error" className="text-red-500 text-xs">{errors.syaratKetentuan.message}</p>}
+                <p className="text-sm text-[#4B2E1C] font-teks leading-relaxed">
+                  Dengan menekan <strong>Bayar Pesanan</strong>, Anda menyetujui <Link href="/kebijakan-privasi" className="font-bold text-[#D4956A] hover:underline">Kebijakan Privasi</Link>, <Link href="/syarat-ketentuan" className="font-bold text-[#D4956A] hover:underline">Syarat & Ketentuan</Link>, serta <Link href="/kebijakan-pengembalian" className="font-bold text-[#D4956A] hover:underline">Kebijakan Pengembalian</Link> Ruang Seduh.
+                </p>
                 
                 <p className="text-xs text-[#8B5E3C] font-teks">
                   Butuh bantuan? <a href="https://wa.me/6281234567890" target="_blank" rel="noopener noreferrer" className="font-bold hover:underline">Hubungi CS via WhatsApp</a>

@@ -30,7 +30,8 @@ export async function kirimEmailInvoice(
   customerName: string,
   cartItems: InvoiceEmailItem[] | CartItem[],
   total: number,
-  orderId: string
+  orderId: string,
+  guestToken?: string | null
 ) {
   try {
     const formattedId = formatOrderId(orderId);
@@ -43,6 +44,7 @@ export async function kirimEmailInvoice(
         orderId: orderId,
         items: cartItems,
         total: total,
+        guestToken: guestToken,
       }),
     });
   } catch {

@@ -1,5 +1,6 @@
 "use server";
 
+import crypto from "crypto";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
@@ -12,8 +13,13 @@ import { revalidatePath } from "next/cache";
 import { hitungOngkirBiteship } from "@/app/actions/biteship";
 
 export type BuatPesananResult =
-  | { success: true; orderId: string; snapToken: string }
+  | { success: true; orderId: string; snapToken: string; guestToken?: string | null }
   | { success: false; error: string };
+
+// Rate limiter for guest checkout (best-effort per instance)
+const guestRateLimitMap = new Map<string, { count: number, timestamp: number }>();
+const GUEST_RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
+const GUEST_MAX_REQUESTS = 3;
 
 export async function buatPesanan(
   data: CheckoutOutput,
@@ -23,7 +29,28 @@ export async function buatPesanan(
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.id) {
-    return { success: false, error: "Anda harus login untuk melakukan pemesanan." };
+    // Guest Rate Limiting
+    const { headers } = await import("next/headers");
+    const headersList = await headers();
+    const ip = headersList.get("x-forwarded-for") || headersList.get("x-real-ip") || "unknown";
+    
+    if (ip !== "unknown") {
+      const now = Date.now();
+      const requestData = guestRateLimitMap.get(ip) || { count: 0, timestamp: now };
+      
+      if (now - requestData.timestamp < GUEST_RATE_LIMIT_WINDOW) {
+        if (requestData.count >= GUEST_MAX_REQUESTS) {
+          return { success: false, error: "Terlalu banyak pesanan. Harap tunggu beberapa saat." };
+        }
+        requestData.count++;
+      } else {
+        requestData.count = 1;
+        requestData.timestamp = now;
+      }
+      
+      if (guestRateLimitMap.size > 1000) guestRateLimitMap.clear();
+      guestRateLimitMap.set(ip, requestData);
+    }
   }
 
   // Server-side validation using the shared schema
@@ -101,69 +128,10 @@ export async function buatPesanan(
 
     const calculatedTotalAmount = calculatedTotalProduk + selectedCourierRate.price;
 
-    // 4. Buat Order di Database dan Reserve Stok (Status PENDING)
-    const order = await prisma.$transaction(async (tx) => {
-      // Atomic Stock Reservation
-      for (const item of cartItems) {
-        const dbProduct = dbProducts.find(p => p.id === item.id || p.sanityId === item.id)!;
-        
-        // Kurangi stok HANYA jika ketersediaan mencukupi (mencegah race condition)
-        const updateResult = await tx.product.updateMany({
-          where: {
-            id: dbProduct.id,
-            stock: { gte: item.quantity }
-          },
-          data: {
-            stock: { decrement: item.quantity }
-          }
-        });
-
-        // Jika count 0, berarti dalam sepersekian detik stok diambil orang lain
-        if (updateResult.count === 0) {
-          throw new Error(`Stok untuk ${dbProduct.name} habis saat proses checkout.`);
-        }
-      }
-
-      return await tx.order.create({
-        data: {
-          id: idempotencyKey, // Use idempotency key as Order ID
-          userId: session.user.id,
-          totalAmount: calculatedTotalAmount,
-          status: "PENDING",
-          // Snapshot Alamat Pengiriman
-          recipientName: data.nama,
-          phoneNumber: data.whatsapp,
-          province: data.provinsi,
-          city: data.kota,
-          district: data.kecamatan,
-          postalCode: data.kodepos,
-          detailAddress: data.detailAlamat,
-          courierNote: data.catatanPesanan || null,
-          biteshipAreaId: data.biteshipAreaId,
-          paymentType: `${data.kurir} - ${data.layananKurir}`, // Info kurir
-          // Snapshot Items
-          items: {
-            create: cartItems.map((item) => {
-              const dbProduct = dbProducts.find(p => p.id === item.id || p.sanityId === item.id)!;
-              return {
-                productId: dbProduct.id,
-                productName: dbProduct.name,
-                unitPrice: dbProduct.price,
-                weight: dbProduct.weight || 200,
-                quantity: item.quantity,
-                price: dbProduct.price,
-                grindSize: item.grindSize || null,
-              };
-            }),
-          },
-        },
-      });
-    });
-
-    // 5. Minta Snap Token ke Midtrans
+    // 4. Minta Snap Token ke Midtrans (SEBELUM memotong stok)
     const parameter = {
       transaction_details: {
-        order_id: order.id,
+        order_id: idempotencyKey, // Gunakan idempotencyKey sebagai order_id
         gross_amount: calculatedTotalAmount,
       },
       customer_details: {
@@ -201,15 +169,95 @@ export async function buatPesanan(
       throw new Error("Gagal mendapatkan Snap token dari Midtrans");
     }
 
-    // Update order dengan snapToken
-    await prisma.order.update({
-      where: { id: order.id },
-      data: { snapToken: snapResponse.token }
+    // 5. Buat Order di Database dan Reserve Stok (Status PENDING)
+    // Dijalankan setelah Midtrans sukses, untuk menghindari stok menggantung
+    const guestToken = session?.user?.id ? null : crypto.randomBytes(32).toString("hex");
+
+    const order = await prisma.$transaction(async (tx) => {
+      // Atomic Stock Reservation
+      for (const item of cartItems) {
+        const dbProduct = dbProducts.find(p => p.id === item.id || p.sanityId === item.id)!;
+        
+        // Kurangi stok HANYA jika ketersediaan mencukupi (mencegah race condition)
+        const updateResult = await tx.product.updateMany({
+          where: {
+            id: dbProduct.id,
+            stock: { gte: item.quantity }
+          },
+          data: {
+            stock: { decrement: item.quantity }
+          }
+        });
+
+        // Jika count 0, berarti dalam sepersekian detik stok diambil orang lain
+        if (updateResult.count === 0) {
+          throw new Error(`Stok untuk ${dbProduct.name} habis saat proses checkout.`);
+        }
+      }
+
+      const newOrder = await tx.order.create({
+        data: {
+          id: idempotencyKey, 
+          userId: session?.user?.id || undefined,
+          email: data.email,
+          guestToken: guestToken || undefined,
+          snapToken: snapResponse.token,
+          totalAmount: calculatedTotalAmount,
+          status: "PENDING",
+          // Snapshot Alamat Pengiriman
+          recipientName: data.nama,
+          phoneNumber: data.whatsapp,
+          province: data.provinsi,
+          city: data.kota,
+          district: data.kecamatan,
+          postalCode: data.kodepos,
+          detailAddress: data.detailAlamat,
+          courierNote: data.catatanPesanan || null,
+          biteshipAreaId: data.biteshipAreaId,
+          paymentType: `${data.kurir} - ${data.layananKurir}`, // Info kurir
+          // Snapshot Items
+          items: {
+            create: cartItems.map((item) => {
+              const dbProduct = dbProducts.find(p => p.id === item.id || p.sanityId === item.id)!;
+              return {
+                productId: dbProduct.id,
+                productName: dbProduct.name,
+                unitPrice: dbProduct.price,
+                weight: dbProduct.weight || 200,
+                quantity: item.quantity,
+                price: dbProduct.price,
+                grindSize: item.grindSize || null,
+              };
+            }),
+          },
+        },
+      });
+      return newOrder;
     });
 
-    return { success: true, orderId: order.id, snapToken: snapResponse.token };
+    // 6. Simpan alamat ke Buku Alamat jika diminta (dan user login)
+    if (data.simpanAlamat && session?.user?.id) {
+      // Cek limit alamat (opsional, bisa dibiarkan)
+      await prisma.address.create({
+        data: {
+          userId: session.user.id,
+          label: data.labelAlamat || "Utama",
+          recipientName: data.nama,
+          phoneNumber: data.whatsapp,
+          province: data.provinsi,
+          city: data.kota,
+          district: data.kecamatan,
+          postalCode: data.kodepos,
+          detailAddress: data.detailAlamat,
+          courierNote: data.catatanPesanan || null,
+          biteshipAreaId: data.biteshipAreaId,
+        }
+      }).catch(err => console.error("Gagal menyimpan alamat:", err));
+    }
+
+    return { success: true, orderId: order.id, snapToken: snapResponse.token, guestToken: guestToken };
   } catch (error) {
-    console.error("[buatPesanan] Error:", error);
+    console.error("[buatPesanan] Error:", error instanceof Error ? error.message : "Unknown error occurred");
     return { success: false, error: sanitizeErrorMessage(error, "Gagal membuat pesanan. Silakan coba lagi.") };
   }
 }

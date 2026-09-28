@@ -20,6 +20,7 @@ interface InvoiceEmailProps {
   name: string;
   items: any[];
   total: number;
+  guestToken?: string | null;
 }
 
 export const InvoiceEmail = ({
@@ -30,9 +31,14 @@ export const InvoiceEmail = ({
     { name: "Hario V60 Dripper", quantity: 1, price: 120000 }
   ],
   total = 205000,
+  guestToken,
 }: InvoiceEmailProps) => {
   const formatRupiah = (price: number) =>
     new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(price);
+
+  const statusLink = guestToken 
+    ? `https://ruang-seduh-nu.vercel.app/pesanan/status?token=${guestToken}`
+    : `https://ruang-seduh-nu.vercel.app/profil/pesanan`;
 
   return (
     <Html>
@@ -91,7 +97,7 @@ export const InvoiceEmail = ({
             </Section>
 
             <Section style={buttonContainer}>
-              <Button href="https://ruang-seduh-nu.vercel.app/profil/pesanan" style={buttonCTA}>
+              <Button href={statusLink} style={buttonCTA}>
                 Cek Status Pesanan
               </Button>
             </Section>

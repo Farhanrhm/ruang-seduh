@@ -44,11 +44,6 @@ export const CheckoutSchema = z.object({
   catatanPesanan: z.string().max(500, "Catatan maksimal 500 karakter.").optional(),
   kurir: z.string().min(1, "Kurir pengiriman wajib dipilih."),
   layananKurir: z.string().min(1, "Layanan kurir wajib dipilih."),
-  syaratKetentuan: z
-    .boolean()
-    .refine((val) => val === true, {
-      message: "Anda harus menyetujui Syarat & Ketentuan",
-    }),
 });
 
 export type CheckoutInput = z.input<typeof CheckoutSchema>;
