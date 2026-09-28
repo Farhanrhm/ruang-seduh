@@ -120,6 +120,18 @@ export const productType = defineType({
         ],
       },
     }),
+    defineField({
+      name: 'pirtNumber',
+      title: 'Nomor PIRT / BPOM (Khusus Kopi)',
+      type: 'string',
+      description: 'Wajib diisi untuk kepatuhan perlindungan konsumen. Contoh: PIRT No. 510317301XXXX-XX',
+    }),
+    defineField({
+      name: 'warrantyInfo',
+      title: 'Info Garansi (Khusus Alat)',
+      type: 'string',
+      description: 'Wajib untuk barang elektronik/alat. Contoh: Garansi Resmi 1 Tahun',
+    }),
   ],
   preview: {
     select: {
