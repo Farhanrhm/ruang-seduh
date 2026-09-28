@@ -49,9 +49,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const fromEmail = process.env.EMAIL_FROM || "Ruang Seduh <halo@ruangseduh.id>";
+    const targetEmail = process.env.NODE_ENV === "production" ? email : "delivered@resend.dev";
+    
     await resend.emails.send({
-      from: "Ruang Seduh <halo@ruangseduh.id>",
-      to: [email],
+      from: fromEmail,
+      to: [targetEmail],
       subject: "Selamat datang di Ruang Seduh!",
       react: WelcomeEmail({ name: "Penikmat Kopi" }),
     });
