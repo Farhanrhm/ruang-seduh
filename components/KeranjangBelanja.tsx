@@ -43,7 +43,18 @@ export default function KeranjangBelanja() {
     setIsBouncing(false);
   }, []);
 
-  if (!isMounted) return null;
+  // Mencegah CLS: Render ikon statis tanpa badge saat SSR
+  if (!isMounted) {
+    return (
+      <button
+        className="relative p-2 text-[#4B2E1C]/50 rounded-full flex items-center justify-center"
+        aria-label="Keranjang memuat"
+        disabled
+      >
+        <ShoppingBag className="w-5 h-5" />
+      </button>
+    );
+  }
 
   return (
     <button

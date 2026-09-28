@@ -1,9 +1,6 @@
 import { client } from "@/sanity/lib/client";
 import KatalogToko from "@/components/KatalogToko";
 
-// ISR: Cache dinonaktifkan (0) agar perubahan gambar Sanity langsung muncul
-export const revalidate = 0; 
-
 export default async function TokoPage() {
   const query = `*[_type == "product"] | order(_createdAt desc) {
     "id": _id,
@@ -20,10 +17,12 @@ export default async function TokoPage() {
     notes,
     "createdAt": _createdAt,
     weight,
-    grindOptions
+    grindOptions,
+    pirtNumber,
+    warrantyInfo
   }`;
   
-  const products = await client.fetch(query);
+  const products = await client.fetch(query, {}, { next: { tags: ["products"] } });
 
   return (
     <div className="bg-[#FDF6EE] min-h-screen pt-24 pb-24 text-[#4B2E1C]">

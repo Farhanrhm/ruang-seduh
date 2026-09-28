@@ -16,8 +16,8 @@ export default function Hero() {
           alt="Suasana menyeduh kopi di Ruang Seduh"
           fill
           priority
-          quality={85}
-          sizes="100vw"
+          quality={60}
+          sizes="(max-width: 768px) 100vw, 100vw"
           className="object-cover brightness-[0.3]"
         />
       </div>

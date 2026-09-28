@@ -1,20 +1,25 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
 import { toggleLike } from "@/app/actions/komentar";
 import { Heart } from "lucide-react";
+import { useSession } from "next-auth/react";
 
-export default function TombolLike({ commentId, slug, initialLikes, hasLiked, isGuest }: any) {
+export default function TombolLike({ commentId, slug, initialLikes, likes = [] }: any) {
+  const { data: session } = useSession();
   const [isPending, startTransition] = useTransition();
-  const [optimisticLiked, setOptimisticLiked] = useState(hasLiked);
-  const [optimisticCount, setOptimisticCount] = useState(initialLikes);
+  const [localAction, setLocalAction] = useState<"liked" | "unliked" | null>(null);
+
+  const serverHasLiked = session?.user?.id ? likes.some((like: any) => like.userId === session.user.id) : false;
+  
+  const optimisticLiked = localAction === "liked" ? true : localAction === "unliked" ? false : serverHasLiked;
+  const optimisticCount = initialLikes + (localAction === "liked" && !serverHasLiked ? 1 : localAction === "unliked" && serverHasLiked ? -1 : 0);
 
   const handleLike = () => {
-    if (isGuest) return alert("Silakan login untuk menyukai komentar.");
+    if (!session?.user) return alert("Silakan login untuk menyukai komentar.");
     
-    // Efek UI instan (Optimistic Update) agar tidak terasa lag
-    setOptimisticLiked(!optimisticLiked);
-    setOptimisticCount(optimisticLiked ? optimisticCount - 1 : optimisticCount + 1);
+    // Efek UI instan
+    setLocalAction(optimisticLiked ? "unliked" : "liked");
 
     startTransition(async () => {
       await toggleLike(commentId, slug);

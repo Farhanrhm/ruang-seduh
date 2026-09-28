@@ -262,6 +262,15 @@ export default function OrderCard({ order }: { order: Order }) {
             </span>
           )}
 
+          <a 
+            href={`https://wa.me/6281234567890?text=Halo%20Ruang%20Seduh,%20saya%20butuh%20bantuan%20mengenai%20pesanan%20saya%20dengan%20ID:%20${order.id}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full sm:w-auto min-h-[44px] px-4 py-2 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl text-sm font-bold hover:bg-emerald-100 transition-colors flex items-center justify-center gap-2"
+          >
+            Bantuan WhatsApp
+          </a>
+
           {order.status === "PENDING" && order.snapToken ? (
             <div className="w-full sm:w-auto min-w-[200px]">
               <PayButton snapToken={order.snapToken} />

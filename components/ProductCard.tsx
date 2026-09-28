@@ -7,7 +7,7 @@ import { useCartStore } from "@/store/useCartStore";
 import { urlFor } from "@/sanity/lib/image";
 import toast from "react-hot-toast";
 
-export default function ProductCard({ product }: { product: any }) {
+export default function ProductCard({ product, priority = false }: { product: any, priority?: boolean }) {
   const [imgError, setImgError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isAdded, setIsAdded] = useState(false);
@@ -51,6 +51,8 @@ export default function ProductCard({ product }: { product: any }) {
             src={displayImage}
             alt={product.name}
             fill
+            priority={priority}
+            unoptimized={!!product.sanityImage}
             className={`object-cover group-hover:scale-110 transition-transform duration-700 ${isLoading ? "opacity-0" : "opacity-100"}`}
             onLoad={() => setIsLoading(false)}
             onError={() => { setImgError(true); setIsLoading(false); }}
@@ -99,11 +101,24 @@ export default function ProductCard({ product }: { product: any }) {
                 </p>
               </div>
             )}
+            {product.pirtNumber && (
+              <p className="text-[10px] font-teks text-[#8B5E3C] mt-2 opacity-80 border-t border-[#8B5E3C]/10 pt-2 text-center">
+                PIRT: {product.pirtNumber}
+              </p>
+            )}
           </div>
         ) : (
-          <div className="mb-6 flex-1">
-            <p className="text-[9px] uppercase tracking-widest font-black text-[#8B5E3C] mb-1">Description</p>
-            <p className="text-sm font-teks text-[#8B5E3C] leading-relaxed line-clamp-3">{product.description}</p>
+          <div className="mb-6 flex-1 flex flex-col gap-3">
+            <div>
+              <p className="text-[9px] uppercase tracking-widest font-black text-[#8B5E3C] mb-1">Description</p>
+              <p className="text-sm font-teks text-[#8B5E3C] leading-relaxed line-clamp-3">{product.description}</p>
+            </div>
+            {product.warrantyInfo && (
+              <div className="flex items-center gap-1.5 text-[#4A7C59] bg-[#4A7C59]/10 px-3 py-2 rounded-lg border border-[#4A7C59]/20 self-start mt-auto">
+                <Check className="w-4 h-4" />
+                <span className="text-xs font-bold tracking-wide">{product.warrantyInfo}</span>
+              </div>
+            )}
           </div>
         )}
 

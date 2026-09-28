@@ -2,13 +2,16 @@
 
 import { useState, useTransition } from "react";
 import { tambahKomentar } from "@/app/actions/komentar";
-import { Send, MessageSquareText } from "lucide-react";
+import { Send, MessageSquareText, Loader2 } from "lucide-react";
 import Link from "next/link";
 import toast from "react-hot-toast";
+import { useSession } from "next-auth/react";
 
-export default function FormKomentar({ slug, userId }: { slug: string; userId?: string }) {
+export default function FormKomentar({ slug }: { slug: string }) {
   const [text, setText] = useState("");
   const [isPending, startTransition] = useTransition();
+  const { data: session } = useSession();
+  const userId = session?.user?.id;
 
   // Tampilan jika user BELUM login
   if (!userId) {
@@ -62,7 +65,7 @@ export default function FormKomentar({ slug, userId }: { slug: string; userId?: 
           disabled={isPending || !text.trim()}
           className="absolute bottom-5 right-5 p-3.5 bg-[#D4956A] text-white rounded-2xl hover:bg-[#b57a52] disabled:opacity-50 disabled:hover:bg-[#D4956A] transition-all shadow-md"
         >
-          <Send className="w-5 h-5" />
+          {isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
         </button>
       </div>
     </form>

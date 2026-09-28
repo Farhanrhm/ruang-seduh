@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useDeferredValue } from "react";
 import { Search, SlidersHorizontal, PackageX, ChevronDown } from "lucide-react";
 import ProductCard from "@/components/ProductCard";
 
@@ -15,11 +15,12 @@ export default function KatalogToko({ initialProducts }: { initialProducts: any[
   const [activeCategory, setActiveCategory] = useState("SEMUA");
   const [sortBy, setSortBy] = useState("newest");
   const [searchQuery, setSearchQuery] = useState("");
+  const deferredSearchQuery = useDeferredValue(searchQuery);
 
   const filteredProducts = useMemo(() => {
     let result = initialProducts.filter((p) => {
       const matchCategory = activeCategory === "SEMUA" || p.category === activeCategory;
-      const matchSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchSearch = p.name.toLowerCase().includes(deferredSearchQuery.toLowerCase());
       return matchCategory && matchSearch;
     });
 
@@ -90,8 +91,8 @@ export default function KatalogToko({ initialProducts }: { initialProducts: any[
 
       {filteredProducts.length > 0 ? (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-          {filteredProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
+          {filteredProducts.map((product, index) => (
+            <ProductCard key={product.id} product={product} priority={index < 4} />
           ))}
         </div>
       ) : (
