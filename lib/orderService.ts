@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { kirimEmailInvoice } from "@/lib/email-service";
+import { sendTelegramNotification } from "@/lib/telegram";
 
 export async function processSuccessfulOrder(orderId: string, midtransId?: string, paymentType?: string) {
   const order = await prisma.order.findUnique({
@@ -56,6 +57,33 @@ export async function processSuccessfulOrder(orderId: string, midtransId?: strin
         } catch (err) {
           console.error("Failed to send invoice email:", err);
         }
+
+        // Kirim notifikasi Telegram ke Admin
+        const formattedDate = new Intl.DateTimeFormat("id-ID", {
+          day: "numeric", month: "short", year: "numeric",
+          hour: "2-digit", minute: "2-digit", timeZone: "Asia/Jakarta"
+        }).format(new Date(order.createdAt)) + " WIB";
+        
+        const formatRupiah = (price: number) =>
+          new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(price);
+
+        const itemsList = emailItems.map(i => `- ${i.quantity}x ${i.name}`).join("\n");
+        const envObj = process["env"];
+        const domain = envObj.NEXT_PUBLIC_APP_URL || "https://ruangseduh.id";
+        
+        const telegramMessage = `🔔 <b>ORDER BARU MASUK!</b>
+ID: <code>${order.id}</code>
+👤 Pembeli: ${order.recipientName || order.user?.name || "Pelanggan"}
+💰 Total: ${formatRupiah(order.totalAmount)}
+🚚 Kurir: -
+
+📦 <b>Item:</b>
+${itemsList}
+
+🔗 <b>Klik untuk proses:</b>
+<a href="${domain}/admin/orders/${order.id}">Buka Dashboard Admin</a>`;
+
+        sendTelegramNotification(telegramMessage).catch(console.error);
       }
     }
   });
@@ -85,6 +113,17 @@ export async function processCancelledOrder(orderId: string, midtransId?: string
           await tx.product.update({
             where: { id: item.productId },
             data: { stock: { increment: item.quantity } },
+          });
+
+          await tx.stockLedger.create({
+            data: {
+              productId: item.productId,
+              quantity: item.quantity, // Positif karena kembali
+              reason: "RETURN",
+              orderId: order.id,
+              actionBy: "Sistem (Webhook/Cancel)",
+              notes: `Pengembalian stok pesanan kadaluwarsa/dibatalkan`,
+            }
           });
         }
       }

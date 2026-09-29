@@ -193,6 +193,18 @@ export async function buatPesanan(
         if (updateResult.count === 0) {
           throw new Error(`Stok untuk ${dbProduct.name} habis saat proses checkout.`);
         }
+
+        // Catat di Stock Ledger
+        await tx.stockLedger.create({
+          data: {
+            productId: dbProduct.id,
+            quantity: -item.quantity,
+            reason: "SALE",
+            orderId: idempotencyKey,
+            actionBy: "Sistem (Checkout)",
+            notes: `Checkout Pesanan ${idempotencyKey}`,
+          }
+        });
       }
 
       const newOrder = await tx.order.create({

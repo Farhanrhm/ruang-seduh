@@ -64,3 +64,39 @@ export async function kirimEmailInvoice(
     console.error("Gagal mengirim email invoice:", error);
   }
 }
+
+export async function kirimEmailResi(
+  email: string,
+  customerName: string,
+  orderId: string,
+  trackingNumber: string
+) {
+  try {
+    const formattedId = formatOrderId(orderId);
+    const envObj = process["env"];
+    const fromEmail = envObj.EMAIL_FROM || "Ruang Seduh Store <pesanan@ruangseduh.id>";
+    const targetEmail = envObj.NODE_ENV === "production" ? email : "delivered@resend.dev";
+    const domain = envObj.NEXT_PUBLIC_APP_URL || "https://ruangseduh.id";
+    
+    await resend.emails.send({
+      from: fromEmail,
+      to: targetEmail,
+      subject: `Paket Anda Telah Dikirim! - ${formattedId}`,
+      html: `
+        <div style="font-family: sans-serif; padding: 20px;">
+          <h2>Halo ${customerName}, paket Anda sedang dalam perjalanan! 🚚</h2>
+          <p>Terima kasih telah berbelanja di Ruang Seduh. Pesanan Anda dengan ID <strong>${formattedId}</strong> telah diserahkan kepada kurir.</p>
+          <div style="background-color: #f4f4f4; padding: 15px; border-radius: 8px; margin: 20px 0;">
+            <p style="margin: 0;">Nomor Resi Pelacakan:</p>
+            <h3 style="margin: 5px 0;">${trackingNumber}</h3>
+          </div>
+          <p>Anda dapat mengecek status pesanan Anda melalui dashboard toko kami atau langsung melalui website kurir bersangkutan.</p>
+          <a href="${domain}/status-pesanan?orderId=${orderId}" style="display: inline-block; padding: 10px 20px; background-color: #000; color: #fff; text-decoration: none; border-radius: 5px;">Lacak Pesanan Saya</a>
+        </div>
+      `,
+    });
+  } catch (error) {
+    console.error("Gagal mengirim email resi:", error);
+    throw error;
+  }
+}
