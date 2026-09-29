@@ -12,7 +12,10 @@ export default function WebVitals() {
     }
 
     // Kirim metrik ke endpoint khusus untuk monitoring di production
-    const body = JSON.stringify(metric);
+    // Filter properti 'entries' untuk menghindari TypeError: Converting circular structure to JSON
+    const body = JSON.stringify(metric, (key, value) => 
+      key === 'entries' ? undefined : value
+    );
     const url = "/api/vitals";
 
     // Gunakan navigator.sendBeacon jika didukung agar request tidak terputus saat user menutup halaman
