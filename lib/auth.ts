@@ -28,9 +28,12 @@ export const authOptions: NextAuthOptions = {
     error: '/masuk',
   },
   callbacks: {
-    async jwt({ token, trigger, session }) {
+    async jwt({ token, trigger, session, user }) {
       if (trigger === "update" && session?.name) {
         token.name = session.name;
+      }
+      if (user) {
+        token.role = user.role;
       }
       return token;
     },
@@ -38,9 +41,11 @@ export const authOptions: NextAuthOptions = {
       if (session.user && token.sub) {
         session.user.id = token.sub;
       }
-      // Memastikan nama dari token JWT yang sudah di-update ikut disalin ke session
       if (session.user && token.name) {
         session.user.name = token.name;
+      }
+      if (session.user && token.role) {
+        session.user.role = token.role as "USER" | "ADMIN";
       }
       return session;
     },

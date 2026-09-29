@@ -125,9 +125,10 @@ model Product {
   imageUrl     String?
   category     Category
   isActive     Boolean     @default(true)
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
   orders       OrderItem[]
+  stockLedgers StockLedger[]
 }
 
 model Order {
@@ -149,10 +150,12 @@ model Order {
   detailAddress  String
   courierNote    String?
   biteshipAreaId String
+  trackingNumber String?
   createdAt      DateTime    @default(now())
   updatedAt      DateTime    @updatedAt
   user           User?       @relation(fields: [userId], references: [id])
   items          OrderItem[]
+  histories      OrderHistory[]
 
   @@index([userId])
   @@index([guestToken])
@@ -170,6 +173,35 @@ model OrderItem {
   grindSize   String?
   order       Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
   product     Product @relation(fields: [productId], references: [id])
+}
+
+model OrderHistory {
+  id          String       @id @default(cuid())
+  orderId     String
+  oldStatus   OrderStatus?
+  newStatus   OrderStatus
+  actionBy    String
+  notes       String?
+  createdAt   DateTime     @default(now())
+  order       Order        @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+}
+
+model StockLedger {
+  id        String       @id @default(cuid())
+  productId String
+  quantity  Int          // Positif untuk masuk (restock/return), negatif untuk keluar (sale/correction)
+  reason    StockReason
+  orderId   String?      // Opsional, referensi jika ada kaitannya dengan penjualan/retur
+  notes     String?
+  actionBy  String       // Sistem atau Admin
+  createdAt DateTime     @default(now())
+  
+  product   Product      @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId])
+  @@index([orderId])
 }
 
 model CoffeeDirectory {
@@ -223,7 +255,16 @@ enum Category {
 enum OrderStatus {
   PENDING
   PAID
+  PROCESSING
   SHIPPED
   DELIVERED
   CANCELLED
+  REFUNDED
+}
+
+enum StockReason {
+  SALE
+  RESTOCK
+  CORRECTION
+  RETURN
 }
